@@ -124,6 +124,80 @@
                     "description": "Internal cohort identifier used in tuple metadata.",
                     "hidden": true
                 },
+                "train_epochs": {
+                    "type": "integer",
+                    "default": 100,
+                    "minimum": 1,
+                    "description": "Epochs per training run.",
+                    "hidden": true
+                },
+                "train_batch_size": {
+                    "type": "integer",
+                    "default": 16,
+                    "minimum": 1,
+                    "description": "Batch size for all training stages; larger values increase GPU memory usage.",
+                    "hidden": true
+                },
+                "train_chunk_size": {
+                    "type": "integer",
+                    "default": 3000,
+                    "minimum": 100,
+                    "description": "Chunk size for all training stages; larger values increase GPU memory usage.",
+                    "hidden": true
+                },
+                "train_aggregation_method": {
+                    "type": "string",
+                    "default": "mean",
+                    "description": "Aggregation method passed to SIEVE training.",
+                    "hidden": true
+                },
+                "train_gradient_accumulation_steps": {
+                    "type": "integer",
+                    "default": 4,
+                    "minimum": 1,
+                    "description": "Gradient accumulation steps for all training stages.",
+                    "hidden": true
+                },
+                "train_gradient_clip": {
+                    "type": "number",
+                    "default": 1.0,
+                    "minimum": 0.0,
+                    "description": "Gradient clipping threshold for all training stages.",
+                    "hidden": true
+                },
+                "train_seed": {
+                    "type": "integer",
+                    "default": 42,
+                    "description": "Training random seed.",
+                    "hidden": true
+                },
+                "train_device": {
+                    "type": "string",
+                    "default": "cuda",
+                    "description": "Training device passed to SIEVE (for example cuda or cpu).",
+                    "hidden": true
+                },
+                "train_early_stopping": {
+                    "type": "integer",
+                    "default": 10,
+                    "minimum": 1,
+                    "description": "Early stopping patience for training runs.",
+                    "hidden": true
+                },
+                "train_hidden_dim": {
+                    "type": "integer",
+                    "default": 64,
+                    "minimum": 1,
+                    "description": "Default hidden dimension used across training stages.",
+                    "hidden": true
+                },
+                "train_num_attention_layers": {
+                    "type": "integer",
+                    "default": 1,
+                    "minimum": 1,
+                    "description": "Default number of attention layers used across training stages.",
+                    "hidden": true
+                },
                 "grid_lr": {
                     "type": ["array", "string"],
                     "description": "Advanced: learning-rate values for internal grid search.",
@@ -133,25 +207,25 @@
                 "grid_lambda_attr": {
                     "type": ["array", "string"],
                     "description": "Advanced: lambda_attr values for internal grid search.",
-                    "default": [0.0, 0.1],
+                    "default": [0.01, 0.1, 0.5, 1.0],
                     "hidden": true
                 },
-                "grid_batch_size": {
+                "grid_latent_dim": {
                     "type": ["array", "string"],
-                    "description": "Advanced: batch_size values for internal grid search.",
-                    "default": [4, 8],
+                    "description": "Advanced: latent dimension values for internal grid search.",
+                    "default": [32, 64],
                     "hidden": true
                 },
-                "grid_chunk_size": {
+                "grid_hidden_dim": {
                     "type": ["array", "string"],
-                    "description": "Advanced: chunk_size values for internal grid search.",
-                    "default": [2000, 3000],
+                    "description": "Advanced: hidden dimension values for internal grid search.",
+                    "default": [64, 128],
                     "hidden": true
                 },
-                "grid_aggregation_method": {
+                "grid_num_attention_layers": {
                     "type": ["array", "string"],
-                    "description": "Advanced: aggregation methods for internal grid search.",
-                    "default": ["mean", "logit_mean"],
+                    "description": "Advanced: number of attention layers for internal grid search.",
+                    "default": [1, 2],
                     "hidden": true
                 },
                 "clinvar_tsv": {

@@ -37,11 +37,20 @@ END_VERSIONS
     stub:
     """
     cat <<'EOF_BEST' > best_params.yaml
-aggregation_method: mean
-batch_size: 8
-chunk_size: 2000
-lambda_attr: 0.1
 lr: 0.0001
+lambda_attr: 0.1
+latent_dim: 32
+hidden_dim: 64
+num_attention_layers: 1
+batch_size: 16
+chunk_size: 3000
+aggregation_method: mean
+epochs: 100
+gradient_accumulation_steps: 4
+gradient_clip: 1.0
+seed: 42
+device: cuda
+early_stopping: 10
 annotation_level: L3
 EOF_BEST
 

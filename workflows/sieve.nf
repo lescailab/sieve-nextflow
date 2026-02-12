@@ -91,12 +91,27 @@ workflow SIEVE {
         tuple(meta.id, sex_map)
     }
 
+    def baseTrainingParams = [
+        epochs: params.train_epochs as Integer,
+        batch_size: params.train_batch_size as Integer,
+        chunk_size: params.train_chunk_size as Integer,
+        aggregation_method: params.train_aggregation_method,
+        gradient_accumulation_steps: params.train_gradient_accumulation_steps as Integer,
+        gradient_clip: params.train_gradient_clip as Double,
+        seed: params.train_seed as Integer,
+        device: params.train_device,
+        early_stopping: params.train_early_stopping as Integer,
+        hidden_dim: params.train_hidden_dim as Integer,
+        num_attention_layers: params.train_num_attention_layers as Integer,
+    ].findAll { key, value -> value != null }
+
     def trainingGrid = buildTrainingGrid(
+        baseTrainingParams,
         params.grid_lr,
         params.grid_lambda_attr,
-        params.grid_batch_size,
-        params.grid_chunk_size,
-        params.grid_aggregation_method
+        params.grid_latent_dim,
+        params.grid_hidden_dim,
+        params.grid_num_attention_layers
     )
 
     ch_grid_specs = Channel
@@ -202,7 +217,8 @@ workflow SIEVE {
         .join(ch_sex_map_keyed, by: 0)
         .join(ch_best_params_map_keyed, by: 0)
         .map { key, meta, level, val_split, preprocessed, sex_map, best_params_map ->
-            def ablationParams = new LinkedHashMap(best_params_map)
+            def ablationParams = new LinkedHashMap(baseTrainingParams)
+            ablationParams.putAll(best_params_map instanceof Map ? best_params_map : [:])
             ablationParams.put('annotation_level', level)
             tuple(meta, preprocessed, sex_map, ablationParams, level, val_split)
         }
@@ -246,7 +262,8 @@ workflow SIEVE {
         .join(ch_sex_map_keyed, by: 0)
         .join(ch_best_params_map_keyed, by: 0)
         .map { key, meta, level, val_split, preprocessed_null, sex_map, best_params_map ->
-            def nullParams = new LinkedHashMap(best_params_map)
+            def nullParams = new LinkedHashMap(baseTrainingParams)
+            nullParams.putAll(best_params_map instanceof Map ? best_params_map : [:])
             nullParams.put('annotation_level', level)
             tuple(meta, preprocessed_null, sex_map, nullParams, level, val_split)
         }
@@ -453,30 +470,42 @@ def toList(value) {
         .findAll { it }
 }
 
-def buildTrainingGrid(lrValues, lambdaAttrValues, batchSizeValues, chunkSizeValues, aggregationMethods) {
+def buildTrainingGrid(baseTrainParams, lrValues, lambdaAttrValues, latentDimValues, hiddenDimValues, layerValues) {
     def lrList = toList(lrValues).collect { it as Double }
     def lambdaList = toList(lambdaAttrValues).collect { it as Double }
-    def batchList = toList(batchSizeValues).collect { it as Integer }
-    def chunkList = toList(chunkSizeValues).collect { it as Integer }
-    def aggList = toList(aggregationMethods)
+    def latentList = toList(latentDimValues).collect { it as Integer }
+    def hiddenList = toList(hiddenDimValues).collect { it as Integer }
+    def layerList = toList(layerValues).collect { it as Integer }
+
+    if (!lrList || !lambdaList || !latentList || !hiddenList || !layerList) {
+        def missing = []
+        if (!lrList) missing << 'grid_lr'
+        if (!lambdaList) missing << 'grid_lambda_attr'
+        if (!latentList) missing << 'grid_latent_dim'
+        if (!hiddenList) missing << 'grid_hidden_dim'
+        if (!layerList) missing << 'grid_num_attention_layers'
+        throw new IllegalArgumentException("Training grid values cannot be empty: ${missing.join(', ')}")
+    }
 
     def grid = []
     int runCounter = 0
 
     lrList.each { lr ->
         lambdaList.each { lambda_attr ->
-            batchList.each { batch_size ->
-                chunkList.each { chunk_size ->
-                    aggList.each { aggregation_method ->
+            latentList.each { latent_dim ->
+                hiddenList.each { hidden_dim ->
+                    layerList.each { num_attention_layers ->
                         runCounter += 1
-                        grid << [
+                        def runParams = new LinkedHashMap(baseTrainParams ?: [:])
+                        runParams.putAll([
                             run_id: String.format('grid_%03d', runCounter),
                             lr: lr,
                             lambda_attr: lambda_attr,
-                            batch_size: batch_size,
-                            chunk_size: chunk_size,
-                            aggregation_method: aggregation_method,
-                        ]
+                            latent_dim: latent_dim,
+                            hidden_dim: hidden_dim,
+                            num_attention_layers: num_attention_layers,
+                        ])
+                        grid << runParams
                     }
                 }
             }

@@ -98,9 +98,18 @@ EOF_STUB_RESULTS
 hyperparameters:
   lr: ${trainParamMapStub.lr ?: 0.0001}
   lambda_attr: ${trainParamMapStub.lambda_attr ?: 0.1}
-  batch_size: ${trainParamMapStub.batch_size ?: 8}
-  chunk_size: ${trainParamMapStub.chunk_size ?: 2000}
+  latent_dim: ${trainParamMapStub.latent_dim ?: 32}
+  hidden_dim: ${trainParamMapStub.hidden_dim ?: 64}
+  num_attention_layers: ${trainParamMapStub.num_attention_layers ?: 1}
+  batch_size: ${trainParamMapStub.batch_size ?: 16}
+  chunk_size: ${trainParamMapStub.chunk_size ?: 3000}
   aggregation_method: "${trainParamMapStub.aggregation_method ?: 'mean'}"
+  epochs: ${trainParamMapStub.epochs ?: 100}
+  gradient_accumulation_steps: ${trainParamMapStub.gradient_accumulation_steps ?: 4}
+  gradient_clip: ${trainParamMapStub.gradient_clip ?: 1.0}
+  seed: ${trainParamMapStub.seed ?: 42}
+  device: "${trainParamMapStub.device ?: 'cuda'}"
+  early_stopping: ${trainParamMapStub.early_stopping ?: 10}
   annotation_level: "${level}"
   val_split: ${val_split}
 EOF_STUB_CONFIG

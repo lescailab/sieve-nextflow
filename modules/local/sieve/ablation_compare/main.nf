@@ -22,7 +22,10 @@ process SIEVE_ABLATION_COMPARE {
         --out-summary-tsv ablation_summary.tsv \
         --out-summary-yaml ablation_summary.yaml
 
-    python -c 'import sys; print(f"python: \"{sys.version.split()[0]}\"")' > .python_version.tmp
+    python - <<'PY' > .python_version.tmp
+import sys
+print(f'python: "{sys.version.split()[0]}"')
+PY
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

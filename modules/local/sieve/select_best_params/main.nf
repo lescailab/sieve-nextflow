@@ -23,7 +23,10 @@ process SIEVE_SELECT_BEST_PARAMS {
         --out-best-run-id best_run_id.txt \
         --out-summary train_grid_summary.tsv
 
-    python -c 'import sys; print(f"python: \"{sys.version.split()[0]}\"")' > .python_version.tmp
+    python - <<'PY' > .python_version.tmp
+import sys
+print(f'python: "{sys.version.split()[0]}"')
+PY
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

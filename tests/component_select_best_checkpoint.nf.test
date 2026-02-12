@@ -1,0 +1,46 @@
+def componentFixtures = new File("assets/testdata/component_fixtures").canonicalPath
+
+nextflow_process {
+
+    name "Test Process SIEVE_SELECT_BEST_CHECKPOINT"
+    script "../modules/local/sieve/select_best_checkpoint/main.nf"
+    process "SIEVE_SELECT_BEST_CHECKPOINT"
+    config "./component_process.config"
+    tag "components"
+    tag "select_best_checkpoint"
+
+    test("select best checkpoint from fold metrics") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'cohort' ],
+                    file('${componentFixtures}/cv/cv_output', checkIfExists: true),
+                    file('${componentFixtures}/cv/cv_results.yaml', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.best_checkpoint != null },
+                {
+                    def bestFoldId = new File(process.out.best_checkpoint.get(0).get(3).toString()).text.trim()
+                    assert bestFoldId == "fold_0"
+                },
+                {
+                    def bestConfig = new File(process.out.best_checkpoint.get(0).get(2).toString()).text
+                    assert bestConfig.contains("fold: 0")
+                },
+                {
+                    def summaryRows = new File(process.out.best_checkpoint.get(0).get(4).toString()).readLines()
+                    assert summaryRows.size() == 3
+                },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

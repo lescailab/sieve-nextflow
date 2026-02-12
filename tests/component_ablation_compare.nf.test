@@ -1,0 +1,44 @@
+def componentFixtures = new File("assets/testdata/component_fixtures").canonicalPath
+
+nextflow_process {
+
+    name "Test Process SIEVE_ABLATION_COMPARE"
+    script "../modules/local/sieve/ablation_compare/main.nf"
+    process "SIEVE_ABLATION_COMPARE"
+    config "./component_process.config"
+    tag "components"
+    tag "ablation_compare"
+
+    test("summarize ablation runs across levels") {
+
+        when {
+            process {
+                """
+                input[0] = [ id: 'cohort' ]
+                input[1] = [
+                    file('${componentFixtures}/ablation/ablation_L0_selection_payload', checkIfExists: true),
+                    file('${componentFixtures}/ablation/ablation_L1_selection_payload', checkIfExists: true),
+                    file('${componentFixtures}/ablation/ablation_L2_selection_payload', checkIfExists: true),
+                    file('${componentFixtures}/ablation/ablation_L3_selection_payload', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.ablation_summary != null },
+                {
+                    def summaryTsvRows = new File(process.out.ablation_summary.get(0).get(1).toString()).readLines()
+                    assert summaryTsvRows.size() == 5
+                },
+                {
+                    def summaryYaml = new File(process.out.ablation_summary.get(0).get(2).toString()).text
+                    assert summaryYaml.contains("best_level: L3")
+                },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

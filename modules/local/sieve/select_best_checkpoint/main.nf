@@ -14,26 +14,29 @@ process SIEVE_SELECT_BEST_CHECKPOINT {
 
     script:
     """
-    mapfile -t fold_dirs < <(find ${cv_output} -mindepth 1 -maxdepth 1 -type d -name 'fold_*' | sort)
+    fold_dirs=\$(find ${cv_output}/ -mindepth 1 -maxdepth 1 -type d -name 'fold_*' | sort)
 
-    if [[ \${#fold_dirs[@]} -eq 0 ]]; then
+    if [ -z "\${fold_dirs}" ]; then
         echo "ERROR: No fold directories found in ${cv_output}" >&2
         exit 1
     fi
 
-    fold_args=()
-    for fold_dir in "\${fold_dirs[@]}"; do
-        fold_args+=("--fold-dir" "\${fold_dir}")
+    set --
+    for fold_dir in \${fold_dirs}; do
+        set -- "\$@" --fold-dir "\${fold_dir}"
     done
 
     select_best_cv_fold.py \
-        "\${fold_args[@]}" \
+        "\$@" \
         --out-best-checkpoint best_checkpoint.pt \
         --out-best-config best_fold_config.yaml \
         --out-best-fold-id best_fold_id.txt \
         --out-summary cv_folds_summary.tsv
 
-    python -c 'import sys; print(f"python: \"{sys.version.split()[0]}\"")' > .python_version.tmp
+    python - <<'PY' > .python_version.tmp
+import sys
+print(f'python: "{sys.version.split()[0]}"')
+PY
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -18,16 +18,18 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(removeNextflowVersion("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml")).match() },
-                { assert new File("$outputDir/sex_inference/sample_sex.tsv").exists() },
-                { assert new File("$outputDir/preprocess/preprocessed.pt").exists() },
-                { assert new File("$outputDir/grid_search/selection/best_params.yaml").exists() },
-                { assert new File("$outputDir/cross_validation/selection/best_checkpoint.pt").exists() },
-                { assert new File("$outputDir/explainability/real/sieve_variant_rankings.csv").exists() },
-                { assert new File("$outputDir/ablation/summary/ablation_summary.tsv").exists() },
-                { assert new File("$outputDir/null_baseline/comparison/comparison_summary.yaml").exists() },
-                { assert new File("$outputDir/epistasis/epistasis_validation.csv").exists() },
-                { assert new File("$outputDir/discovery_validation/validation_report.yaml").exists() }
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_COLLECT_PLOTS") },
+                { assert new File("$outputDir/data/sex_map/sample_sex.tsv").exists() },
+                { assert new File("$outputDir/data/preprocessed/preprocessed.pt").exists() },
+                { assert new File("$outputDir/models/best_model/best_checkpoint.pt").exists() },
+                { assert new File("$outputDir/explainability/best_model/explain_output/sieve_variant_rankings.csv").exists() },
+                { assert new File("$outputDir/explainability/analysis/validation_output/validation_report.yaml").exists() },
+                { assert new File("$outputDir/ablation/discovery/ablation_summary.tsv").exists() },
+                { assert new File("$outputDir/null/model/best_model.pt").exists() },
+                { assert new File("$outputDir/null/comparison/comparison_summary.yaml").exists() },
+                { assert new File("$outputDir/null/comparison_sex_chrom_fixed/comparison_summary.yaml").exists() },
+                { assert new File("$outputDir/plots/plots_manifest.tsv").exists() }
             )
         }
     }
@@ -46,13 +48,13 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert !new File("$outputDir/sex_inference/sample_sex.tsv").exists() },
-                { assert new File("$outputDir/preprocess/preprocessed.pt").exists() },
-                { assert new File("$outputDir/grid_search/selection/best_params.yaml").exists() },
-                { assert new File("$outputDir/cross_validation/selection/best_checkpoint.pt").exists() },
-                { assert new File("$outputDir/explainability/real/sieve_variant_rankings.csv").exists() },
-                { assert new File("$outputDir/null_baseline/comparison/comparison_summary.yaml").exists() },
-                { assert new File("$outputDir/discovery_validation/validation_report.yaml").exists() }
+                { assert new File("$outputDir/data/sex_map/sample_sex.tsv").exists() },
+                { assert new File("$outputDir/data/preprocessed/preprocessed.pt").exists() },
+                { assert new File("$outputDir/models/best_model/best_checkpoint.pt").exists() },
+                { assert new File("$outputDir/explainability/best_model/explain_output/sieve_variant_rankings.csv").exists() },
+                { assert new File("$outputDir/null/comparison/comparison_summary.yaml").exists() },
+                { assert new File("$outputDir/null/comparison_sex_chrom_fixed/comparison_summary.yaml").exists() },
+                { assert new File("$outputDir/explainability/analysis/validation_output/validation_report.yaml").exists() }
             )
         }
     }
@@ -71,12 +73,14 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert new File("$outputDir/preprocess/preprocessed.pt").exists() },
-                { assert new File("$outputDir/grid_search/selection/train_grid_summary.tsv").exists() },
-                { assert new File("$outputDir/cross_validation/selection/cv_folds_summary.tsv").exists() },
-                { assert new File("$outputDir/explainability/real/sieve_gene_rankings.csv").exists() },
-                { assert new File("$outputDir/null_baseline/comparison/comparison_summary.yaml").exists() },
-                { assert new File("$outputDir/discovery_validation/validation_report.yaml").exists() }
+                { assert new File("$outputDir/data/sex_map/sample_sex.tsv").exists() },
+                { assert new File("$outputDir/data/preprocessed/preprocessed.pt").exists() },
+                { assert new File("$outputDir/models/best_model/cv_folds_summary.tsv").exists() },
+                { assert new File("$outputDir/explainability/best_model/explain_output/sieve_gene_rankings.csv").exists() },
+                { assert new File("$outputDir/null/comparison/comparison_summary.yaml").exists() },
+                { assert new File("$outputDir/null/comparison_sex_chrom_fixed/comparison_summary.yaml").exists() },
+                { assert new File("$outputDir/ablation/discovery/ablation_summary.tsv").exists() },
+                { assert new File("$outputDir/explainability/analysis/validation_output/validation_report.yaml").exists() }
             )
         }
     }

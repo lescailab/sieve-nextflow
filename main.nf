@@ -30,6 +30,19 @@ workflow NFCORE_SIEVE {
     main:
 
     SIEVE()
+
+    emit:
+    sex_map                   = SIEVE.out.sex_map
+    preprocessed_dataset      = SIEVE.out.preprocessed_dataset
+    best_model                = SIEVE.out.best_model
+    explainability_best_model = SIEVE.out.explainability_best_model
+    explainability_analysis   = SIEVE.out.explainability_analysis
+    ablation_discovery        = SIEVE.out.ablation_discovery
+    null_model                = SIEVE.out.null_model
+    null_comparison           = SIEVE.out.null_comparison
+    null_comparison_sex_fixed = SIEVE.out.null_comparison_sex_fixed
+    plots                     = SIEVE.out.plots
+    pipeline_versions         = SIEVE.out.pipeline_versions
 }
 
 /*
@@ -68,6 +81,33 @@ workflow {
         params.monochrome_logs,
         params.hook_url,
     )
+
+    publish:
+    sex_map                   = NFCORE_SIEVE.out.sex_map
+    preprocessed_dataset      = NFCORE_SIEVE.out.preprocessed_dataset
+    best_model                = NFCORE_SIEVE.out.best_model
+    explainability_best_model = NFCORE_SIEVE.out.explainability_best_model
+    explainability_analysis   = NFCORE_SIEVE.out.explainability_analysis
+    ablation_discovery        = NFCORE_SIEVE.out.ablation_discovery
+    null_model                = NFCORE_SIEVE.out.null_model
+    null_comparison           = NFCORE_SIEVE.out.null_comparison
+    null_comparison_sex_fixed = NFCORE_SIEVE.out.null_comparison_sex_fixed
+    plots                     = NFCORE_SIEVE.out.plots
+    pipeline_versions         = NFCORE_SIEVE.out.pipeline_versions
+}
+
+output {
+    sex_map { path 'data/sex_map' }
+    preprocessed_dataset { path 'data/preprocessed' }
+    best_model { path 'models/best_model' }
+    explainability_best_model { path 'explainability/best_model' }
+    explainability_analysis { path 'explainability/analysis' }
+    ablation_discovery { path 'ablation/discovery' }
+    null_model { path 'null/model' }
+    null_comparison { path 'null/comparison' }
+    null_comparison_sex_fixed { path 'null/comparison_sex_chrom_fixed' }
+    plots { path 'plots' }
+    pipeline_versions { path 'pipeline_info' }
 }
 
 /*

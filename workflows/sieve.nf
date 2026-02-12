@@ -6,6 +6,7 @@
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 
 include { SIEVE_INFER_SEX } from '../modules/local/sieve/infer_sex/main'
+include { SIEVE_EMIT_SEX_MAP } from '../modules/local/sieve/emit_sex_map/main'
 include { SIEVE_PREPROCESS } from '../modules/local/sieve/preprocess/main'
 include { SIEVE_TRAIN_SINGLE as SIEVE_TRAIN_SINGLE_GRID } from '../modules/local/sieve/train_single/main'
 include { SIEVE_TRAIN_SINGLE as SIEVE_TRAIN_SINGLE_ABLATION } from '../modules/local/sieve/train_single/main'
@@ -14,12 +15,15 @@ include { SIEVE_TRAIN_CV } from '../modules/local/sieve/train_cv/main'
 include { SIEVE_EXPLAIN as SIEVE_EXPLAIN_REAL } from '../modules/local/sieve/explain/main'
 include { SIEVE_EXPLAIN as SIEVE_EXPLAIN_NULL } from '../modules/local/sieve/explain/main'
 include { SIEVE_CREATE_NULL_BASELINE } from '../modules/local/sieve/create_null_baseline/main'
-include { SIEVE_COMPARE_ATTRIBUTIONS } from '../modules/local/sieve/compare_attributions/main'
+include { SIEVE_COMPARE_ATTRIBUTIONS as SIEVE_COMPARE_ATTRIBUTIONS_RAW } from '../modules/local/sieve/compare_attributions/main'
+include { SIEVE_COMPARE_ATTRIBUTIONS as SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED } from '../modules/local/sieve/compare_attributions/main'
 include { SIEVE_VALIDATE_EPISTASIS } from '../modules/local/sieve/validate_epistasis/main'
 include { SIEVE_VALIDATE_DISCOVERIES } from '../modules/local/sieve/validate_discoveries/main'
 include { SIEVE_SELECT_BEST_PARAMS } from '../modules/local/sieve/select_best_params/main'
 include { SIEVE_SELECT_BEST_CHECKPOINT } from '../modules/local/sieve/select_best_checkpoint/main'
 include { SIEVE_ABLATION_COMPARE } from '../modules/local/sieve/ablation_compare/main'
+include { SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS } from '../modules/local/sieve/filter_sex_chrom_attributions/main'
+include { SIEVE_COLLECT_PLOTS } from '../modules/local/sieve/collect_plots/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,6 +36,7 @@ workflow SIEVE {
     main:
 
     ch_versions = Channel.empty()
+    ch_plot_sources = Channel.empty()
 
     def cohortMeta = [id: params.cohort_id ?: 'cohort']
 
@@ -56,13 +61,19 @@ workflow SIEVE {
         )
         ch_sex_map = SIEVE_INFER_SEX.out.sex_map
         ch_versions = ch_versions.mix(SIEVE_INFER_SEX.out.versions)
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_INFER_SEX.out.diagnostics.map { meta, diagnostic -> diagnostic })
     } else {
         error("Either --sex_map must be provided or --infer_sex must be true.")
     }
 
+    SIEVE_EMIT_SEX_MAP(ch_sex_map)
+    ch_versions = ch_versions.mix(SIEVE_EMIT_SEX_MAP.out.versions)
+
+    ch_effective_sex_map = SIEVE_EMIT_SEX_MAP.out.sex_map
+
     ch_preprocess_input = ch_vcf
         .combine(ch_phenotypes, by: 0)
-        .combine(ch_sex_map, by: 0)
+        .combine(ch_effective_sex_map, by: 0)
         .map { meta, vcf, phenotypes, sex_map ->
             tuple(meta, vcf, phenotypes, sex_map)
         }
@@ -76,7 +87,7 @@ workflow SIEVE {
     ch_preprocessed_keyed = SIEVE_PREPROCESS.out.preprocessed.map { meta, preprocessed ->
         tuple(meta.id, preprocessed)
     }
-    ch_sex_map_keyed = ch_sex_map.map { meta, sex_map ->
+    ch_sex_map_keyed = ch_effective_sex_map.map { meta, sex_map ->
         tuple(meta.id, sex_map)
     }
 
@@ -156,6 +167,7 @@ workflow SIEVE {
 
     SIEVE_TRAIN_CV(ch_cv_input)
     ch_versions = ch_versions.mix(SIEVE_TRAIN_CV.out.versions)
+    ch_plot_sources = ch_plot_sources.mix(SIEVE_TRAIN_CV.out.cv_bundle.map { meta, cv_output, cv_results -> cv_output })
 
     SIEVE_SELECT_BEST_CHECKPOINT(SIEVE_TRAIN_CV.out.cv_bundle)
     ch_versions = ch_versions.mix(SIEVE_SELECT_BEST_CHECKPOINT.out.versions)
@@ -172,6 +184,7 @@ workflow SIEVE {
 
     SIEVE_EXPLAIN_REAL(ch_explain_real_input)
     ch_versions = ch_versions.mix(SIEVE_EXPLAIN_REAL.out.versions)
+    ch_plot_sources = ch_plot_sources.mix(SIEVE_EXPLAIN_REAL.out.explain_dir.map { meta, explain_dir -> explain_dir })
 
     ch_ablation_specs = Channel
         .fromList(['L0', 'L1', 'L2', 'L3'])
@@ -196,6 +209,7 @@ workflow SIEVE {
 
     SIEVE_TRAIN_SINGLE_ABLATION(ch_ablation_train_input)
     ch_versions = ch_versions.mix(SIEVE_TRAIN_SINGLE_ABLATION.out.versions)
+    ch_plot_sources = ch_plot_sources.mix(SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload.map { meta, run_dir -> run_dir })
 
     ch_ablation_selection_dirs = SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload
         .map { meta, run_dir -> run_dir }
@@ -252,6 +266,7 @@ workflow SIEVE {
 
     SIEVE_EXPLAIN_NULL(ch_null_explain_input)
     ch_versions = ch_versions.mix(SIEVE_EXPLAIN_NULL.out.versions)
+    ch_plot_sources = ch_plot_sources.mix(SIEVE_EXPLAIN_NULL.out.explain_dir.map { meta, explain_dir -> explain_dir })
 
     ch_real_variant_keyed = SIEVE_EXPLAIN_REAL.out.rankings.map { meta, variant_rankings, gene_rankings, interactions ->
         tuple(meta.id, variant_rankings)
@@ -267,8 +282,26 @@ workflow SIEVE {
             tuple([id: key, run_id: 'compare_attributions', stage: 'null_baseline'], real_variant_rankings, null_variant_rankings)
         }
 
-    SIEVE_COMPARE_ATTRIBUTIONS(ch_compare_attributions_input)
-    ch_versions = ch_versions.mix(SIEVE_COMPARE_ATTRIBUTIONS.out.versions)
+    SIEVE_COMPARE_ATTRIBUTIONS_RAW(ch_compare_attributions_input)
+    ch_versions = ch_versions.mix(SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.versions)
+    ch_plot_sources = ch_plot_sources.mix(SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.comparison.map { meta, summary, comparison_dir -> comparison_dir })
+
+    ch_sex_fixed_filter_input = ch_real_variant_keyed
+        .join(ch_null_variant_keyed, by: 0)
+        .map { key, real_variant_rankings, null_variant_rankings ->
+            tuple([id: key, run_id: 'sex_chr_filter', stage: 'null_baseline'], real_variant_rankings, null_variant_rankings)
+        }
+
+    SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS(ch_sex_fixed_filter_input)
+    ch_versions = ch_versions.mix(SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS.out.versions)
+
+    ch_compare_sex_fixed_input = SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS.out.filtered_rankings.map { meta, real_autosomal, null_autosomal, filter_summary ->
+        tuple([id: meta.id, run_id: 'compare_attributions_sex_fixed', stage: 'null_baseline'], real_autosomal, null_autosomal)
+    }
+
+    SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED(ch_compare_sex_fixed_input)
+    ch_versions = ch_versions.mix(SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED.out.versions)
+    ch_plot_sources = ch_plot_sources.mix(SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED.out.comparison.map { meta, summary, comparison_dir -> comparison_dir })
 
     ch_nonempty_interactions_keyed = SIEVE_EXPLAIN_REAL.out.rankings
         .map { meta, variant_rankings, gene_rankings, interactions ->
@@ -287,6 +320,7 @@ workflow SIEVE {
 
     SIEVE_VALIDATE_EPISTASIS(ch_epistasis_input)
     ch_versions = ch_versions.mix(SIEVE_VALIDATE_EPISTASIS.out.versions)
+    ch_plot_sources = ch_plot_sources.mix(SIEVE_VALIDATE_EPISTASIS.out.epistasis.map { meta, epistasis_csv, epistasis_dir -> epistasis_dir })
 
     ch_discovery_validation_input = SIEVE_EXPLAIN_REAL.out.rankings.map { meta, variant_rankings, gene_rankings, interactions ->
         tuple(
@@ -301,26 +335,101 @@ workflow SIEVE {
 
     SIEVE_VALIDATE_DISCOVERIES(ch_discovery_validation_input)
     ch_versions = ch_versions.mix(SIEVE_VALIDATE_DISCOVERIES.out.versions)
+    ch_plot_sources = ch_plot_sources.mix(SIEVE_VALIDATE_DISCOVERIES.out.validation.map { meta, validation_report, validation_dir -> validation_dir })
+
+    ch_plot_sources_list = ch_plot_sources.collect()
+
+    SIEVE_COLLECT_PLOTS(
+        ch_selection_meta,
+        ch_plot_sources_list
+    )
+    ch_versions = ch_versions.mix(SIEVE_COLLECT_PLOTS.out.versions)
 
     softwareVersionsToYAML(ch_versions)
         .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
             name: 'nf_core_sieve_software_versions.yml',
             sort: true,
             newLine: true
         )
         .set { ch_collated_versions }
 
+    ch_published_sex_map = ch_effective_sex_map.map { meta, sex_map_file ->
+        sex_map_file
+    }
+    ch_published_preprocessed = SIEVE_PREPROCESS.out.preprocessed.map { meta, preprocessed_file ->
+        preprocessed_file
+    }
+    ch_published_best_model = SIEVE_SELECT_BEST_CHECKPOINT.out.best_checkpoint.map { meta, checkpoint, fold_config, fold_id, cv_summary ->
+        [checkpoint, fold_config, fold_id, cv_summary]
+    }
+    ch_published_explainability_best = SIEVE_EXPLAIN_REAL.out.explain_dir.map { meta, explain_dir ->
+        explain_dir
+    }
+    ch_published_explainability_analysis = SIEVE_VALIDATE_DISCOVERIES.out.validation
+        .map { meta, validation_report, validation_dir ->
+            [validation_report, validation_dir]
+        }
+        .mix(
+            SIEVE_VALIDATE_EPISTASIS.out.epistasis.map { meta, epistasis_validation, epistasis_dir ->
+                [epistasis_validation, epistasis_dir]
+            }
+        )
+    ch_published_ablation_discovery = SIEVE_ABLATION_COMPARE.out.ablation_summary
+        .map { meta, ablation_tsv, ablation_yaml ->
+            [ablation_tsv, ablation_yaml]
+        }
+        .mix(
+            SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload.map { meta, run_dir ->
+                run_dir
+            }
+        )
+    ch_published_null_model = SIEVE_TRAIN_SINGLE_NULL.out.train_artifacts
+        .map { meta, null_results, null_config, null_model ->
+            [null_model, null_config, null_results]
+        }
+        .mix(
+            SIEVE_TRAIN_SINGLE_NULL.out.history.map { meta, null_history ->
+                null_history
+            }
+        )
+        .mix(
+            SIEVE_CREATE_NULL_BASELINE.out.null_preprocessed.map { meta, null_preprocessed ->
+                null_preprocessed
+            }
+        )
+        .mix(
+            SIEVE_EXPLAIN_NULL.out.explain_dir.map { meta, null_explain_dir ->
+                null_explain_dir
+            }
+        )
+    ch_published_null_comparison = SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.comparison.map { meta, comparison_summary, comparison_dir ->
+        [comparison_summary, comparison_dir]
+    }
+    ch_published_null_comparison_sex_fixed = SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED.out.comparison
+        .map { meta, comparison_summary, comparison_dir ->
+            [comparison_summary, comparison_dir]
+        }
+        .mix(
+            SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS.out.filtered_rankings.map { meta, real_autosomal, null_autosomal, filter_summary ->
+                [real_autosomal, null_autosomal, filter_summary]
+            }
+        )
+    ch_published_plots = SIEVE_COLLECT_PLOTS.out.plot_bundle.map { meta, plots_dir, plots_manifest ->
+        [plots_dir, plots_manifest]
+    }
+
     emit:
-    sex_map                    = ch_sex_map
-    preprocessed               = SIEVE_PREPROCESS.out.preprocessed
-    train_grid_best            = SIEVE_SELECT_BEST_PARAMS.out.best_params
-    cv_best                    = SIEVE_SELECT_BEST_CHECKPOINT.out.best_checkpoint
-    explain_real               = SIEVE_EXPLAIN_REAL.out.rankings
-    ablation_summary           = SIEVE_ABLATION_COMPARE.out.ablation_summary
-    null_baseline_comparison   = SIEVE_COMPARE_ATTRIBUTIONS.out.comparison
-    epistasis_validation       = SIEVE_VALIDATE_EPISTASIS.out.epistasis
-    discovery_validation       = SIEVE_VALIDATE_DISCOVERIES.out.validation
+    sex_map                    = ch_published_sex_map
+    preprocessed_dataset       = ch_published_preprocessed
+    best_model                 = ch_published_best_model
+    explainability_best_model  = ch_published_explainability_best
+    explainability_analysis    = ch_published_explainability_analysis
+    ablation_discovery         = ch_published_ablation_discovery
+    null_model                 = ch_published_null_model
+    null_comparison            = ch_published_null_comparison
+    null_comparison_sex_fixed  = ch_published_null_comparison_sex_fixed
+    plots                      = ch_published_plots
+    pipeline_versions          = ch_collated_versions
     versions                   = ch_versions
 }
 

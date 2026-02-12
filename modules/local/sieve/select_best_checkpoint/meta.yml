@@ -1,0 +1,46 @@
+name: "sieve_select_best_checkpoint"
+description: Deterministically select best CV fold checkpoint by AUC, accuracy, and loss.
+keywords:
+  - sieve
+  - model selection
+  - cross validation
+  - checkpoint
+tools:
+  - select_best_cv_fold.py:
+      description: Utility script to rank CV folds and select best checkpoint.
+      homepage: https://github.com/nf-core/sieve
+      documentation: https://github.com/nf-core/sieve
+      licence: ["MIT"]
+input:
+  - - meta:
+        type: map
+        description: Cohort-level metadata map
+    - cv_output:
+        type: directory
+        description: CV output directory containing fold_* subdirectories
+    - cv_results:
+        type: file
+        description: CV-level summary YAML
+output:
+  - best_checkpoint:
+      - - meta:
+            type: map
+            description: Cohort-level metadata map
+        - best_checkpoint.pt:
+            type: file
+            description: Best fold checkpoint file
+        - best_fold_config.yaml:
+            type: file
+            description: Best fold config YAML
+        - best_fold_id.txt:
+            type: file
+            description: Selected best fold identifier
+        - cv_folds_summary.tsv:
+            type: file
+            description: Ranking summary across CV folds
+  - versions:
+      - versions.yml:
+          type: file
+          description: Software versions used by the process
+authors:
+  - "@lescai"

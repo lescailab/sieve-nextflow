@@ -10,6 +10,15 @@
 
 ## Pipeline tools
 
+## [SIEVE](https://anaconda.org/lescailab/sieve)
+
+> Lescai Lab. SIEVE (Sparse Interpretable Exome Variant Explainer) user guide and software package, accessed via Anaconda package `lescailab::sieve`.
+
+### SIEVE runtime images used by this pipeline
+
+- Docker/Wave: `community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382`
+- Singularity/Apptainer ORAS: `oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef`
+
 ## Software packaging/containerisation tools
 
 - [Anaconda](https://anaconda.com)

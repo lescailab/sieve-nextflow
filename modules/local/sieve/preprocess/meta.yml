@@ -1,0 +1,43 @@
+name: "sieve_preprocess"
+description: Encode VCF and phenotype information into SIEVE preprocessed tensors.
+keywords:
+  - sieve
+  - preprocess
+  - vcf
+  - phenotype
+tools:
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence: ["MIT"]
+input:
+  - - meta:
+        type: map
+        description: Sample metadata map
+    - vcf:
+        type: file
+        description: Input bgzipped VCF file
+    - phenotypes:
+        type: file
+        description: TSV with sample phenotype labels
+    - sex_map:
+        type: file
+        description: TSV with inferred or provided sex values
+  - - genome_build:
+        type: string
+        description: Genome build (GRCh37 or GRCh38)
+output:
+  - preprocessed:
+      - - meta:
+            type: map
+            description: Sample metadata map
+        - preprocessed.pt:
+            type: file
+            description: Encoded dataset for SIEVE training/explainability
+  - versions:
+      - versions.yml:
+          type: file
+          description: Software versions used by the process
+authors:
+  - "@lescai"

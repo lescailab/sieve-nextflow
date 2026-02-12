@@ -1,0 +1,56 @@
+name: "sieve_explain"
+description: Run SIEVE explainability from a selected checkpoint and configuration.
+keywords:
+  - sieve
+  - explainability
+  - ranking
+  - interactions
+tools:
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence: ["MIT"]
+input:
+  - - meta:
+        type: map
+        description: Metadata map for explain run
+    - checkpoint:
+        type: file
+        description: Trained checkpoint file
+    - config:
+        type: file
+        description: Fold/model configuration YAML
+    - preprocessed:
+        type: file
+        description: Preprocessed tensor file
+    - is_null_baseline:
+        type: boolean
+        description: Flag to run in null-baseline mode
+output:
+  - rankings:
+      - - meta:
+            type: map
+            description: Metadata map for explain run
+        - sieve_variant_rankings.csv:
+            type: file
+            description: Variant attribution ranking table
+        - sieve_gene_rankings.csv:
+            type: file
+            description: Gene attribution ranking table
+        - sieve_interactions.csv:
+            type: file
+            description: Interaction attribution table
+  - explain_dir:
+      - - meta:
+            type: map
+            description: Metadata map for explain run
+        - explain_output:
+            type: directory
+            description: Explainability output directory
+  - versions:
+      - versions.yml:
+          type: file
+          description: Software versions used by the process
+authors:
+  - "@lescai"

@@ -1,0 +1,37 @@
+name: "sieve_ablation_compare"
+description: Summarize SIEVE model performance across annotation levels L0-L3.
+keywords:
+  - sieve
+  - ablation
+  - model comparison
+  - annotation levels
+tools:
+  - ablation_compare.py:
+      description: Utility script to summarize ablation performance across levels.
+      homepage: https://github.com/nf-core/sieve
+      documentation: https://github.com/nf-core/sieve
+      licence: ["MIT"]
+input:
+  - - meta:
+        type: map
+        description: Cohort-level metadata map
+  - - run_dirs:
+        type: directory
+        description: Ablation run directories containing results/config files
+output:
+  - ablation_summary:
+      - - meta:
+            type: map
+            description: Cohort-level metadata map
+        - ablation_summary.tsv:
+            type: file
+            description: Tabular summary of ablation performance by level
+        - ablation_summary.yaml:
+            type: file
+            description: YAML summary of ablation comparison and best level
+  - versions:
+      - versions.yml:
+          type: file
+          description: Software versions used by the process
+authors:
+  - "@lescai"

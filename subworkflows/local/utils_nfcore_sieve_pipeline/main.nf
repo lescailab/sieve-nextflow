@@ -8,15 +8,13 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
-include { paramsSummaryMap          } from 'plugin/nf-schema'
-include { samplesheetToList         } from 'plugin/nf-schema'
-include { paramsHelp                } from 'plugin/nf-schema'
-include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
-include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
-include { imNotification            } from '../../nf-core/utils_nfcore_pipeline'
-include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
-include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
+include { UTILS_NFSCHEMA_PLUGIN } from '../../nf-core/utils_nfschema_plugin'
+include { paramsSummaryMap } from 'plugin/nf-schema'
+include { completionEmail } from '../../nf-core/utils_nfcore_pipeline'
+include { completionSummary } from '../../nf-core/utils_nfcore_pipeline'
+include { imNotification } from '../../nf-core/utils_nfcore_pipeline'
+include { UTILS_NFCORE_PIPELINE } from '../../nf-core/utils_nfcore_pipeline'
+include { UTILS_NEXTFLOW_PIPELINE } from '../../nf-core/utils_nextflow_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,9 +28,13 @@ workflow PIPELINE_INITIALISATION {
     version           // boolean: Display version and exit
     validate_params   // boolean: Boolean whether to validate parameters against the schema at runtime
     monochrome_logs   // boolean: Do not use coloured log outputs
-    nextflow_cli_args //   array: List of positional nextflow CLI args
-    outdir            //  string: The output directory where the results will be saved
-    input             //  string: Path to input samplesheet
+    nextflow_cli_args // array: List of positional nextflow CLI args
+    outdir            // string: Path to output directory
+    vcf               // string: Path to bgzipped indexed VCF
+    phenotypes        // string: Path to phenotype TSV
+    genome_build      // string: GRCh37 or GRCh38
+    infer_sex         // boolean: whether to infer sex when sex_map not provided
+    sex_map           // string: Optional precomputed sex map TSV
     help              // boolean: Display help message and exit
     help_full         // boolean: Show the full help message
     show_hidden       // boolean: Show hidden parameters in the help message
@@ -41,29 +43,26 @@ workflow PIPELINE_INITIALISATION {
 
     ch_versions = channel.empty()
 
-    //
-    // Print version and exit if required and dump pipeline parameters to JSON file
-    //
-    UTILS_NEXTFLOW_PIPELINE (
+    UTILS_NEXTFLOW_PIPELINE(
         version,
         true,
         outdir,
         workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1
     )
 
-    //
-    // Validate parameters and generate parameter summary to stdout
-    //
     before_text = """
--\033[2m----------------------------------------------------\033[0m-
+-
+\033[2m----------------------------------------------------\033[0m-
                                         \033[0;32m,--.\033[0;30m/\033[0;32m,-.\033[0m
 \033[0;34m        ___     __   __   __   ___     \033[0;32m/,-._.--~\'\033[0m
 \033[0;34m  |\\ | |__  __ /  ` /  \\ |__) |__         \033[0;33m}  {\033[0m
 \033[0;34m  | \\| |       \\__, \\__/ |  \\ |___     \033[0;32m\\`-._,-`-,\033[0m
                                         \033[0;32m`._,._,\'\033[0m
 \033[0;35m  nf-core/sieve ${workflow.manifest.version}\033[0m
--\033[2m----------------------------------------------------\033[0m-
+-
+\033[2m----------------------------------------------------\033[0m-
 """
+
     after_text = """${workflow.manifest.doi ? "\n* The pipeline\n" : ""}${workflow.manifest.doi.tokenize(",").collect { doi -> "    https://doi.org/${doi.trim().replace('https://doi.org/','')}"}.join("\n")}${workflow.manifest.doi ? "\n" : ""}
 * The nf-core framework
     https://doi.org/10.1038/s41587-020-0439-x
@@ -71,9 +70,10 @@ workflow PIPELINE_INITIALISATION {
 * Software dependencies
     https://github.com/nf-core/sieve/blob/master/CITATIONS.md
 """
-    command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --input samplesheet.csv --outdir <OUTDIR>"
 
-    UTILS_NFSCHEMA_PLUGIN (
+    command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --vcf cohort.vcf.gz --phenotypes phenotypes.tsv --genome_build GRCh38 --outdir <OUTDIR>"
+
+    UTILS_NFSCHEMA_PLUGIN(
         workflow,
         validate_params,
         null,
@@ -85,40 +85,14 @@ workflow PIPELINE_INITIALISATION {
         command
     )
 
-    //
-    // Check config provided to the pipeline
-    //
-    UTILS_NFCORE_PIPELINE (
+    validateSieveArguments(vcf, phenotypes, genome_build, infer_sex, sex_map)
+
+    UTILS_NFCORE_PIPELINE(
         nextflow_cli_args
     )
 
-    //
-    // Create channel from input file provided through params.input
-    //
-
-    channel
-        .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
-        }
-        .groupTuple()
-        .map { samplesheet ->
-            validateInputSamplesheet(samplesheet)
-        }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
-        }
-        .set { ch_samplesheet }
-
     emit:
-    samplesheet = ch_samplesheet
-    versions    = ch_versions
+    versions = ch_versions
 }
 
 /*
@@ -130,19 +104,16 @@ workflow PIPELINE_INITIALISATION {
 workflow PIPELINE_COMPLETION {
 
     take:
-    email           //  string: email address
-    email_on_fail   //  string: email address sent on pipeline failure
+    email           // string: email address
+    email_on_fail   // string: email address sent on pipeline failure
     plaintext_email // boolean: Send plain-text email instead of HTML
-    outdir          //    path: Path to output directory where results will be published
+    outdir          // path: Path to output directory where results will be published
     monochrome_logs // boolean: Disable ANSI colour codes in log output
-    hook_url        //  string: hook URL for notifications
+    hook_url        // string: hook URL for notifications
 
     main:
-    summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    summary_params = paramsSummaryMap(workflow, parameters_schema: 'nextflow_schema.json')
 
-    //
-    // Completion email and summary
-    //
     workflow.onComplete {
         if (email || email_on_fail) {
             completionEmail(
@@ -163,7 +134,7 @@ workflow PIPELINE_COMPLETION {
     }
 
     workflow.onError {
-        log.error "Pipeline failed. Please refer to troubleshooting docs: https://nf-co.re/docs/usage/troubleshooting"
+        log.error 'Pipeline failed. Please refer to troubleshooting docs: https://nf-co.re/docs/usage/troubleshooting'
     }
 }
 
@@ -173,78 +144,52 @@ workflow PIPELINE_COMPLETION {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-//
-// Validate channels from input samplesheet
-//
-def validateInputSamplesheet(input) {
-    def (metas, fastqs) = input[1..2]
-
-    // Check that multiple runs of the same sample are of the same datatype i.e. single-end / paired-end
-    def endedness_ok = metas.collect{ meta -> meta.single_end }.unique().size == 1
-    if (!endedness_ok) {
-        error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
+def validateSieveArguments(vcf, phenotypes, genome_build, infer_sex, sex_map) {
+    if (!vcf) {
+        error('Missing required argument: --vcf')
     }
 
-    return [ metas[0], fastqs ]
-}
-//
-// Generate methods description for MultiQC
-//
-def toolCitationText() {
-    // TODO nf-core: Optionally add in-text citation tools to this list.
-    // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
-    // Uncomment function in methodsDescriptionText to render in MultiQC report
-    def citation_text = [
-            "Tools used in the workflow included:",
-            "."
-        ].join(' ').trim()
+    def vcfFile = new File(vcf.toString())
+    if (!vcfFile.exists()) {
+        error("The file provided to --vcf does not exist: ${vcf}")
+    }
 
-    return citation_text
-}
+    if (!vcf.toString().endsWith('.vcf.gz')) {
+        error('The --vcf input must end with .vcf.gz')
+    }
 
-def toolBibliographyText() {
-    // TODO nf-core: Optionally add bibliographic entries to this list.
-    // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "<li>Author (2023) Pub name, Journal, DOI</li>" : "",
-    // Uncomment function in methodsDescriptionText to render in MultiQC report
-    def reference_text = [
-        ].join(' ').trim()
+    def tbiIndex = new File(vcf.toString() + '.tbi')
+    def csiIndex = new File(vcf.toString() + '.csi')
+    if (!tbiIndex.exists() && !csiIndex.exists()) {
+        error("Could not find a VCF index for '${vcf}'. Expected '${vcf}.tbi' or '${vcf}.csi'.")
+    }
 
-    return reference_text
-}
+    if (!phenotypes) {
+        error('Missing required argument: --phenotypes')
+    }
 
-def methodsDescriptionText(mqc_methods_yaml) {
-    // Convert  to a named map so can be used as with familiar NXF ${workflow} variable syntax in the MultiQC YML file
-    def meta = [:]
-    meta.workflow = workflow.toMap()
-    meta["manifest_map"] = workflow.manifest.toMap()
+    def phenotypesFile = new File(phenotypes.toString())
+    if (!phenotypesFile.exists()) {
+        error("The file provided to --phenotypes does not exist: ${phenotypes}")
+    }
 
-    // Pipeline DOI
-    if (meta.manifest_map.doi) {
-        // Using a loop to handle multiple DOIs
-        // Removing `https://doi.org/` to handle pipelines using DOIs vs DOI resolvers
-        // Removing ` ` since the manifest.doi is a string and not a proper list
-        def temp_doi_ref = ""
-        def manifest_doi = meta.manifest_map.doi.tokenize(",")
-        manifest_doi.each { doi_ref ->
-            temp_doi_ref += "(doi: <a href=\'https://doi.org/${doi_ref.replace("https://doi.org/", "").replace(" ", "")}\'>${doi_ref.replace("https://doi.org/", "").replace(" ", "")}</a>), "
+    def allowedBuilds = ['GRCh37', 'GRCh38']
+    if (!(genome_build in allowedBuilds)) {
+        error("Invalid --genome_build '${genome_build}'. Supported values: ${allowedBuilds.join(', ')}")
+    }
+
+    if (!infer_sex && !sex_map) {
+        error('Invalid sex settings: provide --sex_map or set --infer_sex true.')
+    }
+
+    if (sex_map) {
+        def sexMapFile = new File(sex_map.toString())
+        if (!sexMapFile.exists()) {
+            error("The file provided to --sex_map does not exist: ${sex_map}")
         }
-        meta["doi_text"] = temp_doi_ref.substring(0, temp_doi_ref.length() - 2)
-    } else meta["doi_text"] = ""
-    meta["nodoi_text"] = meta.manifest_map.doi ? "" : "<li>If available, make sure to update the text to include the Zenodo DOI of version of the pipeline used. </li>"
 
-    // Tool references
-    meta["tool_citations"] = ""
-    meta["tool_bibliography"] = ""
-
-    // TODO nf-core: Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
-    // meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
-    // meta["tool_bibliography"] = toolBibliographyText()
-
-
-    def methods_text = mqc_methods_yaml.text
-
-    def engine =  new groovy.text.SimpleTemplateEngine()
-    def description_html = engine.createTemplate(methods_text).make(meta)
-
-    return description_html.toString()
+        if (infer_sex) {
+            log.warn('Both --sex_map and --infer_sex were provided. The pipeline will use --sex_map and skip sex inference.')
+        }
+    }
 }

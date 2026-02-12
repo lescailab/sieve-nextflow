@@ -29,9 +29,9 @@ process SIEVE_TRAIN_CV {
 
     if ! find cv_output -maxdepth 1 -type d -name 'fold_*' | grep -q .; then
         mkdir -p cv_output/fold_1
-        cfg_candidate=\$(find cv_output -maxdepth 3 -type f \( -name 'config.yaml' -o -name '*config*.yaml' \) | head -n 1 || true)
-        model_candidate=\$(find cv_output -maxdepth 5 -type f \( -name 'best_model.pt' -o -name '*.pt' \) | head -n 1 || true)
-        metric_candidate=\$(find cv_output -maxdepth 3 -type f \( -name 'fold_info.yaml' -o -name 'results.yaml' -o -name '*metrics*.yaml' \) | head -n 1 || true)
+        cfg_candidate=\$(find cv_output -maxdepth 3 -type f \\( -name 'config.yaml' -o -name '*config*.yaml' \\) | head -n 1 || true)
+        model_candidate=\$(find cv_output -maxdepth 5 -type f \\( -name 'best_model.pt' -o -name '*.pt' \\) | head -n 1 || true)
+        metric_candidate=\$(find cv_output -maxdepth 3 -type f \\( -name 'fold_info.yaml' -o -name 'results.yaml' -o -name '*metrics*.yaml' \\) | head -n 1 || true)
 
         [[ -n "\${cfg_candidate}" ]] && cp "\${cfg_candidate}" cv_output/fold_1/config.yaml || cp ${best_params} cv_output/fold_1/config.yaml
         [[ -n "\${model_candidate}" ]] && cp "\${model_candidate}" cv_output/fold_1/best_model.pt || touch cv_output/fold_1/best_model.pt
@@ -48,7 +48,7 @@ EOF_FOLD_INFO
     fi
 
     if [[ ! -f cv_results.yaml ]]; then
-        cv_results_candidate=\$(find cv_output -maxdepth 3 -type f \( -name 'cv_results.yaml' -o -name '*cv*results*.yaml' \) | head -n 1 || true)
+        cv_results_candidate=\$(find cv_output -maxdepth 3 -type f \\( -name 'cv_results.yaml' -o -name '*cv*results*.yaml' \\) | head -n 1 || true)
         if [[ -n "\${cv_results_candidate}" ]]; then
             cp "\${cv_results_candidate}" cv_results.yaml
         else
@@ -68,7 +68,7 @@ EOF_CV_RESULTS
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "\${sieve_version}"
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
@@ -109,6 +109,6 @@ EOF_CV_RESULTS
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "stub"
-    END_VERSIONS
+END_VERSIONS
     """
 }

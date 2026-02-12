@@ -15,6 +15,7 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.success },
+                { assert snapshot(removeNextflowVersion("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml")).match() },
                 { assert new File("$outputDir/preprocess/preprocessed.pt").exists() },
                 { assert new File("$outputDir/grid_search/selection/best_params.yaml").exists() },
                 { assert new File("$outputDir/cross_validation/selection/best_checkpoint.pt").exists() },

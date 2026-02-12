@@ -27,9 +27,9 @@ process SIEVE_EXPLAIN {
         ${nullFlag} \
         ${args}
 
-    variant_candidate=\$(find explain_output -maxdepth 3 -type f \( -name 'sieve_variant_rankings.csv' -o -name '*variant*rank*.csv' \) | head -n 1 || true)
-    gene_candidate=\$(find explain_output -maxdepth 3 -type f \( -name 'sieve_gene_rankings.csv' -o -name '*gene*rank*.csv' \) | head -n 1 || true)
-    interaction_candidate=\$(find explain_output -maxdepth 3 -type f \( -name 'sieve_interactions.csv' -o -name '*interaction*.csv' \) | head -n 1 || true)
+    variant_candidate=\$(find explain_output -maxdepth 3 -type f \\( -name 'sieve_variant_rankings.csv' -o -name '*variant*rank*.csv' \\) | head -n 1 || true)
+    gene_candidate=\$(find explain_output -maxdepth 3 -type f \\( -name 'sieve_gene_rankings.csv' -o -name '*gene*rank*.csv' \\) | head -n 1 || true)
+    interaction_candidate=\$(find explain_output -maxdepth 3 -type f \\( -name 'sieve_interactions.csv' -o -name '*interaction*.csv' \\) | head -n 1 || true)
 
     if [[ -n "\${variant_candidate}" ]]; then
         cp "\${variant_candidate}" sieve_variant_rankings.csv
@@ -65,7 +65,7 @@ EOF_INTERACTIONS
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "\${sieve_version}"
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
@@ -102,6 +102,6 @@ EOF_INTERACTIONS
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "stub"
-    END_VERSIONS
+END_VERSIONS
     """
 }

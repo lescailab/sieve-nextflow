@@ -25,7 +25,7 @@ process SIEVE_VALIDATE_EPISTASIS {
         --output-dir epistasis_output \
         ${args}
 
-    result_candidate=\$(find epistasis_output -maxdepth 3 -type f \( -name 'epistasis_validation.csv' -o -name '*epistasis*validation*.csv' \) | head -n 1 || true)
+    result_candidate=\$(find epistasis_output -maxdepth 3 -type f \\( -name 'epistasis_validation.csv' -o -name '*epistasis*validation*.csv' \\) | head -n 1 || true)
 
     if [[ -n "\${result_candidate}" ]]; then
         cp "\${result_candidate}" epistasis_validation.csv
@@ -43,7 +43,7 @@ EOF_EPI
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "\${sieve_version}"
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
@@ -60,6 +60,6 @@ EOF_EPI
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "stub"
-    END_VERSIONS
+END_VERSIONS
     """
 }

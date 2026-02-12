@@ -29,7 +29,7 @@ process SIEVE_CREATE_NULL_BASELINE {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "\${sieve_version}"
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
@@ -39,6 +39,6 @@ process SIEVE_CREATE_NULL_BASELINE {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "stub"
-    END_VERSIONS
+END_VERSIONS
     """
 }

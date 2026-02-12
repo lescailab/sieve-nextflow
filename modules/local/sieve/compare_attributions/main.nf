@@ -6,7 +6,7 @@ process SIEVE_COMPARE_ATTRIBUTIONS {
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef' : 'community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382'}"
 
     input:
-    tuple val(meta), path(real_variant_rankings), path(null_variant_rankings)
+    tuple val(meta), path(real_variant_rankings, stageAs: 'real/sieve_variant_rankings.csv'), path(null_variant_rankings, stageAs: 'null/sieve_variant_rankings.csv')
 
     output:
     tuple val(meta), path('comparison_summary.yaml'), path('comparison_output'), emit: comparison
@@ -23,7 +23,7 @@ process SIEVE_COMPARE_ATTRIBUTIONS {
         --output-dir comparison_output \
         ${args}
 
-    summary_candidate=\$(find comparison_output -maxdepth 3 -type f \( -name 'comparison_summary.yaml' -o -name '*summary*.yaml' \) | head -n 1 || true)
+    summary_candidate=\$(find comparison_output -maxdepth 3 -type f \\( -name 'comparison_summary.yaml' -o -name '*summary*.yaml' \\) | head -n 1 || true)
 
     if [[ -n "\${summary_candidate}" ]]; then
         cp "\${summary_candidate}" comparison_summary.yaml
@@ -45,7 +45,7 @@ EOF_SUMMARY
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "\${sieve_version}"
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
@@ -71,6 +71,6 @@ EOF_CSV
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "stub"
-    END_VERSIONS
+END_VERSIONS
     """
 }

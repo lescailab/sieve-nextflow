@@ -23,12 +23,12 @@ process SIEVE_SELECT_BEST_PARAMS {
         --out-best-run-id best_run_id.txt \
         --out-summary train_grid_summary.tsv
 
-    python --version | sed 's/Python //g' | awk '{print "python: \"" $1 "\""}' > .python_version.tmp
+    python -c 'import sys; print(f"python: \"{sys.version.split()[0]}\"")' > .python_version.tmp
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         \$(cat .python_version.tmp)
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
@@ -52,6 +52,6 @@ EOF_SUMMARY
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: "stub"
-    END_VERSIONS
+END_VERSIONS
     """
 }

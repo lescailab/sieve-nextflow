@@ -36,7 +36,7 @@ process SIEVE_VALIDATE_DISCOVERIES {
         ${advancedArgString} \
         ${args}
 
-    report_candidate=\$(find validation_output -maxdepth 3 -type f \( -name 'validation_report.yaml' -o -name '*validation*report*.yaml' \) | head -n 1 || true)
+    report_candidate=\$(find validation_output -maxdepth 3 -type f \\( -name 'validation_report.yaml' -o -name '*validation*report*.yaml' \\) | head -n 1 || true)
 
     if [[ -n "\${report_candidate}" ]]; then
         cp "\${report_candidate}" validation_report.yaml
@@ -56,7 +56,7 @@ EOF_VALIDATION
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "\${sieve_version}"
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
@@ -76,6 +76,6 @@ EOF_VALIDATION
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "stub"
-    END_VERSIONS
+END_VERSIONS
     """
 }

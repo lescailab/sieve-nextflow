@@ -42,9 +42,9 @@ process SIEVE_TRAIN_SINGLE {
         ${trainParamArgs} \
         ${args}
 
-    results_candidate=\$(find train_output -maxdepth 3 -type f \( -name 'results.yaml' -o -name '*results*.yaml' \) | head -n 1 || true)
-    config_candidate=\$(find train_output -maxdepth 3 -type f \( -name 'config.yaml' -o -name '*config*.yaml' \) | head -n 1 || true)
-    model_candidate=\$(find train_output -maxdepth 5 -type f \( -name 'best_model.pt' -o -name '*checkpoint*.pt' -o -name '*.pt' \) | head -n 1 || true)
+    results_candidate=\$(find train_output -maxdepth 3 -type f \\( -name 'results.yaml' -o -name '*results*.yaml' \\) | head -n 1 || true)
+    config_candidate=\$(find train_output -maxdepth 3 -type f \\( -name 'config.yaml' -o -name '*config*.yaml' \\) | head -n 1 || true)
+    model_candidate=\$(find train_output -maxdepth 5 -type f \\( -name 'best_model.pt' -o -name '*checkpoint*.pt' -o -name '*.pt' \\) | head -n 1 || true)
 
     [[ -n "\${results_candidate}" ]] || { echo "ERROR: Missing training results YAML" >&2; exit 1; }
     [[ -n "\${config_candidate}" ]] || { echo "ERROR: Missing training config YAML" >&2; exit 1; }
@@ -70,7 +70,7 @@ process SIEVE_TRAIN_SINGLE {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "\${sieve_version}"
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
@@ -123,6 +123,6 @@ EOF_STUB_HISTORY
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sieve: "stub"
-    END_VERSIONS
+END_VERSIONS
     """
 }

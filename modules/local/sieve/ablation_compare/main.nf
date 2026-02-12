@@ -22,12 +22,12 @@ process SIEVE_ABLATION_COMPARE {
         --out-summary-tsv ablation_summary.tsv \
         --out-summary-yaml ablation_summary.yaml
 
-    python --version | sed 's/Python //g' | awk '{print "python: \"" $1 "\""}' > .python_version.tmp
+    python -c 'import sys; print(f"python: \"{sys.version.split()[0]}\"")' > .python_version.tmp
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         \$(cat .python_version.tmp)
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
@@ -73,6 +73,6 @@ EOF_YAML
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: "stub"
-    END_VERSIONS
+END_VERSIONS
     """
 }

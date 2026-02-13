@@ -1,6 +1,7 @@
 process SIEVE_VALIDATE_EPISTASIS {
     tag "$meta.id:${meta.run_id ?: 'validate_epistasis'}"
     label 'process_medium'
+    label 'process_gpu'
 
     conda "${moduleDir}/environment.yml"
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef' : 'community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382'}"

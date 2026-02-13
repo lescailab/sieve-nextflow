@@ -1,6 +1,7 @@
 process SIEVE_TRAIN_SINGLE {
     tag "$meta.id:${meta.run_id ?: 'run'}:${level}"
     label 'process_medium'
+    label 'process_gpu'
 
     conda "${moduleDir}/environment.yml"
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef' : 'community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382'}"

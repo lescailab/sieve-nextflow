@@ -2,7 +2,7 @@ process SIEVE_INFER_SEX {
     tag "$meta.id"
     label 'process_medium'
 
-    conda "lescailab::sieve=0.1.0"
+    conda "${moduleDir}/environment.yml"
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef' : 'community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382'}"
 
     input:
@@ -12,7 +12,10 @@ process SIEVE_INFER_SEX {
     output:
     tuple val(meta), path('sample_sex.tsv'), emit: sex_map
     tuple val(meta), path('infer_sex_diagnostics/*'), optional: true, emit: diagnostics
-    path 'versions.yml', emit: versions
+    path 'versions.yml', emit: versions, topic: 'versions'
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''

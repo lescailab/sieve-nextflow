@@ -2,7 +2,7 @@ process SIEVE_SELECT_BEST_PARAMS {
     tag "$meta.id"
     label 'process_low'
 
-    conda "lescailab::sieve=0.1.0"
+    conda "${moduleDir}/environment.yml"
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef' : 'community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382'}"
 
     input:
@@ -11,7 +11,10 @@ process SIEVE_SELECT_BEST_PARAMS {
 
     output:
     tuple val(meta), path('best_params.yaml'), path('best_run_id.txt'), path('train_grid_summary.tsv'), emit: best_params
-    path 'versions.yml', emit: versions
+    path 'versions.yml', emit: versions, topic: 'versions'
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     def runDirs = run_dirs instanceof List ? run_dirs : [run_dirs]

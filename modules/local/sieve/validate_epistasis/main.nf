@@ -2,7 +2,7 @@ process SIEVE_VALIDATE_EPISTASIS {
     tag "$meta.id:${meta.run_id ?: 'validate_epistasis'}"
     label 'process_medium'
 
-    conda "lescailab::sieve=0.1.0"
+    conda "${moduleDir}/environment.yml"
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef' : 'community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382'}"
 
     input:
@@ -10,7 +10,10 @@ process SIEVE_VALIDATE_EPISTASIS {
 
     output:
     tuple val(meta), path('epistasis_validation.csv'), path('epistasis_output'), emit: epistasis
-    path 'versions.yml', emit: versions
+    path 'versions.yml', emit: versions, topic: 'versions'
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''

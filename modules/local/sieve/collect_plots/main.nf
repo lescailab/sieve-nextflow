@@ -2,7 +2,7 @@ process SIEVE_COLLECT_PLOTS {
     tag "$meta.id:${meta.run_id ?: 'collect_plots'}"
     label 'process_low'
 
-    conda "python=3.11"
+    conda "${moduleDir}/environment.yml"
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef' : 'community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382'}"
 
     input:
@@ -11,7 +11,10 @@ process SIEVE_COLLECT_PLOTS {
 
     output:
     tuple val(meta), path('plots'), path('plots_manifest.tsv'), emit: plot_bundle
-    path 'versions.yml', emit: versions
+    path 'versions.yml', emit: versions, topic: 'versions'
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     def plotSources = plot_sources instanceof List ? plot_sources : [plot_sources]

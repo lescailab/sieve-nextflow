@@ -2,7 +2,7 @@ process SIEVE_TRAIN_SINGLE {
     tag "$meta.id:${meta.run_id ?: 'run'}:${level}"
     label 'process_medium'
 
-    conda "lescailab::sieve=0.1.0"
+    conda "${moduleDir}/environment.yml"
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef' : 'community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382'}"
 
     input:
@@ -12,7 +12,10 @@ process SIEVE_TRAIN_SINGLE {
     tuple val(meta), path('results.yaml'), path('config.yaml'), path('best_model.pt'), emit: train_artifacts
     tuple val(meta), path('training_history.yaml'), optional: true, emit: history
     tuple val(meta), path('*_selection_payload'), emit: selection_payload
-    path 'versions.yml', emit: versions
+    path 'versions.yml', emit: versions, topic: 'versions'
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''

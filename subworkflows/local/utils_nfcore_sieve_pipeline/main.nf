@@ -35,6 +35,11 @@ workflow PIPELINE_INITIALISATION {
     genome_build      // string: GRCh37 or GRCh38
     infer_sex         // boolean: whether to infer sex when sex_map not provided
     sex_map           // string: Optional precomputed sex map TSV
+    preprocessed_data // string: Optional preprocessed dataset (.pt)
+    best_params       // string: Optional best-parameter YAML to skip grid search
+    best_checkpoint   // string: Optional model checkpoint (.pt) to skip CV
+    checkpoint_config // string: Optional config YAML paired with --best_checkpoint
+    execute_step      // string: Optional comma-separated list of steps to execute
     help              // boolean: Display help message and exit
     help_full         // boolean: Show the full help message
     show_hidden       // boolean: Show hidden parameters in the help message
@@ -85,7 +90,18 @@ workflow PIPELINE_INITIALISATION {
         command
     )
 
-    validateSieveArguments(vcf, phenotypes, genome_build, infer_sex, sex_map)
+    validateSieveArguments(
+        vcf,
+        phenotypes,
+        genome_build,
+        infer_sex,
+        sex_map,
+        preprocessed_data,
+        best_params,
+        best_checkpoint,
+        checkpoint_config,
+        execute_step
+    )
 
     UTILS_NFCORE_PIPELINE(
         nextflow_cli_args
@@ -144,52 +160,228 @@ workflow PIPELINE_COMPLETION {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-def validateSieveArguments(vcf, phenotypes, genome_build, infer_sex, sex_map) {
-    if (!vcf) {
-        error('Missing required argument: --vcf')
+def validateSieveArguments(vcf, phenotypes, genome_build, infer_sex, sex_map, preprocessed_data, best_params, best_checkpoint, checkpoint_config, execute_step) {
+    def selectedSteps = resolveExecuteSteps(execute_step)
+
+    def targetSex = selectedSteps.contains('sex')
+    def targetPreprocess = selectedSteps.contains('preprocess')
+    def targetGrid = selectedSteps.contains('grid')
+    def targetCv = selectedSteps.contains('cv')
+    def targetExplain = selectedSteps.contains('explain')
+    def targetAblation = selectedSteps.contains('ablation')
+    def targetNull = selectedSteps.contains('null')
+    def targetEpistasis = selectedSteps.contains('epistasis')
+    def targetValidation = selectedSteps.contains('validation')
+
+    def useProvidedPreprocessed = preprocessed_data as boolean
+    def useProvidedBestCheckpoint = (best_checkpoint && checkpoint_config) as boolean
+
+    def needExplain = targetExplain || targetEpistasis || targetValidation || targetNull
+    def needBestCheckpoint = targetCv || needExplain
+    def needBestParams = targetGrid || targetAblation || targetNull || (needBestCheckpoint && !useProvidedBestCheckpoint)
+    def needPreprocessed = targetPreprocess || needBestParams || needExplain || (needBestCheckpoint && !useProvidedBestCheckpoint)
+    def needSexMap = targetSex || needBestParams || (needPreprocessed && !useProvidedPreprocessed)
+
+    if ((best_checkpoint && !checkpoint_config) || (!best_checkpoint && checkpoint_config)) {
+        error('Parameters --best_checkpoint and --checkpoint_config must be provided together.')
     }
 
-    def vcfFile = new File(vcf.toString())
-    if (!vcfFile.exists()) {
-        error("The file provided to --vcf does not exist: ${vcf}")
+    if (best_checkpoint) {
+        assertExistingFile(best_checkpoint, '--best_checkpoint')
+        if (!best_checkpoint.toString().endsWith('.pt')) {
+            error('The --best_checkpoint input should be a .pt file.')
+        }
     }
 
-    if (!vcf.toString().endsWith('.vcf.gz')) {
-        error('The --vcf input must end with .vcf.gz')
+    if (checkpoint_config) {
+        assertExistingFile(checkpoint_config, '--checkpoint_config')
+        if (!(checkpoint_config.toString().endsWith('.yaml') || checkpoint_config.toString().endsWith('.yml'))) {
+            error('The --checkpoint_config input should end with .yaml or .yml.')
+        }
     }
 
-    def tbiIndex = new File(vcf.toString() + '.tbi')
-    def csiIndex = new File(vcf.toString() + '.csi')
-    if (!tbiIndex.exists() && !csiIndex.exists()) {
-        error("Could not find a VCF index for '${vcf}'. Expected '${vcf}.tbi' or '${vcf}.csi'.")
+    if (best_params) {
+        assertExistingFile(best_params, '--best_params')
+        if (!(best_params.toString().endsWith('.yaml') || best_params.toString().endsWith('.yml'))) {
+            error('The --best_params input should end with .yaml or .yml.')
+        }
     }
 
-    if (!phenotypes) {
-        error('Missing required argument: --phenotypes')
-    }
-
-    def phenotypesFile = new File(phenotypes.toString())
-    if (!phenotypesFile.exists()) {
-        error("The file provided to --phenotypes does not exist: ${phenotypes}")
-    }
-
-    def allowedBuilds = ['GRCh37', 'GRCh38']
-    if (!(genome_build in allowedBuilds)) {
-        error("Invalid --genome_build '${genome_build}'. Supported values: ${allowedBuilds.join(', ')}")
-    }
-
-    if (!infer_sex && !sex_map) {
-        error('Invalid sex settings: provide --sex_map or set --infer_sex true.')
+    if (preprocessed_data) {
+        assertExistingFile(preprocessed_data, '--preprocessed_data')
+        if (!preprocessed_data.toString().endsWith('.pt')) {
+            error('The --preprocessed_data input must end with .pt')
+        }
     }
 
     if (sex_map) {
-        def sexMapFile = new File(sex_map.toString())
-        if (!sexMapFile.exists()) {
-            error("The file provided to --sex_map does not exist: ${sex_map}")
-        }
-
+        assertExistingFile(sex_map, '--sex_map')
         if (infer_sex) {
             log.warn('Both --sex_map and --infer_sex were provided. The pipeline will use --sex_map and skip sex inference.')
         }
     }
+
+    def needsRawVcfForSex = needSexMap && !sex_map
+    def needsRawVcfForPreprocess = needPreprocessed && !useProvidedPreprocessed
+    def needsRawVcf = needsRawVcfForSex || needsRawVcfForPreprocess
+    def needsPhenotypes = needPreprocessed && !useProvidedPreprocessed
+
+    if (needSexMap && !sex_map && !infer_sex) {
+        error('The selected execution steps require sex information. Provide --sex_map or set --infer_sex true.')
+    }
+
+    if (needsRawVcf) {
+        if (!vcf) {
+            error('Missing required argument: --vcf (required by selected execution steps).')
+        }
+
+        def vcfFile = new File(vcf.toString())
+        if (!vcfFile.exists()) {
+            error("The file provided to --vcf does not exist: ${vcf}")
+        }
+
+        if (!vcf.toString().endsWith('.vcf.gz')) {
+            error('The --vcf input must end with .vcf.gz')
+        }
+
+        def tbiIndex = new File(vcf.toString() + '.tbi')
+        def csiIndex = new File(vcf.toString() + '.csi')
+        if (!tbiIndex.exists() && !csiIndex.exists()) {
+            error("Could not find a VCF index for '${vcf}'. Expected '${vcf}.tbi' or '${vcf}.csi'.")
+        }
+    }
+
+    if (needsPhenotypes) {
+        if (!phenotypes) {
+            error('Missing required argument: --phenotypes (required when preprocessing runs).')
+        }
+
+        def phenotypesFile = new File(phenotypes.toString())
+        if (!phenotypesFile.exists()) {
+            error("The file provided to --phenotypes does not exist: ${phenotypes}")
+        }
+    }
+
+    if (needsRawVcf) {
+        def allowedBuilds = ['GRCh37', 'GRCh38']
+        if (!(genome_build in allowedBuilds)) {
+            error("Invalid --genome_build '${genome_build}'. Supported values: ${allowedBuilds.join(', ')}")
+        }
+    }
+
+}
+
+def assertExistingFile(pathLike, paramName) {
+    def target = new File(pathLike.toString())
+    if (!target.exists()) {
+        error("The file provided to ${paramName} does not exist: ${pathLike}")
+    }
+}
+
+def splitCsvValues(value) {
+    if (value == null) {
+        return []
+    }
+    if (value instanceof List) {
+        return value
+    }
+    return value
+        .toString()
+        .split(',')
+        .collect { it.trim() }
+        .findAll { it }
+}
+
+def executionStepNames() {
+    return [
+        'sex',
+        'preprocess',
+        'grid',
+        'cv',
+        'explain',
+        'ablation',
+        'null',
+        'epistasis',
+        'validation',
+        'plots',
+    ] as LinkedHashSet
+}
+
+def normalizeExecutionStep(rawStep) {
+    if (rawStep == null) {
+        return null
+    }
+
+    def step = rawStep
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replaceAll(/[\s-]+/, '_')
+
+    switch (step) {
+        case 'all':
+            return 'all'
+        case 'sex':
+        case 'sex_map':
+        case 'infer_sex':
+            return 'sex'
+        case 'preprocess':
+        case 'preprocessing':
+        case 'preprocessed':
+            return 'preprocess'
+        case 'grid':
+        case 'grid_search':
+        case 'best_params':
+        case 'hyperparameter_search':
+            return 'grid'
+        case 'cv':
+        case 'cross_fold':
+        case 'cross_validation':
+        case 'checkpoint_selection':
+            return 'cv'
+        case 'explain':
+        case 'explainability':
+            return 'explain'
+        case 'ablation':
+        case 'ablation_experiment':
+            return 'ablation'
+        case 'null':
+        case 'null_model':
+        case 'null_baseline':
+            return 'null'
+        case 'epistasis':
+        case 'epistasis_validation':
+            return 'epistasis'
+        case 'validation':
+        case 'discoveries':
+        case 'discovery_validation':
+            return 'validation'
+        case 'plots':
+        case 'collect_plots':
+            return 'plots'
+        default:
+            return step
+    }
+}
+
+def resolveExecuteSteps(stepValue) {
+    def allSteps = executionStepNames()
+    def requested = splitCsvValues(stepValue)
+        .collect { normalizeExecutionStep(it) }
+        .findAll { it }
+
+    if (!requested) {
+        return allSteps
+    }
+
+    if (requested.contains('all')) {
+        return allSteps
+    }
+
+    def invalid = requested.findAll { !(it in allSteps) }.unique()
+    if (invalid) {
+        throw new IllegalArgumentException("Invalid --execute_step value(s): ${invalid.join(', ')}. Allowed values: ${allSteps.join(', ')}")
+    }
+
+    return requested as LinkedHashSet
 }

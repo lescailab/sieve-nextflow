@@ -10,7 +10,6 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["vcf", "phenotypes", "genome_build"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -24,7 +23,7 @@
                     "format": "file-path",
                     "exists": true,
                     "pattern": "^\\S+\\.vcf\\.gz$",
-                    "description": "Path to bgzipped multi-sample VCF (.vcf.gz).",
+                    "description": "Optional path to bgzipped multi-sample VCF (.vcf.gz). Required when preprocessing or sex inference must run.",
                     "help_text": "The file must be bgzipped and indexed (.tbi or .csi).",
                     "fa_icon": "fas fa-file"
                 },
@@ -32,7 +31,7 @@
                     "type": "string",
                     "format": "file-path",
                     "exists": true,
-                    "description": "Path to phenotype TSV with columns sample_id and phenotype.",
+                    "description": "Optional phenotype TSV with columns sample_id and phenotype. Required when preprocessing runs.",
                     "fa_icon": "fas fa-table"
                 },
                 "genome_build": {
@@ -55,6 +54,46 @@
                     "description": "Optional TSV mapping sample_id to sex. If provided, sex inference is skipped.",
                     "fa_icon": "fas fa-file-lines"
                 },
+                "preprocessed_data": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.pt$",
+                    "description": "Optional preprocessed dataset (.pt). If provided, VCF preprocessing is skipped.",
+                    "fa_icon": "fas fa-file-archive"
+                },
+                "best_params": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.ya?ml$",
+                    "description": "Optional best-parameter YAML. If provided, hyperparameter grid search is skipped.",
+                    "fa_icon": "fas fa-file-code",
+                    "hidden": true
+                },
+                "best_checkpoint": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.pt$",
+                    "description": "Optional model checkpoint (.pt). Must be provided together with --checkpoint_config to skip CV training.",
+                    "fa_icon": "fas fa-file-archive",
+                    "hidden": true
+                },
+                "checkpoint_config": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.ya?ml$",
+                    "description": "Optional model config YAML paired with --best_checkpoint.",
+                    "fa_icon": "fas fa-file-code",
+                    "hidden": true
+                },
+                "execute_step": {
+                    "type": "string",
+                    "description": "Optional comma-separated list of pipeline steps to execute (for example: ablation,explain). Allowed: sex, preprocess, grid, cv, explain, ablation, null, epistasis, validation, plots.",
+                    "fa_icon": "fas fa-list-check"
+                },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
@@ -68,21 +107,7 @@
                     "fa_icon": "fas fa-envelope",
                     "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
                 }
-            },
-            "allOf": [
-                {
-                    "if": {
-                        "properties": {
-                            "infer_sex": {
-                                "const": false
-                            }
-                        }
-                    },
-                    "then": {
-                        "required": ["sex_map"]
-                    }
-                }
-            ]
+            }
         },
         "workflow_options": {
             "title": "SIEVE workflow options",

@@ -66,6 +66,11 @@ workflow {
         params.genome_build,
         params.infer_sex,
         params.sex_map,
+        params.preprocessed_data,
+        params.best_params,
+        params.best_checkpoint,
+        params.checkpoint_config,
+        params.execute_step,
         params.help,
         params.help_full,
         params.show_hidden

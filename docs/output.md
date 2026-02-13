@@ -54,3 +54,5 @@ All paths below are relative to the pipeline `--outdir`.
 - The best model path for explainability is `cross_validation/selection/best_checkpoint.pt`.
 - Epistasis validation is conditionally executed only when `sieve_interactions.csv` has interaction rows.
 - Null baseline branches run in parallel with epistasis once explainability outputs are available.
+- If `--execute_step` is used, only outputs from selected steps (and their dependencies) are produced.
+- If artifact shortcuts are provided (`--sex_map`, `--preprocessed_data`, `--best_params`, `--best_checkpoint/--checkpoint_config`), corresponding upstream output files may reflect supplied inputs rather than newly generated artifacts.

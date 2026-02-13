@@ -1,8 +1,10 @@
 # nf-core/sieve: Usage
 
-## Required inputs
+## Input combinations
 
-Run with the following required parameters:
+`nf-core/sieve` can run from raw inputs or from downstream artifacts.
+
+Raw-input mode:
 
 - `--vcf`: bgzipped indexed multi-sample VCF (`.vcf.gz` + `.tbi` or `.csi`)
 - `--phenotypes`: TSV with columns `sample_id` and `phenotype`
@@ -28,6 +30,14 @@ sampleA	case
 sampleB	control
 ```
 
+Artifact shortcuts:
+
+- `--preprocessed_data <dataset.pt>`: skip preprocessing from VCF
+- `--best_params <best_params.yaml>`: skip grid search
+- `--best_checkpoint <checkpoint.pt> --checkpoint_config <config.yaml>`: skip grid and CV checkpoint selection
+
+`--vcf` and `--phenotypes` become optional when the selected stages can be satisfied by provided downstream artifacts.
+
 ## Sex handling
 
 Default behavior is sex inference:
@@ -42,7 +52,30 @@ To skip inference, provide a sex map:
 --infer_sex false --sex_map sample_sex.tsv
 ```
 
-If `--sex_map` is provided, it is used and inference is skipped.
+If `--sex_map` is provided, it is used directly and inference/map creation steps are skipped.
+
+## Step selection
+
+Use `--execute_step` to run only selected parts of the pipeline:
+
+```bash
+--execute_step ablation,plots
+```
+
+Allowed values:
+
+- `sex`
+- `preprocess`
+- `grid`
+- `cv`
+- `explain`
+- `ablation`
+- `null`
+- `epistasis`
+- `validation`
+- `plots`
+
+Dependencies are resolved automatically (for example, selecting `ablation` triggers upstream requirements unless satisfied by supplied artifacts).
 
 ## Profiles
 

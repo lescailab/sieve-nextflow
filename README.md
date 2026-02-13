@@ -19,21 +19,19 @@
 
 ## Introduction
 
-**nf-core/sieve** runs the SIEVE (Sparse Interpretable Exome Variant Explainer) workflow for case-control variant discovery from a multi-sample VCF. The pipeline handles sex-map generation or ingestion, preprocessing, hyperparameter search, cross-validation model selection, explainability, ablation experiments, null-baseline attribution comparison, optional epistasis validation, and discovery validation outputs.
+**nf-core/sieve** runs the SIEVE (Sparse Interpretable Exome Variant Explainer) workflow for case-control variant discovery from a multi-sample VCF. The pipeline handles sex-map generation or ingestion, preprocessing, hyperparameter search, cross-validation model selection, explainability, ablation experiments, null-baseline attribution comparison, optional epistasis validation, and discovery validation outputs. Existing artifacts (sex map, preprocessed dataset, params/checkpoint configs) can be injected to skip upstream stages.
 
 ## SIEVE Workflow
 
 1. Sex map selection or inference (`--sex_map` or `--infer_sex`)
-2. Preprocessing into `preprocessed.pt`
-3. Parallel hyperparameter grid training (no CV)
-4. Best hyperparameter selection (AUC, accuracy, loss)
-5. Cross-validation training with selected hyperparameters
-6. Best fold checkpoint selection
-7. Explainability on best checkpoint
-8. Ablation training at L0-L3 plus summary
-9. Null-baseline training/explainability and attribution comparison
-10. Conditional epistasis validation (only when interactions exist)
-11. Discovery validation against optional external resources
+2. Preprocessing into `preprocessed.pt` (optional skip via `--preprocessed_data`)
+3. Parallel hyperparameter grid training (no CV) and best hyperparameter selection (optional skip via `--best_params` or checkpoint+config)
+4. Cross-validation training with selected hyperparameters and best fold checkpoint selection (optional skip via `--best_checkpoint` + `--checkpoint_config`)
+5. Explainability on best checkpoint
+6. Ablation training at L0-L3 plus summary
+7. Null-baseline training/explainability and attribution comparison
+8. Conditional epistasis validation (only when interactions exist)
+9. Discovery validation against optional external resources
 
 ## Usage
 
@@ -75,6 +73,34 @@ nextflow run nf-core/sieve \
   --genome_build GRCh38 \
   --infer_sex false \
   --sex_map sample_sex.tsv \
+  --outdir results
+```
+
+Reuse existing artifacts:
+
+- `--preprocessed_data <dataset.pt>` skips VCF preprocessing.
+- `--best_params <best_params.yaml>` skips internal grid search.
+- `--best_checkpoint <checkpoint.pt> --checkpoint_config <config.yaml>` skips grid search and CV checkpoint selection, and uses the provided model directly.
+
+Run only selected stages:
+
+```bash
+--execute_step ablation,plots
+```
+
+Allowed step names: `sex`, `preprocess`, `grid`, `cv`, `explain`, `ablation`, `null`, `epistasis`, `validation`, `plots` (comma-separated). Required upstream dependencies are executed automatically unless already satisfied by provided artifacts.
+
+Example: ablation-only from downstream artifacts
+
+```bash
+nextflow run nf-core/sieve \
+  -profile docker \
+  --preprocessed_data assets/testdata/small_reprocessed_test.pt \
+  --sex_map assets/testdata/sex_map.tsv \
+  --best_params assets/testdata/test_model/L3_run/config.yaml \
+  --best_checkpoint assets/testdata/component_fixtures/cv/cv_output/fold_1/best_model.pt \
+  --checkpoint_config assets/testdata/test_model/L3_run/config.yaml \
+  --execute_step ablation \
   --outdir results
 ```
 

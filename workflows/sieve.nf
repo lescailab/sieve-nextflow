@@ -610,50 +610,39 @@ def normalizeExecutionStep(rawStep) {
         .toLowerCase()
         .replaceAll(/[\s-]+/, '_')
 
-    switch (step) {
-        case 'all':
-            return 'all'
-        case 'sex':
-        case 'sex_map':
-        case 'infer_sex':
-            return 'sex'
-        case 'preprocess':
-        case 'preprocessing':
-        case 'preprocessed':
-            return 'preprocess'
-        case 'grid':
-        case 'grid_search':
-        case 'best_params':
-        case 'hyperparameter_search':
-            return 'grid'
-        case 'cv':
-        case 'cross_fold':
-        case 'cross_validation':
-        case 'checkpoint_selection':
-            return 'cv'
-        case 'explain':
-        case 'explainability':
-            return 'explain'
-        case 'ablation':
-        case 'ablation_experiment':
-            return 'ablation'
-        case 'null':
-        case 'null_model':
-        case 'null_baseline':
-            return 'null'
-        case 'epistasis':
-        case 'epistasis_validation':
-            return 'epistasis'
-        case 'validation':
-        case 'discoveries':
-        case 'discovery_validation':
-            return 'validation'
-        case 'plots':
-        case 'collect_plots':
-            return 'plots'
-        default:
-            return step
-    }
+    def aliases = [
+        all: 'all',
+        sex: 'sex',
+        sex_map: 'sex',
+        infer_sex: 'sex',
+        preprocess: 'preprocess',
+        preprocessing: 'preprocess',
+        preprocessed: 'preprocess',
+        grid: 'grid',
+        grid_search: 'grid',
+        best_params: 'grid',
+        hyperparameter_search: 'grid',
+        cv: 'cv',
+        cross_fold: 'cv',
+        cross_validation: 'cv',
+        checkpoint_selection: 'cv',
+        explain: 'explain',
+        explainability: 'explain',
+        ablation: 'ablation',
+        ablation_experiment: 'ablation',
+        null: 'null',
+        null_model: 'null',
+        null_baseline: 'null',
+        epistasis: 'epistasis',
+        epistasis_validation: 'epistasis',
+        validation: 'validation',
+        discoveries: 'validation',
+        discovery_validation: 'validation',
+        plots: 'plots',
+        collect_plots: 'plots',
+    ]
+
+    return aliases.containsKey(step) ? aliases[step] : step
 }
 
 def resolveExecuteSteps(stepValue) {

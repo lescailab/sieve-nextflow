@@ -90,7 +90,7 @@ workflow SIEVE {
             )
             ch_effective_sex_map = SIEVE_INFER_SEX.out.sex_map
             ch_versions = ch_versions.mix(SIEVE_INFER_SEX.out.versions)
-            ch_plot_sources = ch_plot_sources.mix(SIEVE_INFER_SEX.out.diagnostics.map { meta, diagnostic -> diagnostic })
+            ch_plot_sources = ch_plot_sources.mix(SIEVE_INFER_SEX.out.diagnostics.map { _meta, diagnostic -> diagnostic })
         }
     }
 
@@ -149,7 +149,7 @@ workflow SIEVE {
         early_stopping: params.train_early_stopping as Integer,
         hidden_dim: params.train_hidden_dim as Integer,
         num_attention_layers: params.train_num_attention_layers as Integer,
-    ].findAll { key, value -> value != null }
+    ].findAll { _key, value -> value != null }
 
     ch_best_params_path_keyed = Channel.empty()
     ch_best_params_map_keyed = Channel.empty()
@@ -194,7 +194,7 @@ workflow SIEVE {
             ch_grid_train_input = ch_grid_specs
                 .join(ch_preprocessed_keyed, by: 0)
                 .join(ch_sex_map_keyed, by: 0)
-                .map { key, meta, grid_params, level, val_split, preprocessed, sex_map ->
+                .map { _key, meta, grid_params, level, val_split, preprocessed, sex_map ->
                     tuple(meta, preprocessed, sex_map, grid_params, level, val_split)
                 }
 
@@ -202,7 +202,7 @@ workflow SIEVE {
             ch_versions = ch_versions.mix(SIEVE_TRAIN_SINGLE_GRID.out.versions)
 
             ch_grid_selection_dirs = SIEVE_TRAIN_SINGLE_GRID.out.selection_payload
-                .map { meta, run_dir -> run_dir }
+                .map { _meta, run_dir -> run_dir }
                 .collect()
 
             SIEVE_SELECT_BEST_PARAMS(
@@ -211,7 +211,7 @@ workflow SIEVE {
             )
             ch_versions = ch_versions.mix(SIEVE_SELECT_BEST_PARAMS.out.versions)
 
-            ch_best_params_path_keyed = SIEVE_SELECT_BEST_PARAMS.out.best_params.map { meta, best_params, best_run_id, summary ->
+            ch_best_params_path_keyed = SIEVE_SELECT_BEST_PARAMS.out.best_params.map { meta, best_params, _best_run_id, _summary ->
                 tuple(meta.id, best_params)
             }
         }
@@ -234,7 +234,7 @@ workflow SIEVE {
                 )
             )
 
-            ch_published_best_model = ch_best_checkpoint_keyed.map { cohort_id, checkpoint, config ->
+            ch_published_best_model = ch_best_checkpoint_keyed.map { _cohort_id, checkpoint, config ->
                 [checkpoint, config]
             }
         } else {
@@ -251,22 +251,22 @@ workflow SIEVE {
                 .join(ch_preprocessed_keyed, by: 0)
                 .join(ch_sex_map_keyed, by: 0)
                 .join(ch_best_params_path_keyed, by: 0)
-                .map { key, meta, level, cv_folds, preprocessed, sex_map, best_params ->
+                .map { _key, meta, level, cv_folds, preprocessed, sex_map, best_params ->
                     tuple(meta, preprocessed, sex_map, best_params, level, cv_folds)
                 }
 
             SIEVE_TRAIN_CV(ch_cv_input)
             ch_versions = ch_versions.mix(SIEVE_TRAIN_CV.out.versions)
-            ch_plot_sources = ch_plot_sources.mix(SIEVE_TRAIN_CV.out.cv_bundle.map { meta, cv_output, cv_results -> cv_output })
+            ch_plot_sources = ch_plot_sources.mix(SIEVE_TRAIN_CV.out.cv_bundle.map { _meta, cv_output, _cv_results -> cv_output })
 
             SIEVE_SELECT_BEST_CHECKPOINT(SIEVE_TRAIN_CV.out.cv_bundle)
             ch_versions = ch_versions.mix(SIEVE_SELECT_BEST_CHECKPOINT.out.versions)
 
-            ch_best_checkpoint_keyed = SIEVE_SELECT_BEST_CHECKPOINT.out.best_checkpoint.map { meta, checkpoint, config, fold_id, summary ->
+            ch_best_checkpoint_keyed = SIEVE_SELECT_BEST_CHECKPOINT.out.best_checkpoint.map { meta, checkpoint, config, _fold_id, _summary ->
                 tuple(meta.id, checkpoint, config)
             }
 
-            ch_published_best_model = SIEVE_SELECT_BEST_CHECKPOINT.out.best_checkpoint.map { meta, checkpoint, fold_config, fold_id, cv_summary ->
+            ch_published_best_model = SIEVE_SELECT_BEST_CHECKPOINT.out.best_checkpoint.map { _meta, checkpoint, fold_config, fold_id, cv_summary ->
                 [checkpoint, fold_config, fold_id, cv_summary]
             }
         }
@@ -285,13 +285,13 @@ workflow SIEVE {
 
         SIEVE_EXPLAIN_REAL(ch_explain_real_input)
         ch_versions = ch_versions.mix(SIEVE_EXPLAIN_REAL.out.versions)
-        ch_plot_sources = ch_plot_sources.mix(SIEVE_EXPLAIN_REAL.out.explain_dir.map { meta, explain_dir -> explain_dir })
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_EXPLAIN_REAL.out.explain_dir.map { _meta, explain_dir -> explain_dir })
 
         ch_real_rankings = SIEVE_EXPLAIN_REAL.out.rankings
-        ch_real_variant_keyed = ch_real_rankings.map { meta, variant_rankings, gene_rankings, interactions ->
+        ch_real_variant_keyed = ch_real_rankings.map { meta, variant_rankings, _gene_rankings, _interactions ->
             tuple(meta.id, variant_rankings)
         }
-        ch_published_explainability_best = SIEVE_EXPLAIN_REAL.out.explain_dir.map { meta, explain_dir ->
+        ch_published_explainability_best = SIEVE_EXPLAIN_REAL.out.explain_dir.map { _meta, explain_dir ->
             explain_dir
         }
     }
@@ -314,7 +314,7 @@ workflow SIEVE {
             .join(ch_preprocessed_keyed, by: 0)
             .join(ch_sex_map_keyed, by: 0)
             .join(ch_best_params_map_keyed, by: 0)
-            .map { key, meta, level, val_split, preprocessed, sex_map, best_params_map ->
+            .map { _key, meta, level, val_split, preprocessed, sex_map, best_params_map ->
                 def ablationParams = new LinkedHashMap(baseTrainingParams)
                 ablationParams.putAll(best_params_map instanceof Map ? best_params_map : [:])
                 ablationParams.put('annotation_level', level)
@@ -323,10 +323,10 @@ workflow SIEVE {
 
         SIEVE_TRAIN_SINGLE_ABLATION(ch_ablation_train_input)
         ch_versions = ch_versions.mix(SIEVE_TRAIN_SINGLE_ABLATION.out.versions)
-        ch_plot_sources = ch_plot_sources.mix(SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload.map { meta, run_dir -> run_dir })
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload.map { _meta, run_dir -> run_dir })
 
         ch_ablation_selection_dirs = SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload
-            .map { meta, run_dir -> run_dir }
+            .map { _meta, run_dir -> run_dir }
             .collect()
 
         SIEVE_ABLATION_COMPARE(
@@ -336,11 +336,11 @@ workflow SIEVE {
         ch_versions = ch_versions.mix(SIEVE_ABLATION_COMPARE.out.versions)
 
         ch_published_ablation_discovery = SIEVE_ABLATION_COMPARE.out.ablation_summary
-            .map { meta, ablation_tsv, ablation_yaml ->
+            .map { _meta, ablation_tsv, ablation_yaml ->
                 [ablation_tsv, ablation_yaml]
             }
             .mix(
-                SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload.map { meta, run_dir ->
+                SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload.map { _meta, run_dir ->
                     run_dir
                 }
             )
@@ -375,7 +375,7 @@ workflow SIEVE {
             .join(ch_null_preprocessed_keyed, by: 0)
             .join(ch_sex_map_keyed, by: 0)
             .join(ch_best_params_map_keyed, by: 0)
-            .map { key, meta, level, val_split, preprocessed_null, sex_map, best_params_map ->
+            .map { _key, meta, level, val_split, preprocessed_null, sex_map, best_params_map ->
                 def nullParams = new LinkedHashMap(baseTrainingParams)
                 nullParams.putAll(best_params_map instanceof Map ? best_params_map : [:])
                 nullParams.put('annotation_level', level)
@@ -385,7 +385,7 @@ workflow SIEVE {
         SIEVE_TRAIN_SINGLE_NULL(ch_null_train_input)
         ch_versions = ch_versions.mix(SIEVE_TRAIN_SINGLE_NULL.out.versions)
 
-        ch_null_model_keyed = SIEVE_TRAIN_SINGLE_NULL.out.train_artifacts.map { meta, results, config, model ->
+        ch_null_model_keyed = SIEVE_TRAIN_SINGLE_NULL.out.train_artifacts.map { meta, _results, config, model ->
             tuple(meta.id, model, config)
         }
 
@@ -397,9 +397,9 @@ workflow SIEVE {
 
         SIEVE_EXPLAIN_NULL(ch_null_explain_input)
         ch_versions = ch_versions.mix(SIEVE_EXPLAIN_NULL.out.versions)
-        ch_plot_sources = ch_plot_sources.mix(SIEVE_EXPLAIN_NULL.out.explain_dir.map { meta, explain_dir -> explain_dir })
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_EXPLAIN_NULL.out.explain_dir.map { _meta, explain_dir -> explain_dir })
 
-        ch_null_variant_keyed = SIEVE_EXPLAIN_NULL.out.rankings.map { meta, variant_rankings, gene_rankings, interactions ->
+        ch_null_variant_keyed = SIEVE_EXPLAIN_NULL.out.rankings.map { meta, variant_rankings, _gene_rankings, _interactions ->
             tuple(meta.id, variant_rankings)
         }
 
@@ -411,7 +411,7 @@ workflow SIEVE {
 
         SIEVE_COMPARE_ATTRIBUTIONS_RAW(ch_compare_attributions_input)
         ch_versions = ch_versions.mix(SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.versions)
-        ch_plot_sources = ch_plot_sources.mix(SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.comparison.map { meta, summary, comparison_dir -> comparison_dir })
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.comparison.map { _meta, _summary, comparison_dir -> comparison_dir })
 
         ch_sex_fixed_filter_input = ch_real_variant_keyed
             .join(ch_null_variant_keyed, by: 0)
@@ -422,44 +422,44 @@ workflow SIEVE {
         SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS(ch_sex_fixed_filter_input)
         ch_versions = ch_versions.mix(SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS.out.versions)
 
-        ch_compare_sex_fixed_input = SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS.out.filtered_rankings.map { meta, real_autosomal, null_autosomal, filter_summary ->
+        ch_compare_sex_fixed_input = SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS.out.filtered_rankings.map { meta, real_autosomal, null_autosomal, _filter_summary ->
             tuple([id: meta.id, run_id: 'compare_attributions_sex_fixed', stage: 'null_baseline'], real_autosomal, null_autosomal)
         }
 
         SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED(ch_compare_sex_fixed_input)
         ch_versions = ch_versions.mix(SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED.out.versions)
-        ch_plot_sources = ch_plot_sources.mix(SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED.out.comparison.map { meta, summary, comparison_dir -> comparison_dir })
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED.out.comparison.map { _meta, _summary, comparison_dir -> comparison_dir })
 
         ch_published_null_model = SIEVE_TRAIN_SINGLE_NULL.out.train_artifacts
-            .map { meta, null_results, null_config, null_model ->
+            .map { _meta, null_results, null_config, null_model ->
                 [null_model, null_config, null_results]
             }
             .mix(
-                SIEVE_TRAIN_SINGLE_NULL.out.history.map { meta, null_history ->
+                SIEVE_TRAIN_SINGLE_NULL.out.history.map { _meta, null_history ->
                     null_history
                 }
             )
             .mix(
-                SIEVE_CREATE_NULL_BASELINE.out.null_preprocessed.map { meta, null_preprocessed ->
+                SIEVE_CREATE_NULL_BASELINE.out.null_preprocessed.map { _meta, null_preprocessed ->
                     null_preprocessed
                 }
             )
             .mix(
-                SIEVE_EXPLAIN_NULL.out.explain_dir.map { meta, null_explain_dir ->
+                SIEVE_EXPLAIN_NULL.out.explain_dir.map { _meta, null_explain_dir ->
                     null_explain_dir
                 }
             )
 
-        ch_published_null_comparison = SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.comparison.map { meta, comparison_summary, comparison_dir ->
+        ch_published_null_comparison = SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.comparison.map { _meta, comparison_summary, comparison_dir ->
             [comparison_summary, comparison_dir]
         }
 
         ch_published_null_comparison_sex_fixed = SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED.out.comparison
-            .map { meta, comparison_summary, comparison_dir ->
+            .map { _meta, comparison_summary, comparison_dir ->
                 [comparison_summary, comparison_dir]
             }
             .mix(
-                SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS.out.filtered_rankings.map { meta, real_autosomal, null_autosomal, filter_summary ->
+                SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS.out.filtered_rankings.map { _meta, real_autosomal, null_autosomal, filter_summary ->
                     [real_autosomal, null_autosomal, filter_summary]
                 }
             )
@@ -469,10 +469,10 @@ workflow SIEVE {
 
     if (targetEpistasis) {
         ch_nonempty_interactions_keyed = ch_real_rankings
-            .map { meta, variant_rankings, gene_rankings, interactions ->
+            .map { meta, _variant_rankings, _gene_rankings, interactions ->
                 tuple(meta.id, interactions)
             }
-            .filter { cohort_id, interactions ->
+            .filter { _cohort_id, interactions ->
                 interactions.exists() && interactions.size() > 0 && interactions.readLines().findAll { line -> line.trim() }.size() > 1
             }
 
@@ -485,17 +485,17 @@ workflow SIEVE {
 
         SIEVE_VALIDATE_EPISTASIS(ch_epistasis_input)
         ch_versions = ch_versions.mix(SIEVE_VALIDATE_EPISTASIS.out.versions)
-        ch_plot_sources = ch_plot_sources.mix(SIEVE_VALIDATE_EPISTASIS.out.epistasis.map { meta, epistasis_csv, epistasis_dir -> epistasis_dir })
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_VALIDATE_EPISTASIS.out.epistasis.map { _meta, _epistasis_csv, epistasis_dir -> epistasis_dir })
 
         ch_published_explainability_analysis = ch_published_explainability_analysis.mix(
-            SIEVE_VALIDATE_EPISTASIS.out.epistasis.map { meta, epistasis_validation, epistasis_dir ->
+            SIEVE_VALIDATE_EPISTASIS.out.epistasis.map { _meta, epistasis_validation, epistasis_dir ->
                 [epistasis_validation, epistasis_dir]
             }
         )
     }
 
     if (targetValidation) {
-        ch_discovery_validation_input = ch_real_rankings.map { meta, variant_rankings, gene_rankings, interactions ->
+        ch_discovery_validation_input = ch_real_rankings.map { meta, variant_rankings, gene_rankings, _interactions ->
             tuple(
                 [id: meta.id, run_id: 'discoveries_validation', stage: 'validation'],
                 variant_rankings,
@@ -508,10 +508,10 @@ workflow SIEVE {
 
         SIEVE_VALIDATE_DISCOVERIES(ch_discovery_validation_input)
         ch_versions = ch_versions.mix(SIEVE_VALIDATE_DISCOVERIES.out.versions)
-        ch_plot_sources = ch_plot_sources.mix(SIEVE_VALIDATE_DISCOVERIES.out.validation.map { meta, validation_report, validation_dir -> validation_dir })
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_VALIDATE_DISCOVERIES.out.validation.map { _meta, _validation_report, validation_dir -> validation_dir })
 
         ch_published_explainability_analysis = ch_published_explainability_analysis.mix(
-            SIEVE_VALIDATE_DISCOVERIES.out.validation.map { meta, validation_report, validation_dir ->
+            SIEVE_VALIDATE_DISCOVERIES.out.validation.map { _meta, validation_report, validation_dir ->
                 [validation_report, validation_dir]
             }
         )
@@ -528,7 +528,7 @@ workflow SIEVE {
         )
         ch_versions = ch_versions.mix(SIEVE_COLLECT_PLOTS.out.versions)
 
-        ch_published_plots = SIEVE_COLLECT_PLOTS.out.plot_bundle.map { meta, plots_dir, plots_manifest ->
+        ch_published_plots = SIEVE_COLLECT_PLOTS.out.plot_bundle.map { _meta, plots_dir, plots_manifest ->
             [plots_dir, plots_manifest]
         }
     }
@@ -541,11 +541,11 @@ workflow SIEVE {
         )
         .set { ch_collated_versions }
 
-    ch_published_sex_map = ch_effective_sex_map.map { meta, sex_map_file ->
+    ch_published_sex_map = ch_effective_sex_map.map { _meta, sex_map_file ->
         sex_map_file
     }
 
-    ch_published_preprocessed = ch_preprocessed.map { meta, preprocessed_file ->
+    ch_published_preprocessed = ch_preprocessed.map { _meta, preprocessed_file ->
         preprocessed_file
     }
 

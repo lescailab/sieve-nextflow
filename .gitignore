@@ -1,3 +1,4 @@
+## nextflow related files and tests
 .nextflow*
 work/
 data/
@@ -11,3 +12,11 @@ null/
 ## nf test files
 .nf-test/
 .nf-test*
+
+## agents files if any
+.agent*
+agent*
+claude*
+.claude*
+.codex*
+codex*

@@ -10,9 +10,6 @@
 
 include { UTILS_NFSCHEMA_PLUGIN } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap } from 'plugin/nf-schema'
-include { completionEmail } from '../../nf-core/utils_nfcore_pipeline'
-include { completionSummary } from '../../nf-core/utils_nfcore_pipeline'
-include { imNotification } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE } from '../../nf-core/utils_nextflow_pipeline'
 
@@ -90,7 +87,7 @@ workflow PIPELINE_INITIALISATION {
         command
     )
 
-    validateSieveArguments(
+    SieveArgumentValidator.validateSieveArguments(
         vcf,
         phenotypes,
         genome_build,
@@ -100,7 +97,9 @@ workflow PIPELINE_INITIALISATION {
         best_params,
         best_checkpoint,
         checkpoint_config,
-        execute_step
+        execute_step,
+        log,
+        { message -> error(message) }
     )
 
     UTILS_NFCORE_PIPELINE(
@@ -129,248 +128,33 @@ workflow PIPELINE_COMPLETION {
 
     main:
     summary_params = paramsSummaryMap(workflow, parameters_schema: 'nextflow_schema.json')
+    workflow_meta = workflow
+    params_map = params
+    logger = log
 
     workflow.onComplete {
         if (email || email_on_fail) {
-            completionEmail(
+            NfcoreTemplateUtils.completionEmail(
                 summary_params,
                 email,
                 email_on_fail,
                 plaintext_email,
                 outdir,
                 monochrome_logs,
-                []
+                [],
+                workflow_meta,
+                params_map,
+                logger
             )
         }
 
-        completionSummary(monochrome_logs)
+        NfcoreTemplateUtils.completionSummary(workflow_meta, logger, monochrome_logs)
         if (hook_url) {
-            imNotification(summary_params, hook_url)
+            NfcoreTemplateUtils.imNotification(summary_params, hook_url, workflow_meta, logger)
         }
     }
 
     workflow.onError {
         log.error 'Pipeline failed. Please refer to troubleshooting docs: https://nf-co.re/docs/usage/troubleshooting'
     }
-}
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    FUNCTIONS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-def validateSieveArguments(vcf, phenotypes, genome_build, infer_sex, sex_map, preprocessed_data, best_params, best_checkpoint, checkpoint_config, execute_step) {
-    def selectedSteps = resolveExecuteSteps(execute_step)
-
-    def targetSex = selectedSteps.contains('sex')
-    def targetPreprocess = selectedSteps.contains('preprocess')
-    def targetGrid = selectedSteps.contains('grid')
-    def targetCv = selectedSteps.contains('cv')
-    def targetExplain = selectedSteps.contains('explain')
-    def targetAblation = selectedSteps.contains('ablation')
-    def targetNull = selectedSteps.contains('null')
-    def targetEpistasis = selectedSteps.contains('epistasis')
-    def targetValidation = selectedSteps.contains('validation')
-
-    def useProvidedPreprocessed = preprocessed_data as boolean
-    def useProvidedBestCheckpoint = (best_checkpoint && checkpoint_config) as boolean
-
-    def needExplain = targetExplain || targetEpistasis || targetValidation || targetNull
-    def needBestCheckpoint = targetCv || needExplain
-    def needBestParams = targetGrid || targetAblation || targetNull || (needBestCheckpoint && !useProvidedBestCheckpoint)
-    def needPreprocessed = targetPreprocess || needBestParams || needExplain || (needBestCheckpoint && !useProvidedBestCheckpoint)
-    def needSexMap = targetSex || needBestParams || (needPreprocessed && !useProvidedPreprocessed)
-
-    if ((best_checkpoint && !checkpoint_config) || (!best_checkpoint && checkpoint_config)) {
-        error('Parameters --best_checkpoint and --checkpoint_config must be provided together.')
-    }
-
-    if (best_checkpoint) {
-        assertExistingFile(best_checkpoint, '--best_checkpoint')
-        if (!best_checkpoint.toString().endsWith('.pt')) {
-            error('The --best_checkpoint input should be a .pt file.')
-        }
-    }
-
-    if (checkpoint_config) {
-        assertExistingFile(checkpoint_config, '--checkpoint_config')
-        if (!(checkpoint_config.toString().endsWith('.yaml') || checkpoint_config.toString().endsWith('.yml'))) {
-            error('The --checkpoint_config input should end with .yaml or .yml.')
-        }
-    }
-
-    if (best_params) {
-        assertExistingFile(best_params, '--best_params')
-        if (!(best_params.toString().endsWith('.yaml') || best_params.toString().endsWith('.yml'))) {
-            error('The --best_params input should end with .yaml or .yml.')
-        }
-    }
-
-    if (preprocessed_data) {
-        assertExistingFile(preprocessed_data, '--preprocessed_data')
-        if (!preprocessed_data.toString().endsWith('.pt')) {
-            error('The --preprocessed_data input must end with .pt')
-        }
-    }
-
-    if (sex_map) {
-        assertExistingFile(sex_map, '--sex_map')
-        if (infer_sex) {
-            log.warn('Both --sex_map and --infer_sex were provided. The pipeline will use --sex_map and skip sex inference.')
-        }
-    }
-
-    def needsRawVcfForSex = needSexMap && !sex_map
-    def needsRawVcfForPreprocess = needPreprocessed && !useProvidedPreprocessed
-    def needsRawVcf = needsRawVcfForSex || needsRawVcfForPreprocess
-    def needsPhenotypes = needPreprocessed && !useProvidedPreprocessed
-
-    if (needSexMap && !sex_map && !infer_sex) {
-        error('The selected execution steps require sex information. Provide --sex_map or set --infer_sex true.')
-    }
-
-    if (needsRawVcf) {
-        if (!vcf) {
-            error('Missing required argument: --vcf (required by selected execution steps).')
-        }
-
-        def vcfFile = new File(vcf.toString())
-        if (!vcfFile.exists()) {
-            error("The file provided to --vcf does not exist: ${vcf}")
-        }
-
-        if (!vcf.toString().endsWith('.vcf.gz')) {
-            error('The --vcf input must end with .vcf.gz')
-        }
-
-        def tbiIndex = new File(vcf.toString() + '.tbi')
-        def csiIndex = new File(vcf.toString() + '.csi')
-        if (!tbiIndex.exists() && !csiIndex.exists()) {
-            error("Could not find a VCF index for '${vcf}'. Expected '${vcf}.tbi' or '${vcf}.csi'.")
-        }
-    }
-
-    if (needsPhenotypes) {
-        if (!phenotypes) {
-            error('Missing required argument: --phenotypes (required when preprocessing runs).')
-        }
-
-        def phenotypesFile = new File(phenotypes.toString())
-        if (!phenotypesFile.exists()) {
-            error("The file provided to --phenotypes does not exist: ${phenotypes}")
-        }
-    }
-
-    if (needsRawVcf) {
-        def allowedBuilds = ['GRCh37', 'GRCh38']
-        if (!(genome_build in allowedBuilds)) {
-            error("Invalid --genome_build '${genome_build}'. Supported values: ${allowedBuilds.join(', ')}")
-        }
-    }
-
-}
-
-def assertExistingFile(pathLike, paramName) {
-    def target = new File(pathLike.toString())
-    if (!target.exists()) {
-        error("The file provided to ${paramName} does not exist: ${pathLike}")
-    }
-}
-
-def splitCsvValues(value) {
-    if (value == null) {
-        return []
-    }
-    if (value instanceof List) {
-        return value
-    }
-    return value
-        .toString()
-        .split(',')
-        .collect { it.trim() }
-        .findAll { it }
-}
-
-def executionStepNames() {
-    return [
-        'sex',
-        'preprocess',
-        'grid',
-        'cv',
-        'explain',
-        'ablation',
-        'null',
-        'epistasis',
-        'validation',
-        'plots',
-    ] as LinkedHashSet
-}
-
-def normalizeExecutionStep(rawStep) {
-    if (rawStep == null) {
-        return null
-    }
-
-    def step = rawStep
-        .toString()
-        .trim()
-        .toLowerCase()
-        .replaceAll(/[\s-]+/, '_')
-
-    def aliases = [
-        all: 'all',
-        sex: 'sex',
-        sex_map: 'sex',
-        infer_sex: 'sex',
-        preprocess: 'preprocess',
-        preprocessing: 'preprocess',
-        preprocessed: 'preprocess',
-        grid: 'grid',
-        grid_search: 'grid',
-        best_params: 'grid',
-        hyperparameter_search: 'grid',
-        cv: 'cv',
-        cross_fold: 'cv',
-        cross_validation: 'cv',
-        checkpoint_selection: 'cv',
-        explain: 'explain',
-        explainability: 'explain',
-        ablation: 'ablation',
-        ablation_experiment: 'ablation',
-        null: 'null',
-        null_model: 'null',
-        null_baseline: 'null',
-        epistasis: 'epistasis',
-        epistasis_validation: 'epistasis',
-        validation: 'validation',
-        discoveries: 'validation',
-        discovery_validation: 'validation',
-        plots: 'plots',
-        collect_plots: 'plots',
-    ]
-
-    return aliases.containsKey(step) ? aliases[step] : step
-}
-
-def resolveExecuteSteps(stepValue) {
-    def allSteps = executionStepNames()
-    def requested = splitCsvValues(stepValue)
-        .collect { normalizeExecutionStep(it) }
-        .findAll { it }
-
-    if (!requested) {
-        return allSteps
-    }
-
-    if (requested.contains('all')) {
-        return allSteps
-    }
-
-    def invalid = requested.findAll { !(it in allSteps) }.unique()
-    if (invalid) {
-        throw new IllegalArgumentException("Invalid --execute_step value(s): ${invalid.join(', ')}. Allowed values: ${allSteps.join(', ')}")
-    }
-
-    return requested as LinkedHashSet
 }

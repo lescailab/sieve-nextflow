@@ -3,8 +3,6 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-
 include { SIEVE_INFER_SEX } from '../modules/local/sieve/infer_sex/main'
 include { SIEVE_PREPROCESS } from '../modules/local/sieve/preprocess/main'
 include { SIEVE_TRAIN_SINGLE as SIEVE_TRAIN_SINGLE_GRID } from '../modules/local/sieve/train_single/main'
@@ -40,7 +38,7 @@ workflow SIEVE {
     def cohortMeta = [id: params.cohort_id ?: 'cohort']
     def ch_selection_meta = Channel.value([id: cohortMeta.id])
 
-    def selectedSteps = resolveExecuteSteps(params.execute_step)
+    def selectedSteps = SieveStepUtils.resolveExecuteSteps(params.execute_step)
     log.info("Executing SIEVE steps: ${selectedSteps.join(', ')}")
 
     def targetSex = selectedSteps.contains('sex')
@@ -170,7 +168,7 @@ workflow SIEVE {
                 )
             )
         } else {
-            def trainingGrid = buildTrainingGrid(
+            def trainingGrid = SieveTrainingUtils.buildTrainingGrid(
                 baseTrainingParams,
                 params.grid_lr,
                 params.grid_lambda_attr,
@@ -217,7 +215,7 @@ workflow SIEVE {
         }
 
         ch_best_params_map_keyed = ch_best_params_path_keyed.map { cohort_id, best_params_path ->
-            tuple(cohort_id, extractTrainingParams(best_params_path))
+            tuple(cohort_id, SieveTrainingUtils.extractTrainingParams(best_params_path))
         }
     }
 
@@ -533,7 +531,7 @@ workflow SIEVE {
         }
     }
 
-    softwareVersionsToYAML(ch_versions)
+    NfcoreTemplateUtils.softwareVersionsToYAML(ch_versions, workflow)
         .collectFile(
             name: 'nf_core_sieve_software_versions.yml',
             sort: true,
@@ -562,197 +560,6 @@ workflow SIEVE {
     plots                      = ch_published_plots
     pipeline_versions          = ch_collated_versions
     versions                   = ch_versions
-}
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    FUNCTIONS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-def splitCsvValues(value) {
-    if (value == null) {
-        return []
-    }
-    if (value instanceof List) {
-        return value
-    }
-    return value
-        .toString()
-        .split(',')
-        .collect { it.trim() }
-        .findAll { it }
-}
-
-def executionStepNames() {
-    return [
-        'sex',
-        'preprocess',
-        'grid',
-        'cv',
-        'explain',
-        'ablation',
-        'null',
-        'epistasis',
-        'validation',
-        'plots',
-    ] as LinkedHashSet
-}
-
-def normalizeExecutionStep(rawStep) {
-    if (rawStep == null) {
-        return null
-    }
-
-    def step = rawStep
-        .toString()
-        .trim()
-        .toLowerCase()
-        .replaceAll(/[\s-]+/, '_')
-
-    def aliases = [
-        all: 'all',
-        sex: 'sex',
-        sex_map: 'sex',
-        infer_sex: 'sex',
-        preprocess: 'preprocess',
-        preprocessing: 'preprocess',
-        preprocessed: 'preprocess',
-        grid: 'grid',
-        grid_search: 'grid',
-        best_params: 'grid',
-        hyperparameter_search: 'grid',
-        cv: 'cv',
-        cross_fold: 'cv',
-        cross_validation: 'cv',
-        checkpoint_selection: 'cv',
-        explain: 'explain',
-        explainability: 'explain',
-        ablation: 'ablation',
-        ablation_experiment: 'ablation',
-        null: 'null',
-        null_model: 'null',
-        null_baseline: 'null',
-        epistasis: 'epistasis',
-        epistasis_validation: 'epistasis',
-        validation: 'validation',
-        discoveries: 'validation',
-        discovery_validation: 'validation',
-        plots: 'plots',
-        collect_plots: 'plots',
-    ]
-
-    return aliases.containsKey(step) ? aliases[step] : step
-}
-
-def resolveExecuteSteps(stepValue) {
-    def allSteps = executionStepNames()
-    def requested = splitCsvValues(stepValue)
-        .collect { normalizeExecutionStep(it) }
-        .findAll { it }
-
-    if (!requested) {
-        return allSteps
-    }
-
-    if (requested.contains('all')) {
-        return allSteps
-    }
-
-    def invalid = requested.findAll { !(it in allSteps) }.unique()
-    if (invalid) {
-        throw new IllegalArgumentException("Invalid --execute_step value(s): ${invalid.join(', ')}. Allowed values: ${allSteps.join(', ')}")
-    }
-
-    return requested as LinkedHashSet
-}
-
-def extractTrainingParams(configPath) {
-    def allowedKeys = [
-        'epochs',
-        'batch_size',
-        'chunk_size',
-        'aggregation_method',
-        'gradient_accumulation_steps',
-        'gradient_clip',
-        'seed',
-        'device',
-        'early_stopping',
-        'hidden_dim',
-        'num_attention_layers',
-        'lr',
-        'lambda_attr',
-        'latent_dim',
-        'annotation_level',
-        'num_heads',
-        'num_workers',
-        'max_variants_per_batch',
-    ] as Set
-
-    def yaml = new org.yaml.snakeyaml.Yaml()
-    def parsed = yaml.load(new File(configPath.toString()).text)
-    parsed = parsed instanceof Map ? parsed : [:]
-
-    if (parsed.hyperparameters instanceof Map) {
-        parsed = parsed.hyperparameters
-    }
-
-    def trainingParams = [:]
-    parsed.each { key, value ->
-        if (value != null) {
-            def normalizedKey = key.toString().replace('-', '_')
-            if (normalizedKey in allowedKeys) {
-                trainingParams[normalizedKey] = value
-            }
-        }
-    }
-
-    return trainingParams
-}
-
-def buildTrainingGrid(baseTrainParams, lrValues, lambdaAttrValues, latentDimValues, hiddenDimValues, layerValues) {
-    def lrList = splitCsvValues(lrValues).collect { it as Double }
-    def lambdaList = splitCsvValues(lambdaAttrValues).collect { it as Double }
-    def latentList = splitCsvValues(latentDimValues).collect { it as Integer }
-    def hiddenList = splitCsvValues(hiddenDimValues).collect { it as Integer }
-    def layerList = splitCsvValues(layerValues).collect { it as Integer }
-
-    if (!lrList || !lambdaList || !latentList || !hiddenList || !layerList) {
-        def missing = []
-        if (!lrList) missing << 'grid_lr'
-        if (!lambdaList) missing << 'grid_lambda_attr'
-        if (!latentList) missing << 'grid_latent_dim'
-        if (!hiddenList) missing << 'grid_hidden_dim'
-        if (!layerList) missing << 'grid_num_attention_layers'
-        throw new IllegalArgumentException("Training grid values cannot be empty: ${missing.join(', ')}")
-    }
-
-    def grid = []
-    int runCounter = 0
-
-    lrList.each { lr ->
-        lambdaList.each { lambda_attr ->
-            latentList.each { latent_dim ->
-                hiddenList.each { hidden_dim ->
-                    layerList.each { num_attention_layers ->
-                        runCounter += 1
-                        def runParams = new LinkedHashMap(baseTrainParams ?: [:])
-                        runParams.putAll([
-                            run_id: String.format('grid_%03d', runCounter),
-                            lr: lr,
-                            lambda_attr: lambda_attr,
-                            latent_dim: latent_dim,
-                            hidden_dim: hidden_dim,
-                            num_attention_layers: num_attention_layers,
-                        ])
-                        grid << runParams
-                    }
-                }
-            }
-        }
-    }
-
-    return grid
 }
 
 /*

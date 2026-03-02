@@ -1,3 +1,6 @@
+import java.nio.file.Files
+import nextflow.file.FileHelper
+
 class SieveArgumentValidator {
 
     static void validateSieveArguments(
@@ -90,8 +93,7 @@ class SieveArgumentValidator {
                 fail.call('Missing required argument: --vcf (required by selected execution steps).')
             }
 
-            def vcfFile = new File(vcf.toString())
-            if (!vcfFile.exists()) {
+            if (!pathExists(vcf)) {
                 fail.call("The file provided to --vcf does not exist: ${vcf}")
             }
 
@@ -99,9 +101,9 @@ class SieveArgumentValidator {
                 fail.call('The --vcf input must end with .vcf.gz')
             }
 
-            def tbiIndex = new File(vcf.toString() + '.tbi')
-            def csiIndex = new File(vcf.toString() + '.csi')
-            if (!tbiIndex.exists() && !csiIndex.exists()) {
+            def tbiIndex = "${vcf}.tbi"
+            def csiIndex = "${vcf}.csi"
+            if (!pathExists(tbiIndex) && !pathExists(csiIndex)) {
                 fail.call("Could not find a VCF index for '${vcf}'. Expected '${vcf}.tbi' or '${vcf}.csi'.")
             }
         }
@@ -111,8 +113,7 @@ class SieveArgumentValidator {
                 fail.call('Missing required argument: --phenotypes (required when preprocessing runs).')
             }
 
-            def phenotypesFile = new File(phenotypes.toString())
-            if (!phenotypesFile.exists()) {
+            if (!pathExists(phenotypes)) {
                 fail.call("The file provided to --phenotypes does not exist: ${phenotypes}")
             }
         }
@@ -126,9 +127,19 @@ class SieveArgumentValidator {
     }
 
     private static void assertExistingFile(pathLike, String paramName, Closure fail) {
-        def target = new File(pathLike.toString())
-        if (!target.exists()) {
+        if (!pathExists(pathLike)) {
             fail.call("The file provided to ${paramName} does not exist: ${pathLike}")
+        }
+    }
+
+    private static boolean pathExists(pathLike) {
+        if (!pathLike) {
+            return false
+        }
+        try {
+            return Files.exists(FileHelper.asPath(pathLike.toString()))
+        } catch (Exception ignored) {
+            return false
         }
     }
 }

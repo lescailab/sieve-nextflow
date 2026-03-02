@@ -8,8 +8,8 @@ keywords:
 tools:
   - ablation_compare.py:
       description: Utility script to summarize ablation performance across levels.
-      homepage: https://github.com/nf-core/sieve
-      documentation: https://github.com/nf-core/sieve
+      homepage: https://github.com/lescailab/sieve-nextflow
+      documentation: https://github.com/lescailab/sieve-nextflow
       licence: ["MIT"]
 input:
   - - meta:

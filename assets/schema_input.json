@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/sieve/master/assets/schema_input.json",
-    "title": "nf-core/sieve pipeline - params.input schema",
+    "$id": "https://raw.githubusercontent.com/lescailab/sieve-nextflow/master/assets/schema_input.json",
+    "title": "lescailab/sieve pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {

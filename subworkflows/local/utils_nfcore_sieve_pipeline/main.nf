@@ -1,5 +1,5 @@
 //
-// Subworkflow with functionality specific to the nf-core/sieve pipeline
+// Subworkflow with functionality specific to the lescailab/sieve pipeline
 //
 
 /*
@@ -60,7 +60,7 @@ workflow PIPELINE_INITIALISATION {
 \033[0;34m  |\\ | |__  __ /  ` /  \\ |__) |__         \033[0;33m}  {\033[0m
 \033[0;34m  | \\| |       \\__, \\__/ |  \\ |___     \033[0;32m\\`-._,-`-,\033[0m
                                         \033[0;32m`._,._,\'\033[0m
-\033[0;35m  nf-core/sieve ${workflow.manifest.version}\033[0m
+\033[0;35m  lescailab/sieve ${workflow.manifest.version}\033[0m
 -
 \033[2m----------------------------------------------------\033[0m-
 """
@@ -70,7 +70,7 @@ workflow PIPELINE_INITIALISATION {
     https://doi.org/10.1038/s41587-020-0439-x
 
 * Software dependencies
-    https://github.com/nf-core/sieve/blob/master/CITATIONS.md
+    https://github.com/lescailab/sieve-nextflow/blob/master/CITATIONS.md
 """
 
     command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --vcf cohort.vcf.gz --phenotypes phenotypes.tsv --genome_build GRCh38 --outdir <OUTDIR>"

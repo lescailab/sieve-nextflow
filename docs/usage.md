@@ -1,8 +1,8 @@
-# nf-core/sieve: Usage
+# lescailab/sieve: Usage
 
 ## Input combinations
 
-`nf-core/sieve` can run from raw inputs or from downstream artifacts.
+`lescailab/sieve` can run from raw inputs or from downstream artifacts.
 
 Raw-input mode:
 
@@ -14,7 +14,7 @@ Raw-input mode:
 Minimal command:
 
 ```bash
-nextflow run nf-core/sieve \
+nextflow run lescailab/sieve-nextflow \
   -profile docker \
   --vcf cohort.vcf.gz \
   --phenotypes phenotypes.tsv \
@@ -91,7 +91,7 @@ Generic software profiles:
 Recommended quick validation:
 
 ```bash
-nextflow run nf-core/sieve -profile test -stub-run --outdir test_results
+nextflow run lescailab/sieve-nextflow -profile test -stub-run --outdir test_results
 ```
 
 ## Advanced options
@@ -135,7 +135,7 @@ The internal search grid focuses on:
 Example override:
 
 ```bash
-nextflow run nf-core/sieve \
+nextflow run lescailab/sieve-nextflow \
   -profile docker \
   --vcf cohort.vcf.gz \
   --phenotypes phenotypes.tsv \
@@ -160,7 +160,7 @@ nextflow run nf-core/sieve \
 Use versioned pipeline releases:
 
 ```bash
-nextflow run nf-core/sieve -r <release> ...
+nextflow run lescailab/sieve-nextflow -r <release> ...
 ```
 
 Reuse fixed parameter sets via `-params-file` (`YAML` or `JSON`) for reproducible reruns.

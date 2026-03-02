@@ -7,7 +7,7 @@ on:
 jobs:
   run-platform:
     name: Run AWS tests
-    if: github.repository == 'nf-core/sieve'
+    if: github.repository == 'lescailab/sieve-nextflow'
     runs-on: ubuntu-latest
     steps:
       # Launch workflow using Seqera Platform CLI tool action

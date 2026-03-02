@@ -9,8 +9,8 @@ keywords:
 tools:
   - select_best_train_params.py:
       description: Utility script to rank SIEVE training runs by AUC, accuracy, and loss.
-      homepage: https://github.com/nf-core/sieve
-      documentation: https://github.com/nf-core/sieve
+      homepage: https://github.com/lescailab/sieve-nextflow
+      documentation: https://github.com/lescailab/sieve-nextflow
       licence: ["MIT"]
 input:
   - - meta:

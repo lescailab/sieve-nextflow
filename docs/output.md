@@ -1,6 +1,6 @@
-# nf-core/sieve: Output
+# lescailab/sieve: Output
 
-This document describes the output produced by `nf-core/sieve`.
+This document describes the output produced by `lescailab/sieve`.
 All paths below are relative to the pipeline `--outdir`.
 
 ## Directory layout

@@ -1,13 +1,13 @@
 <h1>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/nf-core-sieve_logo_dark.png">
-    <img alt="nf-core/sieve" src="docs/images/nf-core-sieve_logo_light.png">
+    <img alt="lescailab/sieve" src="docs/images/nf-core-sieve_logo_light.png">
   </picture>
 </h1>
 
-[![Open in GitHub Codespaces](https://img.shields.io/badge/Open_In_GitHub_Codespaces-black?labelColor=grey&logo=github)](https://github.com/codespaces/new/nf-core/sieve)
-[![GitHub Actions CI Status](https://github.com/nf-core/sieve/actions/workflows/nf-test.yml/badge.svg)](https://github.com/nf-core/sieve/actions/workflows/nf-test.yml)
-[![GitHub Actions Linting Status](https://github.com/nf-core/sieve/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-core/sieve/actions/workflows/linting.yml)
+[![Open in GitHub Codespaces](https://img.shields.io/badge/Open_In_GitHub_Codespaces-black?labelColor=grey&logo=github)](https://github.com/codespaces/new/lescailab/sieve-nextflow)
+[![GitHub Actions CI Status](https://github.com/lescailab/sieve-nextflow/actions/workflows/nf-test.yml/badge.svg)](https://github.com/lescailab/sieve-nextflow/actions/workflows/nf-test.yml)
+[![GitHub Actions Linting Status](https://github.com/lescailab/sieve-nextflow/actions/workflows/linting.yml/badge.svg)](https://github.com/lescailab/sieve-nextflow/actions/workflows/linting.yml)
 [![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/sieve/results)
 [![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
 
@@ -19,7 +19,7 @@
 
 ## Introduction
 
-**nf-core/sieve** runs the SIEVE (Sparse Interpretable Exome Variant Explainer) workflow for case-control variant discovery from a multi-sample VCF. The pipeline handles sex-map generation or ingestion, preprocessing, hyperparameter search, cross-validation model selection, explainability, ablation experiments, null-baseline attribution comparison, optional epistasis validation, and discovery validation outputs. Existing artifacts (sex map, preprocessed dataset, params/checkpoint configs) can be injected to skip upstream stages.
+**lescailab/sieve** runs the SIEVE (Sparse Interpretable Exome Variant Explainer) workflow for case-control variant discovery from a multi-sample VCF. The pipeline handles sex-map generation or ingestion, preprocessing, hyperparameter search, cross-validation model selection, explainability, ablation experiments, null-baseline attribution comparison, optional epistasis validation, and discovery validation outputs. Existing artifacts (sex map, preprocessed dataset, params/checkpoint configs) can be injected to skip upstream stages.
 
 ## SIEVE Workflow
 
@@ -41,7 +41,7 @@
 Minimal run:
 
 ```bash
-nextflow run nf-core/sieve \
+nextflow run lescailab/sieve-nextflow \
   -profile docker \
   --vcf cohort.vcf.gz \
   --phenotypes phenotypes.tsv \
@@ -66,7 +66,7 @@ Sex handling:
 Example using a provided sex map:
 
 ```bash
-nextflow run nf-core/sieve \
+nextflow run lescailab/sieve-nextflow \
   -profile docker \
   --vcf cohort.vcf.gz \
   --phenotypes phenotypes.tsv \
@@ -93,7 +93,7 @@ Allowed step names: `sex`, `preprocess`, `grid`, `cv`, `explain`, `ablation`, `n
 Example: ablation-only from downstream artifacts
 
 ```bash
-nextflow run nf-core/sieve \
+nextflow run lescailab/sieve-nextflow \
   -profile docker \
   --preprocessed_data assets/testdata/small_reprocessed_test.pt \
   --sex_map assets/testdata/sex_map.tsv \
@@ -115,7 +115,7 @@ See [docs/output.md](docs/output.md) for output directory structure and file des
 
 ## Credits
 
-nf-core/sieve was originally written by Francesco Lescai.
+lescailab/sieve was originally written by Francesco Lescai.
 
 ## Contributions and Support
 

@@ -1,6 +1,6 @@
 {
-    "name": "nf-core/sieve",
-    "homePage": "https://github.com/nf-core/sieve",
+    "name": "lescailab/sieve",
+    "homePage": "https://github.com/lescailab/sieve-nextflow",
     "repos": {
         "https://github.com/nf-core/modules.git": {
             "modules": {

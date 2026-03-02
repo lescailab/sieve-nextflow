@@ -8,8 +8,8 @@ keywords:
 tools:
   - select_best_cv_fold.py:
       description: Utility script to rank CV folds and select best checkpoint.
-      homepage: https://github.com/nf-core/sieve
-      documentation: https://github.com/nf-core/sieve
+      homepage: https://github.com/lescailab/sieve-nextflow
+      documentation: https://github.com/lescailab/sieve-nextflow
       licence: ["MIT"]
 input:
   - - meta:

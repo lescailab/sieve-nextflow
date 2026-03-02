@@ -3,4 +3,4 @@ channels:
   - bioconda
   - lescailab
 dependencies:
-  - lescailab::sieve=0.1.0
+  - lescailab::sieve=0.1.1

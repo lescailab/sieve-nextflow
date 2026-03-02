@@ -25,7 +25,7 @@ process SIEVE_TRAIN_SINGLE {
     def trainParamMap = train_params instanceof Map ? train_params : [:]
     def trainParamArgs = trainParamMap
         .findAll { key, value ->
-            value != null && !(key.toString() in ['run_id', 'stage', 'level'])
+            value != null && !(key.toString() in ['run_id', 'stage', 'level', 'annotation_level'])
         }
         .collect { key, value ->
             def cliKey = key.toString().replaceAll('_', '-')
@@ -41,7 +41,7 @@ process SIEVE_TRAIN_SINGLE {
         --preprocessed-data ${preprocessed} \
         --sex-map ${sex_map} \
         --output-dir train_output \
-        --annotation-level ${level} \
+        --level ${level} \
         --val-split ${val_split} \
         ${trainParamArgs} \
         ${args}

@@ -190,8 +190,8 @@ workflow SIEVE {
                 }
 
             ch_grid_train_input = ch_grid_specs
-                .join(ch_preprocessed_keyed, by: 0)
-                .join(ch_sex_map_keyed, by: 0)
+                .combine(ch_preprocessed_keyed, by: 0)
+                .combine(ch_sex_map_keyed, by: 0)
                 .map { _key, meta, grid_params, level, val_split, preprocessed, sex_map ->
                     tuple(meta, preprocessed, sex_map, grid_params, level, val_split)
                 }
@@ -309,9 +309,9 @@ workflow SIEVE {
             }
 
         ch_ablation_train_input = ch_ablation_specs
-            .join(ch_preprocessed_keyed, by: 0)
-            .join(ch_sex_map_keyed, by: 0)
-            .join(ch_best_params_map_keyed, by: 0)
+            .combine(ch_preprocessed_keyed, by: 0)
+            .combine(ch_sex_map_keyed, by: 0)
+            .combine(ch_best_params_map_keyed, by: 0)
             .map { _key, meta, level, val_split, preprocessed, sex_map, best_params_map ->
                 def ablationParams = new LinkedHashMap(baseTrainingParams)
                 ablationParams.putAll(best_params_map instanceof Map ? best_params_map : [:])

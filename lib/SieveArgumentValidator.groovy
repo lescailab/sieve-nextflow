@@ -1,4 +1,5 @@
 import java.nio.file.Files
+import java.nio.file.Path
 import nextflow.file.FileHelper
 
 class SieveArgumentValidator {
@@ -137,9 +138,16 @@ class SieveArgumentValidator {
             return false
         }
         try {
-            return Files.exists(FileHelper.asPath(pathLike.toString()))
+            return Files.exists(asNioPath(pathLike))
         } catch (Exception ignored) {
             return false
         }
+    }
+
+    private static Path asNioPath(pathLike) {
+        if (pathLike instanceof Path) {
+            return (Path) pathLike
+        }
+        return FileHelper.asPath(pathLike.toString())
     }
 }

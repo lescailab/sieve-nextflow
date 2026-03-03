@@ -17,6 +17,8 @@ null/
 .agent*
 agent*
 claude*
+CLAUDE*
 .claude*
 .codex*
 codex*
+*PIPELINE.md

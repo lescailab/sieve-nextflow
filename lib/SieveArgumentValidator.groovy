@@ -1,7 +1,3 @@
-import java.nio.file.Files
-import java.nio.file.Path
-import nextflow.file.FileHelper
-
 class SieveArgumentValidator {
 
     static void validateSieveArguments(
@@ -138,16 +134,16 @@ class SieveArgumentValidator {
             return false
         }
         try {
-            return Files.exists(asNioPath(pathLike))
+            return java.nio.file.Files.exists(asNioPath(pathLike))
         } catch (Exception ignored) {
             return false
         }
     }
 
-    private static Path asNioPath(pathLike) {
-        if (pathLike instanceof Path) {
-            return (Path) pathLike
+    private static asNioPath(pathLike) {
+        if (pathLike instanceof java.nio.file.Path) {
+            return pathLike
         }
-        return FileHelper.asPath(pathLike.toString())
+        return nextflow.file.FileHelper.asPath(pathLike.toString())
     }
 }

@@ -15,7 +15,9 @@ repos:
               .*ro-crate-metadata.json$|
               modules/nf-core/.*|
               subworkflows/nf-core/.*|
-              .*\.snap$
+              .*\.snap$|
+              assets/testdata/.*|
+              modules/local/sieve/train_single/meta\.yml$
           )$
       - id: end-of-file-fixer
         exclude: |
@@ -23,5 +25,7 @@ repos:
               .*ro-crate-metadata.json$|
               modules/nf-core/.*|
               subworkflows/nf-core/.*|
-              .*\.snap$
+              .*\.snap$|
+              assets/testdata/.*|
+              modules/local/sieve/train_single/meta\.yml$
           )$

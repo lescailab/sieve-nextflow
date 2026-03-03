@@ -12,6 +12,9 @@ nextflow_process {
     test("summarize ablation runs across levels") {
 
         when {
+            params {
+                outdir = "$outputDir"
+            }
             process {
                 """
                 input[0] = [ id: 'cohort' ]
@@ -37,7 +40,8 @@ nextflow_process {
                     def summaryYaml = new File(process.out.ablation_summary.get(0).get(2).toString()).text
                     assert summaryYaml.contains("best_level: L3")
                 },
-                { assert process.out.versions }
+                { assert process.out.versions },
+                { assert snapshot(process.out.versions).match("versions") }
             )
         }
     }

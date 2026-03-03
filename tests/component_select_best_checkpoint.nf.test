@@ -12,6 +12,9 @@ nextflow_process {
     test("select best checkpoint from fold metrics") {
 
         when {
+            params {
+                outdir = "$outputDir"
+            }
             process {
                 """
                 input[0] = [
@@ -39,7 +42,8 @@ nextflow_process {
                     def summaryRows = new File(process.out.best_checkpoint.get(0).get(4).toString()).readLines()
                     assert summaryRows.size() == 3
                 },
-                { assert process.out.versions }
+                { assert process.out.versions },
+                { assert snapshot(process.out.versions).match("versions") }
             )
         }
     }

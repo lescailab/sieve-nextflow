@@ -55,7 +55,7 @@ output:
       - - meta:
             type: map
             description: Metadata map with run identifier
-        - "*_selection_payload":
+        - '*_selection_payload':
             type: directory
             description: Deterministic directory with results and config for ranking modules
   - versions:

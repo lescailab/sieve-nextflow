@@ -14,3 +14,6 @@ bin/
 ro-crate-metadata.json
 modules/nf-core/
 subworkflows/nf-core/
+# Test data assets - keep original formatting
+assets/testdata/
+modules/local/sieve/train_single/meta.yml

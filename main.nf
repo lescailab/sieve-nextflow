@@ -55,11 +55,23 @@ workflow {
 
     main:
 
+    //
+    // Extract positional arguments from command line for nf-core template checks
+    // In strict syntax mode, we parse workflow.commandLine to detect accidental positional args
+    //
+    def cmdLine = workflow.commandLine.toString()
+    def tokens = cmdLine.tokenize(' ')
+    def runIdx = tokens.indexOf('run')
+    // Filter tokens: skip 'nextflow', 'run', the script name, flags/options, and assignments
+    def cli_args = tokens.indexed().findAll { idx, token ->
+        idx > runIdx + 1 && !token.startsWith('-') && !token.contains('=')
+    }.collect { idx, token -> token }
+
     PIPELINE_INITIALISATION(
         params.version,
         params.validate_params,
         params.monochrome_logs,
-        args,
+        cli_args,
         params.outdir,
         params.vcf,
         params.phenotypes,

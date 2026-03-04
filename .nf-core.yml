@@ -17,6 +17,10 @@ lint:
     - conf/igenomes.config
     - conf/igenomes_ignored.config
     - assets/multiqc_config.yml
+  nextflow_config:
+    - manifest.name
+    - manifest.homePage
+  nf_test_content: false
 
 template:
   org: nf-core

@@ -12,6 +12,9 @@ nextflow_process {
     test("select best params with metric tie-breaking") {
 
         when {
+            params {
+                outdir = "$outputDir"
+            }
             process {
                 """
                 input[0] = [ id: 'cohort' ]
@@ -40,7 +43,8 @@ nextflow_process {
                     def summaryRows = new File(process.out.best_params.get(0).get(3).toString()).readLines()
                     assert summaryRows.size() == 4
                 },
-                { assert process.out.versions }
+                { assert process.out.versions },
+                { assert snapshot(process.out.versions).match("versions") }
             )
         }
     }

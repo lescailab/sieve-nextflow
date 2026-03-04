@@ -32,11 +32,11 @@ workflow SIEVE {
 
     main:
 
-    ch_versions = Channel.empty()
-    ch_plot_sources = Channel.empty()
+    ch_versions = channel.empty()
+    ch_plot_sources = channel.empty()
 
     def cohortMeta = [id: params.cohort_id ?: 'cohort']
-    def ch_selection_meta = Channel.value([id: cohortMeta.id])
+    def ch_selection_meta = channel.value([id: cohortMeta.id])
 
     def selectedSteps = SieveStepUtils.resolveExecuteSteps(params.execute_step)
     log.info("Executing SIEVE steps: ${selectedSteps.join(', ')}")
@@ -63,11 +63,11 @@ workflow SIEVE {
     def needPreprocessed = targetPreprocess || needBestParams || needExplain || (needBestCheckpoint && !useProvidedBestCheckpoint)
     def needSexMap = targetSex || needBestParams || (needPreprocessed && !useProvidedPreprocessed)
 
-    ch_effective_sex_map = Channel.empty()
+    ch_effective_sex_map = channel.empty()
 
     if (needSexMap) {
         if (useProvidedSexMap) {
-            ch_effective_sex_map = Channel.value(
+            ch_effective_sex_map = channel.value(
                 tuple(
                     cohortMeta,
                     file(params.sex_map, checkIfExists: true)
@@ -78,7 +78,7 @@ workflow SIEVE {
                 error('The selected steps require a sex map. Provide --sex_map or set --infer_sex true.')
             }
 
-            ch_vcf_for_sex = Channel
+            ch_vcf_for_sex = channel
                 .fromPath(params.vcf, checkIfExists: true)
                 .map { vcf -> tuple(cohortMeta, vcf) }
 
@@ -92,22 +92,22 @@ workflow SIEVE {
         }
     }
 
-    ch_preprocessed = Channel.empty()
+    ch_preprocessed = channel.empty()
 
     if (needPreprocessed) {
         if (useProvidedPreprocessed) {
-            ch_preprocessed = Channel.value(
+            ch_preprocessed = channel.value(
                 tuple(
                     cohortMeta,
                     file(params.preprocessed_data, checkIfExists: true)
                 )
             )
         } else {
-            ch_vcf_for_preprocess = Channel
+            ch_vcf_for_preprocess = channel
                 .fromPath(params.vcf, checkIfExists: true)
                 .map { vcf -> tuple(cohortMeta, vcf) }
 
-            ch_phenotypes = Channel
+            ch_phenotypes = channel
                 .fromPath(params.phenotypes, checkIfExists: true)
                 .map { phenotypes -> tuple(cohortMeta, phenotypes) }
 
@@ -149,19 +149,19 @@ workflow SIEVE {
         num_attention_layers: params.train_num_attention_layers as Integer,
     ].findAll { _key, value -> value != null }
 
-    ch_best_params_path_keyed = Channel.empty()
-    ch_best_params_map_keyed = Channel.empty()
+    ch_best_params_path_keyed = channel.empty()
+    ch_best_params_map_keyed = channel.empty()
 
     if (needBestParams) {
         if (useProvidedBestParams) {
-            ch_best_params_path_keyed = Channel.value(
+            ch_best_params_path_keyed = channel.value(
                 tuple(
                     cohortMeta.id,
                     file(params.best_params, checkIfExists: true)
                 )
             )
         } else if (useProvidedBestCheckpoint) {
-            ch_best_params_path_keyed = Channel.value(
+            ch_best_params_path_keyed = channel.value(
                 tuple(
                     cohortMeta.id,
                     file(params.checkpoint_config, checkIfExists: true)
@@ -177,7 +177,7 @@ workflow SIEVE {
                 params.grid_num_attention_layers
             )
 
-            ch_grid_specs = Channel
+            ch_grid_specs = channel
                 .fromList(trainingGrid)
                 .map { grid_params ->
                     tuple(
@@ -219,12 +219,12 @@ workflow SIEVE {
         }
     }
 
-    ch_best_checkpoint_keyed = Channel.empty()
-    ch_published_best_model = Channel.empty()
+    ch_best_checkpoint_keyed = channel.empty()
+    ch_published_best_model = channel.empty()
 
     if (needBestCheckpoint) {
         if (useProvidedBestCheckpoint) {
-            ch_best_checkpoint_keyed = Channel.value(
+            ch_best_checkpoint_keyed = channel.value(
                 tuple(
                     cohortMeta.id,
                     file(params.best_checkpoint, checkIfExists: true),
@@ -236,7 +236,7 @@ workflow SIEVE {
                 [checkpoint, config]
             }
         } else {
-            ch_cv_spec = Channel.value(
+            ch_cv_spec = channel.value(
                 tuple(
                     cohortMeta.id,
                     [id: cohortMeta.id, run_id: 'cv_main', stage: 'cv', level: params.default_train_level],
@@ -270,9 +270,9 @@ workflow SIEVE {
         }
     }
 
-    ch_real_rankings = Channel.empty()
-    ch_real_variant_keyed = Channel.empty()
-    ch_published_explainability_best = Channel.empty()
+    ch_real_rankings = channel.empty()
+    ch_real_variant_keyed = channel.empty()
+    ch_published_explainability_best = channel.empty()
 
     if (needExplain) {
         ch_explain_real_input = ch_best_checkpoint_keyed
@@ -294,10 +294,10 @@ workflow SIEVE {
         }
     }
 
-    ch_published_ablation_discovery = Channel.empty()
+    ch_published_ablation_discovery = channel.empty()
 
     if (targetAblation) {
-        ch_ablation_specs = Channel
+        ch_ablation_specs = channel
             .fromList(['L0', 'L1', 'L2', 'L3'])
             .map { level ->
                 tuple(
@@ -344,9 +344,9 @@ workflow SIEVE {
             )
     }
 
-    ch_published_null_model = Channel.empty()
-    ch_published_null_comparison = Channel.empty()
-    ch_published_null_comparison_sex_fixed = Channel.empty()
+    ch_published_null_model = channel.empty()
+    ch_published_null_comparison = channel.empty()
+    ch_published_null_comparison_sex_fixed = channel.empty()
 
     if (targetNull) {
         ch_null_baseline_input = ch_preprocessed_keyed.map { cohort_id, preprocessed ->
@@ -360,7 +360,7 @@ workflow SIEVE {
             tuple(meta.id, preprocessed_null)
         }
 
-        ch_null_train_spec = Channel.value(
+        ch_null_train_spec = channel.value(
             tuple(
                 cohortMeta.id,
                 [id: cohortMeta.id, run_id: 'null_train', stage: 'null_baseline', level: params.default_train_level],
@@ -463,7 +463,7 @@ workflow SIEVE {
             )
     }
 
-    ch_published_explainability_analysis = Channel.empty()
+    ch_published_explainability_analysis = channel.empty()
 
     if (targetEpistasis) {
         ch_nonempty_interactions_keyed = ch_real_rankings
@@ -515,7 +515,7 @@ workflow SIEVE {
         )
     }
 
-    ch_published_plots = Channel.empty()
+    ch_published_plots = channel.empty()
 
     if (targetPlots) {
         ch_plot_sources_list = ch_plot_sources.collect()

@@ -1,7 +1,3 @@
-import java.nio.file.Files
-import java.nio.file.Path
-import nextflow.file.FileHelper
-
 class SieveTrainingUtils {
 
     static Map extractTrainingParams(configPath) {
@@ -29,7 +25,7 @@ class SieveTrainingUtils {
         def yaml = new org.yaml.snakeyaml.Yaml()
         def parsed
         def resolvedPath = asNioPath(configPath)
-        Files.newInputStream(resolvedPath).withCloseable { inputStream ->
+        java.nio.file.Files.newInputStream(resolvedPath).withCloseable { inputStream ->
             parsed = yaml.load(inputStream)
         }
         parsed = parsed instanceof Map ? parsed : [:]
@@ -51,11 +47,11 @@ class SieveTrainingUtils {
         return trainingParams
     }
 
-    private static Path asNioPath(pathLike) {
-        if (pathLike instanceof Path) {
-            return (Path) pathLike
+    private static asNioPath(pathLike) {
+        if (pathLike instanceof java.nio.file.Path) {
+            return pathLike
         }
-        return FileHelper.asPath(pathLike.toString())
+        return nextflow.file.FileHelper.asPath(pathLike.toString())
     }
 
     static List buildTrainingGrid(baseTrainParams, lrValues, lambdaAttrValues, latentDimValues, hiddenDimValues, layerValues) {

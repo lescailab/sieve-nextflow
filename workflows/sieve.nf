@@ -19,6 +19,8 @@ include { SIEVE_VALIDATE_DISCOVERIES } from '../modules/local/sieve/validate_dis
 include { SIEVE_SELECT_BEST_PARAMS } from '../modules/local/sieve/select_best_params/main'
 include { SIEVE_SELECT_BEST_CHECKPOINT } from '../modules/local/sieve/select_best_checkpoint/main'
 include { SIEVE_ABLATION_COMPARE } from '../modules/local/sieve/ablation_compare/main'
+include { SIEVE_EXPLAIN as SIEVE_EXPLAIN_ABLATION } from '../modules/local/sieve/explain/main'
+include { SIEVE_ABLATION_RANKING_COMPARE } from '../modules/local/sieve/ablation_ranking_compare/main'
 include { SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS } from '../modules/local/sieve/filter_sex_chrom_attributions/main'
 include { SIEVE_COLLECT_PLOTS } from '../modules/local/sieve/collect_plots/main'
 
@@ -57,7 +59,7 @@ workflow SIEVE {
     def useProvidedBestParams = params.best_params as boolean
     def useProvidedBestCheckpoint = (params.best_checkpoint && params.checkpoint_config) as boolean
 
-    def needExplain = targetExplain || targetEpistasis || targetValidation || targetNull
+    def needExplain = targetExplain || targetEpistasis || targetValidation || targetNull || targetAblation
     def needBestCheckpoint = targetCv || needExplain
     def needBestParams = targetGrid || targetAblation || targetNull || (needBestCheckpoint && !useProvidedBestCheckpoint)
     def needPreprocessed = targetPreprocess || needBestParams || needExplain || (needBestCheckpoint && !useProvidedBestCheckpoint)
@@ -297,8 +299,9 @@ workflow SIEVE {
     ch_published_ablation_discovery = channel.empty()
 
     if (targetAblation) {
+        // Train only L0-L2 from scratch; L3 reuses the best checkpoint via explain
         ch_ablation_specs = channel
-            .fromList(['L0', 'L1', 'L2', 'L3'])
+            .fromList(['L0', 'L1', 'L2'])
             .map { level ->
                 tuple(
                     cohortMeta.id,
@@ -323,6 +326,7 @@ workflow SIEVE {
         ch_versions = ch_versions.mix(SIEVE_TRAIN_SINGLE_ABLATION.out.versions)
         ch_plot_sources = ch_plot_sources.mix(SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload.map { _meta, run_dir -> run_dir })
 
+        // Metrics comparison: collect L0-L2 selection payloads for ABLATION_COMPARE
         ch_ablation_selection_dirs = SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload
             .map { _meta, run_dir -> run_dir }
             .collect()
@@ -333,6 +337,58 @@ workflow SIEVE {
         )
         ch_versions = ch_versions.mix(SIEVE_ABLATION_COMPARE.out.versions)
 
+        // Run explainability on each ablation model (L0-L2)
+        ch_ablation_explain_input = SIEVE_TRAIN_SINGLE_ABLATION.out.train_artifacts
+            .map { meta, _results, config, checkpoint ->
+                tuple(meta, checkpoint, config)
+            }
+            .combine(ch_preprocessed_keyed.map { _cohort_id, preprocessed -> preprocessed }.first())
+            .map { meta, checkpoint, config, preprocessed ->
+                tuple(
+                    [id: meta.id, run_id: "explain_ablation_${meta.level}", stage: 'ablation', level: meta.level],
+                    checkpoint,
+                    config,
+                    preprocessed,
+                    false
+                )
+            }
+
+        SIEVE_EXPLAIN_ABLATION(ch_ablation_explain_input)
+        ch_versions = ch_versions.mix(SIEVE_EXPLAIN_ABLATION.out.versions)
+
+        // Collect L0-L2 rankings and rename with level prefix
+        ch_ablation_L0L2_rankings = SIEVE_EXPLAIN_ABLATION.out.rankings
+            .map { meta, variant_rankings, gene_rankings, _interactions ->
+                tuple(meta.level, variant_rankings, gene_rankings)
+            }
+
+        // L3 rankings come from the explain_real output on the best checkpoint
+        ch_ablation_L3_rankings = ch_real_rankings
+            .map { _meta, variant_rankings, gene_rankings, _interactions ->
+                tuple('L3', variant_rankings, gene_rankings)
+            }
+
+        // Merge all levels and collect ranking files with level prefixes
+        ch_all_ablation_ranking_files = ch_ablation_L0L2_rankings
+            .mix(ch_ablation_L3_rankings)
+            .flatMap { level, variant_rankings, gene_rankings ->
+                [[level, 'variant', variant_rankings], [level, 'gene', gene_rankings]]
+            }
+            .map { level, kind, rankings_file ->
+                ["${level}_sieve_${kind}_rankings.csv", rankings_file]
+            }
+            .collectFile { label, source_file ->
+                [label, source_file]
+            }
+            .collect()
+
+        SIEVE_ABLATION_RANKING_COMPARE(
+            ch_selection_meta,
+            ch_all_ablation_ranking_files
+        )
+        ch_versions = ch_versions.mix(SIEVE_ABLATION_RANKING_COMPARE.out.versions)
+
+        // Publish: metrics summary + ranking comparison + per-level explain outputs
         ch_published_ablation_discovery = SIEVE_ABLATION_COMPARE.out.ablation_summary
             .map { _meta, ablation_tsv, ablation_yaml ->
                 [ablation_tsv, ablation_yaml]
@@ -340,6 +396,16 @@ workflow SIEVE {
             .mix(
                 SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload.map { _meta, run_dir ->
                     run_dir
+                }
+            )
+            .mix(
+                SIEVE_ABLATION_RANKING_COMPARE.out.ranking_comparison.map { _meta, comparison_yaml, jaccard_tsv, level_specific_tsv ->
+                    [comparison_yaml, jaccard_tsv, level_specific_tsv]
+                }
+            )
+            .mix(
+                SIEVE_EXPLAIN_ABLATION.out.explain_dir.map { _meta, explain_dir ->
+                    explain_dir
                 }
             )
     }

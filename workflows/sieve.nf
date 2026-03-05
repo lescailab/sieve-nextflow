@@ -592,9 +592,19 @@ workflow SIEVE {
         )
         ch_versions = ch_versions.mix(SIEVE_COLLECT_PLOTS.out.versions)
 
-        ch_published_plots = SIEVE_COLLECT_PLOTS.out.plot_bundle.map { _meta, plots_dir, plots_manifest ->
-            [plots_dir, plots_manifest]
-        }
+        ch_published_plots = SIEVE_COLLECT_PLOTS.out.plot_bundle
+            .flatMap { _meta, plots_dir, plots_manifest ->
+                def published = []
+                if (plots_dir instanceof Collection) {
+                    published.addAll(plots_dir)
+                } else if (plots_dir != null) {
+                    published << plots_dir
+                }
+                if (plots_manifest != null) {
+                    published << plots_manifest
+                }
+                published
+            }
     }
 
     NfcoreTemplateUtils.softwareVersionsToYAML(ch_versions, workflow)

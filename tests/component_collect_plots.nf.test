@@ -1,0 +1,48 @@
+def componentFixtures = new File("assets/testdata/component_fixtures").canonicalPath
+
+nextflow_process {
+
+    name "Test Process SIEVE_COLLECT_PLOTS"
+    script "../modules/local/sieve/collect_plots/main.nf"
+    process "SIEVE_COLLECT_PLOTS"
+    config "./component_process.config"
+    tag "components"
+    tag "collect_plots"
+
+    test("emit placeholder bundle when no plot files exist") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [ id: 'cohort' ]
+                input[1] = [
+                    file('${componentFixtures}/ablation/ablation_L0_selection_payload', checkIfExists: true),
+                    file('${componentFixtures}/ablation/ablation_L1_selection_payload', checkIfExists: true),
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.plot_bundle != null },
+                {
+                    def plotBundle = process.out.plot_bundle.get(0)
+                    def plotsDir = new File(plotBundle.get(1).toString())
+                    assert plotsDir.isDirectory()
+                    assert new File(plotsDir, '0000__no_plots_found.txt').exists()
+                },
+                {
+                    def manifestRows = new File(process.out.plot_bundle.get(0).get(2).toString()).readLines()
+                    assert manifestRows.size() == 1
+                    assert manifestRows.get(0) == 'source_root\tsource_file\tpublished_plot'
+                },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

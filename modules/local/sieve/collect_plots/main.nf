@@ -53,6 +53,10 @@ for source in source_items:
     elif source.is_file() and source.suffix.lower() in plot_exts:
         emit_plot(source, source.parent)
 
+if counter == 0:
+    placeholder = plots_dir / '0000__no_plots_found.txt'
+    placeholder.write_text('No plot files were found in the provided sources.\\n', encoding='utf-8')
+
 with open('plots_manifest.tsv', 'w', newline='', encoding='utf-8') as handle:
     writer = csv.writer(handle, delimiter='\\t')
     writer.writerow(['source_root', 'source_file', 'published_plot'])

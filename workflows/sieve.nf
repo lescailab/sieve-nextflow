@@ -342,7 +342,7 @@ workflow SIEVE {
             .map { meta, _results, config, checkpoint ->
                 tuple(meta, checkpoint, config)
             }
-            .combine(ch_preprocessed_keyed.map { _cohort_id, preprocessed -> preprocessed }.first())
+            .combine(ch_preprocessed_keyed.map { _cohort_id, preprocessed -> preprocessed })
             .map { meta, checkpoint, config, preprocessed ->
                 tuple(
                     [id: meta.id, run_id: "explain_ablation_${meta.level}", stage: 'ablation', level: meta.level],

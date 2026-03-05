@@ -65,7 +65,7 @@ workflow {
     // Filter tokens: skip 'nextflow', 'run', the script name, flags/options, and assignments
     def cli_args = tokens.indexed().findAll { idx, token ->
         idx > runIdx + 1 && !token.startsWith('-') && !token.contains('=')
-    }.collect { idx, token -> token }
+    }.collect { _idx, token -> token }
 
     PIPELINE_INITIALISATION(
         params.version,

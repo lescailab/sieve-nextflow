@@ -18,7 +18,7 @@ process SIEVE_COLLECT_PLOTS {
 
     script:
     def plotSources = plot_sources instanceof List ? plot_sources : [plot_sources]
-    def sourceList = plotSources.collect { it.toString() }.join('\n')
+    def sourceList = plotSources.collect { source -> source.toString() }.join('\n')
     """
     mkdir -p plots
 

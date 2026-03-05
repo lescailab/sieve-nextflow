@@ -18,7 +18,7 @@ process SIEVE_ABLATION_COMPARE {
 
     script:
     def runDirs = run_dirs instanceof List ? run_dirs : [run_dirs]
-    def runDirArgs = runDirs.collect { "--run-dir '${it}'" }.join(' ')
+    def runDirArgs = runDirs.collect { dir -> "--run-dir '${dir}'" }.join(' ')
     """
     ablation_compare.py \
         ${runDirArgs} \

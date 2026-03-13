@@ -56,7 +56,7 @@ END_VERSIONS
     mkdir -p infer_sex_diagnostics
 
     cat <<'EOF_STUB_SEX' > sample_sex.tsv
-sample_id	sex
+sample_id	inferred_sex
 sampleA	female
 sampleB	male
 EOF_STUB_SEX

@@ -82,7 +82,12 @@ workflow SIEVE {
 
             ch_vcf_for_sex = channel
                 .fromPath(params.vcf, checkIfExists: true)
-                .map { vcf -> tuple(cohortMeta, vcf) }
+                .map { vcf ->
+                    def idx = file("${vcf}.tbi").exists() ? file("${vcf}.tbi") :
+                              file("${vcf}.csi").exists() ? file("${vcf}.csi") :
+                              []
+                    tuple(cohortMeta, vcf, idx)
+                }
 
             SIEVE_INFER_SEX(
                 ch_vcf_for_sex,

@@ -6,7 +6,7 @@ process SIEVE_INFER_SEX {
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:f8e7db75b531e7d4' : 'ghcr.io/lescailab/sieve-container:f8e7db75b531e7d4'}"
 
     input:
-    tuple val(meta), path(vcf)
+    tuple val(meta), path(vcf), path(vcf_index)
     val genome_build
 
     output:

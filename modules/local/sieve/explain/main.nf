@@ -4,7 +4,7 @@ process SIEVE_EXPLAIN {
     label 'process_gpu'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:f8e7db75b531e7d4' : 'ghcr.io/lescailab/sieve-container:f8e7db75b531e7d4'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
 
     input:
     tuple val(meta), path(checkpoint), path(config), path(preprocessed), val(is_null_baseline)

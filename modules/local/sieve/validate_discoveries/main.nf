@@ -3,7 +3,7 @@ process SIEVE_VALIDATE_DISCOVERIES {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:f8e7db75b531e7d4' : 'ghcr.io/lescailab/sieve-container:f8e7db75b531e7d4'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
 
     input:
     tuple val(meta), path(variant_rankings), path(gene_rankings), val(clinvar_tsv), val(gwas_tsv), val(go_mapping_json)

@@ -3,7 +3,7 @@ process SIEVE_COMPARE_ATTRIBUTIONS {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:f8e7db75b531e7d4' : 'ghcr.io/lescailab/sieve-container:f8e7db75b531e7d4'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
 
     input:
     tuple val(meta), path(real_variant_rankings, stageAs: 'real/sieve_variant_rankings.csv'), path(null_variant_rankings, stageAs: 'null/sieve_variant_rankings.csv')

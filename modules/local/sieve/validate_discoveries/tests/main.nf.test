@@ -1,0 +1,39 @@
+nextflow_process {
+
+    name "Test Process SIEVE_VALIDATE_DISCOVERIES"
+    script "../main.nf"
+    process "SIEVE_VALIDATE_DISCOVERIES"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "validate_discoveries"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/test_biomart.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/test_gwas_simple.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_go.json", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.validation != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

@@ -4,6 +4,7 @@
 
 include { SIEVE_VALIDATE_DISCOVERIES } from '../../../modules/local/sieve/validate_discoveries/main'
 include { SIEVE_COLLECT_PLOTS        } from '../../../modules/local/sieve/collect_plots/main'
+include { resolveExecuteSteps } from '../../../lib/sieve_helpers'
 
 workflow VALIDATION {
 
@@ -21,7 +22,7 @@ workflow VALIDATION {
     ch_published_explainability_analysis = channel.empty()
     ch_published_plots = channel.empty()
 
-    def selectedSteps = SieveStepUtils.resolveExecuteSteps(params.execute_step)
+    def selectedSteps = resolveExecuteSteps(params.execute_step)
     def targetValidation = selectedSteps.contains('validation')
     def targetPlots = selectedSteps.contains('plots')
 

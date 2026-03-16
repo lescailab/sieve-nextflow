@@ -10,8 +10,7 @@ process SIEVE_CREATE_NULL_BASELINE {
 
     output:
     tuple val(meta), path('preprocessed_NULL.pt'), emit: null_preprocessed
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

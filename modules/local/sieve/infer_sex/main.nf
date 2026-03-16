@@ -12,8 +12,7 @@ process SIEVE_INFER_SEX {
     output:
     tuple val(meta), path('sample_sex.tsv'), emit: sex_map
     tuple val(meta), path('infer_sex_diagnostics/*'), optional: true, emit: diagnostics
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

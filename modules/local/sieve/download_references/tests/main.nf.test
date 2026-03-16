@@ -1,0 +1,33 @@
+nextflow_process {
+
+    name "Test Process SIEVE_DOWNLOAD_REFERENCES"
+    script "../main.nf"
+    process "SIEVE_DOWNLOAD_REFERENCES"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "download_references"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [ id: 'cohort' ]
+input[1] = 'GRCh38'
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.references != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

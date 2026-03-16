@@ -1,0 +1,36 @@
+nextflow_process {
+
+    name "Test Process SIEVE_SELECT_BEST_CHECKPOINT"
+    script "../main.nf"
+    process "SIEVE_SELECT_BEST_CHECKPOINT"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "select_best_checkpoint"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/component_fixtures/cv/cv_output", checkIfExists: true),
+    file("${projectDir}/assets/testdata/component_fixtures/cv/cv_results.yaml", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.best_checkpoint != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

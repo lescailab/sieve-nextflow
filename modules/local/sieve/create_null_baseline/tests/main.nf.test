@@ -1,0 +1,36 @@
+nextflow_process {
+
+    name "Test Process SIEVE_CREATE_NULL_BASELINE"
+    script "../main.nf"
+    process "SIEVE_CREATE_NULL_BASELINE"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "create_null_baseline"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true),
+    42
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.null_preprocessed != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

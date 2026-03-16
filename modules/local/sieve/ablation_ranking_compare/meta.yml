@@ -1,41 +1,50 @@
-name: "sieve_ablation_ranking_compare"
+name: sieve_ablation_ranking_compare
 description: Compare variant attribution rankings across annotation levels L0-L3.
 keywords:
-  - sieve
-  - ablation
-  - variant ranking
-  - Jaccard similarity
-  - level-specific variants
+- sieve
+- ablation
+- variant ranking
+- Jaccard similarity
+- level-specific variants
 tools:
-  - ablation_ranking_compare.py:
-      description: Compare variant rankings across ablation levels.
-      homepage: https://github.com/lescailab/sieve-nextflow
-      documentation: https://github.com/lescailab/sieve-nextflow
-      licence: ["MIT"]
+- ablation_ranking_compare.py:
+    description: Compare variant rankings across ablation levels.
+    homepage: https://github.com/lescailab/sieve-nextflow
+    documentation: https://github.com/lescailab/sieve-nextflow
+    licence:
+    - MIT
 input:
+- - meta:
+      type: map
+      description: Cohort-level metadata map
+- - ranking_files:
+      type: file
+      description: Variant ranking CSV files from each ablation level (collected)
+output:
+  ranking_comparison:
   - - meta:
         type: map
         description: Cohort-level metadata map
-  - - ranking_files:
+    - ablation_ranking_comparison.yaml:
         type: file
-        description: Variant ranking CSV files from each ablation level (collected)
-output:
-  - ranking_comparison:
-      - - meta:
-            type: map
-            description: Cohort-level metadata map
-        - ablation_ranking_comparison.yaml:
-            type: file
-            description: YAML summary of ranking overlaps and level-specific variants
-        - ablation_jaccard_matrix.tsv:
-            type: file
-            description: Pairwise Jaccard similarity matrix across levels
-        - level_specific_variants.tsv:
-            type: file
-            description: Variants uniquely ranked highly at specific annotation levels
-  - versions:
-      - versions.yml:
-          type: file
-          description: Software versions used by the process
+        description: YAML summary of ranking overlaps and level-specific variants
+    - ablation_jaccard_matrix.tsv:
+        type: file
+        description: Pairwise Jaccard similarity matrix across levels
+    - level_specific_variants.tsv:
+        type: file
+        description: Variants uniquely ranked highly at specific annotation levels
+  versions: &1
+  - - "${task.process}":
+        type: string
+        description: The name of the process
+    - sieve:
+        type: string
+        description: The name of the tool
+    - 1.0.0:
+        type: string
+        description: The version of the tool
 authors:
-  - "@lescai"
+- "@lescai"
+topics:
+  versions: *1

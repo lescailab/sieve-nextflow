@@ -11,8 +11,7 @@ process SIEVE_VALIDATE_EPISTASIS {
 
     output:
     tuple val(meta), path('epistasis_validation.csv'), path('epistasis_output'), emit: epistasis
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

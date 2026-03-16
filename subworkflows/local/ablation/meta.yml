@@ -1,0 +1,42 @@
+name: ABLATION
+description: Train ablation models across annotation levels and compare their performance
+  and rankings.
+keywords:
+- sieve
+- ablation
+- training
+- rankings
+components:
+- sieve/train/single
+- sieve/explain
+- sieve/ablation/compare
+- sieve/ablation/ranking/compare
+input:
+- ch_selection_meta:
+    type: channel
+    description: Channel emitting cohort-level metadata maps.
+- ch_preprocessed_keyed:
+    type: channel
+    description: 'Channel of keyed preprocessed tensors. Structure: [ val(cohort_id),
+      path(preprocessed) ]'
+- ch_sex_map_keyed:
+    type: channel
+    description: 'Channel of keyed sex maps. Structure: [ val(cohort_id), path(sex_map)
+      ]'
+- ch_best_params_map_keyed:
+    type: channel
+    description: 'Channel of keyed hyperparameter maps. Structure: [ val(cohort_id),
+      val(params_map) ]'
+output:
+- published_ablation_discovery:
+    type: channel
+    description: Channel of files and directories published under the ablation output
+      tree.
+- versions:
+    type: channel
+    description: Channel of software version entries emitted by nested modules.
+- plot_sources:
+    type: channel
+    description: Channel of directories that may contain plots for downstream collection.
+authors:
+- "@lescai"

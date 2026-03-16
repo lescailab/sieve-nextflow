@@ -12,8 +12,7 @@ process SIEVE_TRAIN_CV {
     output:
     tuple val(meta), path('cv_output'), path('cv_results.yaml'), emit: cv_bundle
     tuple val(meta), path('cv_output/fold_*'), emit: fold_dirs
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

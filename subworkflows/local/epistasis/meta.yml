@@ -1,0 +1,48 @@
+name: EPISTASIS
+description: Audit co-occurrence, validate epistasis, estimate power, and aggregate
+  gene interactions.
+keywords:
+- sieve
+- epistasis
+- cooccurrence
+- power
+components:
+- sieve/audit/cooccurrence
+- sieve/validate/epistasis
+- sieve/epistasis/power/analysis
+- sieve/aggregate/gene/interactions
+input:
+- ch_preprocessed:
+    type: channel
+    description: 'Channel of preprocessed tensors. Structure: [ val(meta), path(preprocessed)
+      ]'
+- ch_preprocessed_keyed:
+    type: channel
+    description: 'Keyed channel of preprocessed tensors. Structure: [ val(cohort_id),
+      path(preprocessed) ]'
+- ch_real_rankings:
+    type: channel
+    description: 'Channel of explainability ranking tuples. Structure: [ val(meta),
+      path(variant), path(gene), path(interactions) ]'
+- ch_best_checkpoint_keyed:
+    type: channel
+    description: 'Keyed channel of checkpoint/config tuples. Structure: [ val(cohort_id),
+      path(checkpoint), path(config) ]'
+- ch_null_attributions_npz:
+    type: channel
+    description: Optional channel containing null-attribution matrix files.
+- ch_null_variant_rankings:
+    type: channel
+    description: Optional channel containing null-model variant rankings.
+output:
+- published_explainability_analysis:
+    type: channel
+    description: Channel of published epistasis analysis artifacts.
+- versions:
+    type: channel
+    description: Channel of software version entries emitted by nested modules.
+- plot_sources:
+    type: channel
+    description: Channel of directories that may contain plots for downstream collection.
+authors:
+- "@lescai"

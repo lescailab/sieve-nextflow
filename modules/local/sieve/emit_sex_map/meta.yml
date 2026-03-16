@@ -1,33 +1,42 @@
-name: "sieve_emit_sex_map"
+name: sieve_emit_sex_map
 description: Materialize the effective sex map as a standardized output artifact.
 keywords:
-  - sieve
-  - sex map
-  - metadata
+- sieve
+- sex map
+- metadata
 tools:
-  - python:
-      description: Python scripting language
-      homepage: https://www.python.org
-      documentation: https://docs.python.org/3/
-      licence: ["PSF-2.0"]
+- python:
+    description: Python scripting language
+    homepage: https://www.python.org
+    documentation: https://docs.python.org/3/
+    licence:
+    - PSF-2.0
 input:
+- - meta:
+      type: map
+      description: Metadata map for the cohort
+  - sex_map:
+      type: file
+      description: Effective cohort sex map TSV
+output:
+  sex_map:
   - - meta:
         type: map
         description: Metadata map for the cohort
-    - sex_map:
+    - sample_sex.tsv:
         type: file
-        description: Effective cohort sex map TSV
-output:
-  - sex_map:
-      - - meta:
-            type: map
-            description: Metadata map for the cohort
-        - sample_sex.tsv:
-            type: file
-            description: Standardized sex map TSV used by downstream workflow outputs
-  - versions:
-      - versions.yml:
-          type: file
-          description: Software versions used by the process
+        description: Standardized sex map TSV used by downstream workflow outputs
+  versions: &1
+  - - "${task.process}":
+        type: string
+        description: The name of the process
+    - python:
+        type: string
+        description: The name of the tool
+    - '3.11':
+        type: string
+        description: The version of the tool
 authors:
-  - "@lescai"
+- "@lescai"
+topics:
+  versions: *1

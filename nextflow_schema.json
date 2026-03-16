@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/lescailab/sieve-nextflow/master/nextflow_schema.json",
+    "$id": "https://raw.githubusercontent.com/lescailab/sieve/master/nextflow_schema.json",
     "title": "lescailab/sieve pipeline parameters",
     "description": "Sparse Interpretable Exome Variant Explainer for case-control variant discovery.",
     "type": "object",

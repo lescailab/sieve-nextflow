@@ -1,0 +1,36 @@
+nextflow_process {
+
+    name "Test Process SIEVE_COLLECT_PLOTS"
+    script "../main.nf"
+    process "SIEVE_COLLECT_PLOTS"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "collect_plots"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [ id: 'cohort' ]
+input[1] = [
+    file("${projectDir}/assets/testdata/component_fixtures/ablation/ablation_L0_selection_payload", checkIfExists: true),
+    file("${projectDir}/assets/testdata/component_fixtures/ablation/ablation_L1_selection_payload", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.plot_bundle != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

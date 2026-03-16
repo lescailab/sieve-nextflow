@@ -1,0 +1,38 @@
+nextflow_process {
+
+    name "Test Process SIEVE_PREPROCESS"
+    script "../main.nf"
+    process "SIEVE_PREPROCESS"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "preprocess"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/small_test_data.vcf.gz", checkIfExists: true),
+    file("${projectDir}/assets/testdata/small_test_data_phenotypes.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/sex_map.tsv", checkIfExists: true)
+]
+input[1] = 'GRCh38'
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.preprocessed != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

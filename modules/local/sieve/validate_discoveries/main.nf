@@ -6,7 +6,7 @@ process SIEVE_VALIDATE_DISCOVERIES {
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
-    tuple val(meta), path(variant_rankings), path(gene_rankings), val(clinvar_tsv), val(gwas_tsv), val(go_mapping_json)
+    tuple val(meta), path(variant_rankings), path(gene_rankings), path(clinvar_tsv), path(gwas_tsv), path(go_mapping_json)
 
     output:
     tuple val(meta), path('validation_report.yaml'), path('validation_output'), emit: validation
@@ -18,13 +18,13 @@ process SIEVE_VALIDATE_DISCOVERIES {
     script:
     def args = task.ext.args ?: ''
     def advancedArgs = []
-    if (clinvar_tsv) {
+    if (clinvar_tsv.name != 'NO_FILE') {
         advancedArgs << "--clinvar ${clinvar_tsv}"
     }
-    if (gwas_tsv) {
+    if (gwas_tsv.name != 'NO_FILE2') {
         advancedArgs << "--gwas ${gwas_tsv}"
     }
-    if (go_mapping_json) {
+    if (go_mapping_json.name != 'NO_FILE3') {
         advancedArgs << "--go-mapping ${go_mapping_json}"
     }
     def advancedArgString = advancedArgs.join(' ')

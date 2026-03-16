@@ -3,7 +3,7 @@ process SIEVE_COMPARE_ATTRIBUTIONS {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
     tuple val(meta), path(real_variant_rankings, stageAs: 'real/sieve_variant_rankings.csv'), path(null_variant_rankings, stageAs: 'null/sieve_variant_rankings.csv')
@@ -20,7 +20,7 @@ process SIEVE_COMPARE_ATTRIBUTIONS {
     """
     mkdir -p comparison_output
 
-    sieve_cmd.sh compare_attributions \
+    sieve-compare-attributions \
         --real ${real_variant_rankings} \
         --null ${null_variant_rankings} \
         --output-dir comparison_output \
@@ -42,8 +42,7 @@ EOF_SUMMARY
 
     cp comparison_summary.yaml comparison_output/comparison_summary.yaml
 
-    sieve_version=\$(sieve_cmd.sh --version 2>/dev/null | head -n 1 || true)
-    [[ -z "\${sieve_version}" ]] && sieve_version="unknown"
+    sieve_version=\$(sieve-compare-attributions --version 2>/dev/null | head -n 1 || echo "unknown")
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

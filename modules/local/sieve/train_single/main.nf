@@ -4,7 +4,7 @@ process SIEVE_TRAIN_SINGLE {
     label 'process_gpu'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
     tuple val(meta), path(preprocessed), path(sex_map), val(train_params), val(level), val(val_split)
@@ -37,7 +37,7 @@ process SIEVE_TRAIN_SINGLE {
     """
     mkdir -p train_output
 
-    sieve_cmd.sh train \
+    sieve-train \
         --preprocessed-data ${preprocessed} \
         --sex-map ${sex_map} \
         --output-dir train_output \
@@ -68,8 +68,7 @@ process SIEVE_TRAIN_SINGLE {
     cp config.yaml ${runId}_selection_payload/config.yaml
     cp best_model.pt ${runId}_selection_payload/best_model.pt
 
-    sieve_version=\$(sieve_cmd.sh --version 2>/dev/null | head -n 1 || true)
-    [[ -z "\${sieve_version}" ]] && sieve_version="unknown"
+    sieve_version=\$(sieve-train --version 2>/dev/null | head -n 1 || echo "unknown")
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

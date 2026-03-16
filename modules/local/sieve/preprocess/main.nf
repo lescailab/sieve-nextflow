@@ -3,7 +3,7 @@ process SIEVE_PREPROCESS {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
     tuple val(meta), path(vcf), path(phenotypes), path(sex_map)
@@ -19,7 +19,7 @@ process SIEVE_PREPROCESS {
     script:
     def args = task.ext.args ?: ''
     """
-    sieve_cmd.sh preprocess \
+    sieve-preprocess \
         --vcf ${vcf} \
         --phenotypes ${phenotypes} \
         --output preprocessed.pt \
@@ -29,8 +29,7 @@ process SIEVE_PREPROCESS {
 
     [[ -f preprocessed.pt ]] || { echo "ERROR: preprocess did not create preprocessed.pt" >&2; exit 1; }
 
-    sieve_version=\$(sieve_cmd.sh --version 2>/dev/null | head -n 1 || true)
-    [[ -z "\${sieve_version}" ]] && sieve_version="unknown"
+    sieve_version=\$(sieve-preprocess --version 2>/dev/null | head -n 1 || echo "unknown")
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

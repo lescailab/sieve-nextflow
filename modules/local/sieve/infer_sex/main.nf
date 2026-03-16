@@ -3,7 +3,7 @@ process SIEVE_INFER_SEX {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
     tuple val(meta), path(vcf), path(vcf_index)
@@ -22,7 +22,7 @@ process SIEVE_INFER_SEX {
     """
     mkdir -p infer_sex_diagnostics
 
-    sieve_cmd.sh infer_sex \
+    sieve-infer-sex \
         --vcf ${vcf} \
         --output-dir infer_sex_diagnostics \
         --genome-build ${genome_build} \
@@ -42,8 +42,7 @@ process SIEVE_INFER_SEX {
 
     cp "\${sex_map_candidate}" sample_sex.tsv
 
-    sieve_version=\$(sieve_cmd.sh --version 2>/dev/null | head -n 1 || true)
-    [[ -z "\${sieve_version}" ]] && sieve_version="unknown"
+    sieve_version=\$(sieve-infer-sex --version 2>/dev/null | head -n 1 || echo "unknown")
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

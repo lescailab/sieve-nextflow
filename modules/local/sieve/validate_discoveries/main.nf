@@ -3,7 +3,7 @@ process SIEVE_VALIDATE_DISCOVERIES {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
     tuple val(meta), path(variant_rankings), path(gene_rankings), val(clinvar_tsv), val(gwas_tsv), val(go_mapping_json)
@@ -32,7 +32,7 @@ process SIEVE_VALIDATE_DISCOVERIES {
     """
     mkdir -p validation_output
 
-    sieve_cmd.sh validate_discoveries \
+    sieve-validate-discoveries \
         --variant-rankings ${variant_rankings} \
         --gene-rankings ${gene_rankings} \
         --output-dir validation_output \
@@ -53,8 +53,7 @@ EOF_VALIDATION
 
     cp validation_report.yaml validation_output/validation_report.yaml
 
-    sieve_version=\$(sieve_cmd.sh --version 2>/dev/null | head -n 1 || true)
-    [[ -z "\${sieve_version}" ]] && sieve_version="unknown"
+    sieve_version=\$(sieve-validate-discoveries --version 2>/dev/null | head -n 1 || echo "unknown")
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

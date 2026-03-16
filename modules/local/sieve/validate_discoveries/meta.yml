@@ -1,58 +1,58 @@
 name: sieve_validate_discoveries
 description: Validate SIEVE-discovered variants/genes against optional reference resources.
 keywords:
-- sieve
-- validation
-- clinvar
-- gwas
+  - sieve
+  - validation
+  - clinvar
+  - gwas
 tools:
-- sieve:
-    description: Sparse Interpretable Exome Variant Explainer
-    homepage: https://anaconda.org/lescailab/sieve
-    documentation: https://anaconda.org/lescailab/sieve
-    licence:
-    - MIT
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence:
+        - MIT
 input:
-- - meta:
-      type: map
-      description: Metadata map
-  - variant_rankings:
-      type: file
-      description: Variant ranking CSV from explainability
-  - gene_rankings:
-      type: file
-      description: Gene ranking CSV from explainability
-  - clinvar_tsv:
-      type: string
-      description: Optional ClinVar TSV path
-  - gwas_tsv:
-      type: string
-      description: Optional GWAS TSV path
-  - go_mapping_json:
-      type: string
-      description: Optional GO mapping JSON path
-output:
-  validation:
   - - meta:
         type: map
         description: Metadata map
-    - validation_report.yaml:
+    - variant_rankings:
         type: file
-        description: Discovery validation summary report
-    - validation_output:
-        type: directory
-        description: Full validation output directory
+        description: Variant ranking CSV from explainability
+    - gene_rankings:
+        type: file
+        description: Gene ranking CSV from explainability
+    - clinvar_tsv:
+        type: string
+        description: Optional ClinVar TSV path
+    - gwas_tsv:
+        type: string
+        description: Optional GWAS TSV path
+    - go_mapping_json:
+        type: string
+        description: Optional GO mapping JSON path
+output:
+  validation:
+    - - meta:
+          type: map
+          description: Metadata map
+      - validation_report.yaml:
+          type: file
+          description: Discovery validation summary report
+      - validation_output:
+          type: directory
+          description: Full validation output directory
   versions: &1
-  - - "${task.process}":
-        type: string
-        description: The name of the process
-    - sieve:
-        type: string
-        description: The name of the tool
-    - 1.0.0:
-        type: string
-        description: The version of the tool
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
 authors:
-- "@lescai"
+  - "@lescai"
 topics:
   versions: *1

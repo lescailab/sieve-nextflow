@@ -2,43 +2,43 @@ name: VALIDATION
 description: Validate discovered genes and variants against reference resources and
   collate plots.
 keywords:
-- sieve
-- validation
-- plots
-- references
+  - sieve
+  - validation
+  - plots
+  - references
 components:
-- sieve/validate/discoveries
-- sieve/collect/plots
-- resolveexecutesteps
+  - sieve/validate/discoveries
+  - sieve/collect/plots
+  - resolveexecutesteps
 input:
-- ch_selection_meta:
-    type: channel
-    description: Channel emitting cohort-level metadata maps.
-- ch_real_rankings:
-    type: channel
-    description: 'Channel of explainability ranking tuples. Structure: [ val(meta),
-      path(variant), path(gene), path(interactions) ]'
-- ch_ref_clinvar:
-    type: channel
-    description: Channel containing ClinVar reference resources.
-- ch_ref_gwas:
-    type: channel
-    description: Channel containing GWAS reference resources.
-- ch_ref_go_mapping:
-    type: channel
-    description: Channel containing GO mapping resources.
-- ch_plot_sources:
-    type: channel
-    description: Channel of files or directories that may contain plots.
+  - ch_selection_meta:
+      type: channel
+      description: Channel emitting cohort-level metadata maps.
+  - ch_real_rankings:
+      type: channel
+      description: "Channel of explainability ranking tuples. Structure: [ val(meta),
+        path(variant), path(gene), path(interactions) ]"
+  - ch_ref_clinvar:
+      type: channel
+      description: Channel containing ClinVar reference resources.
+  - ch_ref_gwas:
+      type: channel
+      description: Channel containing GWAS reference resources.
+  - ch_ref_go_mapping:
+      type: channel
+      description: Channel containing GO mapping resources.
+  - ch_plot_sources:
+      type: channel
+      description: Channel of files or directories that may contain plots.
 output:
-- published_explainability_analysis:
-    type: channel
-    description: Channel of published validation artifacts.
-- published_plots:
-    type: channel
-    description: Channel of published plot bundle artifacts.
-- versions:
-    type: channel
-    description: Channel of software version entries emitted by nested modules.
+  - published_explainability_analysis:
+      type: channel
+      description: Channel of published validation artifacts.
+  - published_plots:
+      type: channel
+      description: Channel of published plot bundle artifacts.
+  - versions:
+      type: channel
+      description: Channel of software version entries emitted by nested modules.
 authors:
-- "@lescai"
+  - "@lescai"

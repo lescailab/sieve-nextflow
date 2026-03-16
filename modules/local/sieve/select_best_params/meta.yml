@@ -2,51 +2,51 @@ name: sieve_select_best_params
 description: Deterministically select best SIEVE hyperparameters across grid-search
   runs.
 keywords:
-- sieve
-- hyperparameter selection
-- auc
-- accuracy
-- loss
+  - sieve
+  - hyperparameter selection
+  - auc
+  - accuracy
+  - loss
 tools:
-- select_best_train_params.py:
-    description: Utility script to rank SIEVE training runs by AUC, accuracy, and
-      loss.
-    homepage: https://github.com/lescailab/sieve-nextflow
-    documentation: https://github.com/lescailab/sieve-nextflow
-    licence:
-    - MIT
+  - select_best_train_params.py:
+      description: Utility script to rank SIEVE training runs by AUC, accuracy, and
+        loss.
+      homepage: https://github.com/lescailab/sieve-nextflow
+      documentation: https://github.com/lescailab/sieve-nextflow
+      licence:
+        - MIT
 input:
-- - meta:
-      type: map
-      description: Cohort-level metadata map
-- - run_dirs:
-      type: directory
-      description: Training run directories with results.yaml and config.yaml
-output:
-  best_params:
   - - meta:
         type: map
         description: Cohort-level metadata map
-    - best_params.yaml:
-        type: file
-        description: Selected hyperparameters YAML
-    - best_run_id.txt:
-        type: file
-        description: Identifier of the selected run
-    - train_grid_summary.tsv:
-        type: file
-        description: Summary of all grid runs and ranking metrics
+  - - run_dirs:
+        type: directory
+        description: Training run directories with results.yaml and config.yaml
+output:
+  best_params:
+    - - meta:
+          type: map
+          description: Cohort-level metadata map
+      - best_params.yaml:
+          type: file
+          description: Selected hyperparameters YAML
+      - best_run_id.txt:
+          type: file
+          description: Identifier of the selected run
+      - train_grid_summary.tsv:
+          type: file
+          description: Summary of all grid runs and ranking metrics
   versions: &1
-  - - "${task.process}":
-        type: string
-        description: The name of the process
-    - sieve:
-        type: string
-        description: The name of the tool
-    - 1.0.0:
-        type: string
-        description: The version of the tool
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
 authors:
-- "@lescai"
+  - "@lescai"
 topics:
   versions: *1

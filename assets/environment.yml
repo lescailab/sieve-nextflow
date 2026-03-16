@@ -1,8 +1,0 @@
-channels:
- - pytorch
- - nvidia
- - bioconda
- - conda-forge
- - lescailab
-dependencies:
-  - lescailab::sieve==1.0.0

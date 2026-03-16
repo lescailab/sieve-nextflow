@@ -4,7 +4,7 @@ process SIEVE_EXPLAIN {
     label 'process_gpu'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
     tuple val(meta), path(checkpoint), path(config), path(preprocessed), val(is_null_baseline)
@@ -23,7 +23,7 @@ process SIEVE_EXPLAIN {
     """
     mkdir -p explain_output
 
-    sieve_cmd.sh explain \
+    sieve-explain \
         --checkpoint ${checkpoint} \
         --config ${config} \
         --preprocessed-data ${preprocessed} \
@@ -63,8 +63,7 @@ EOF_INTERACTIONS
     cp sieve_gene_rankings.csv explain_output/sieve_gene_rankings.csv
     cp sieve_interactions.csv explain_output/sieve_interactions.csv
 
-    sieve_version=\$(sieve_cmd.sh --version 2>/dev/null | head -n 1 || true)
-    [[ -z "\${sieve_version}" ]] && sieve_version="unknown"
+    sieve_version=\$(sieve-explain --version 2>/dev/null | head -n 1 || echo "unknown")
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

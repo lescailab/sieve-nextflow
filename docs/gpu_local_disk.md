@@ -7,6 +7,7 @@ The `conf/gpu_local_disk.config` configuration disables Fusion virtual filesyste
 ## When to Use
 
 Use this configuration when:
+
 - Experiencing OOM (Out of Memory) errors on GPU nodes
 - GPU processes are killed unexpectedly
 - Heavy I/O operations are competing with GPU memory
@@ -42,12 +43,14 @@ includeConfig 'conf/gpu_local_disk.config'
 ## Trade-offs
 
 ### Benefits ✅
+
 - Reduced memory pressure (no Fusion caching in RAM)
 - Better I/O performance for large files
 - More predictable resource usage
 - Eliminates Fusion-related OOM issues
 
 ### Costs ⚠️
+
 - Higher network egress costs (files copied to/from GCS)
 - Longer stage-in/stage-out times for large files
 - Increased boot disk costs (500GB vs default 10GB)
@@ -55,12 +58,14 @@ includeConfig 'conf/gpu_local_disk.config'
 ## Performance Impact
 
 For the SIEVE explain process with:
+
 - 3.9GB preprocessed data
 - 1.5GB model checkpoint
 
 **With Fusion**: Files accessed via virtual filesystem, but can cause OOM if buffer caching uses too much RAM
 
-**With Local Disk**: 
+**With Local Disk**:
+
 - Stage-in: ~2-3 minutes to copy 5.4GB to local disk
 - Computation: Runs with full available RAM (no Fusion overhead)
 - Stage-out: ~1-2 minutes to copy results back
@@ -80,6 +85,7 @@ df -h                     # Should show 500GB boot disk
 ## Troubleshooting
 
 If jobs still fail:
+
 1. Check actual memory usage in task logs (look for `peak_rss` in trace file)
 2. Verify disk size: `df -h` should show ~500GB
 3. Ensure Fusion is disabled: `echo $FUSION_ENABLED` should be "false"

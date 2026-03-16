@@ -594,14 +594,14 @@ workflow SIEVE {
         ch_null_attributions_npz = targetNull
             ? SIEVE_EXPLAIN_NULL.out.explain_dir.map { _meta, explain_dir ->
                   def npz = explain_dir.resolve('attributions.npz')
-                  npz.exists() ? npz : file('NO_FILE')
+                  npz.exists() ? npz : []
               }
-            : channel.value(file('NO_FILE'))
+            : channel.value([])
 
         // Optional: epistasis validation CSV (if validate_epistasis produced results)
         ch_epistasis_csv = SIEVE_VALIDATE_EPISTASIS.out.epistasis
             .map { _meta, epistasis_csv, _dir -> epistasis_csv }
-            .ifEmpty(file('NO_FILE2'))
+            .ifEmpty([])
 
         ch_power_input = ch_cooccurrence_keyed
             .map { _key, pairs, summary ->
@@ -637,7 +637,7 @@ workflow SIEVE {
         // Optional: null variant rankings (if null baseline was run)
         ch_null_rankings_for_agg = targetNull
             ? SIEVE_EXPLAIN_NULL.out.rankings.map { _meta, variant_rankings, _gene_rankings, _interactions -> variant_rankings }
-            : channel.value(file('NO_FILE'))
+            : channel.value([])
 
         // Optional: cooccurrence per-pair CSV from audit
         ch_cooccur_pairs_for_agg = SIEVE_AUDIT_COOCCURRENCE.out.cooccurrence_pairs

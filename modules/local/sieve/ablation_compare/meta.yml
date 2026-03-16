@@ -1,46 +1,46 @@
 name: sieve_ablation_compare
 description: Summarize SIEVE model performance across annotation levels L0-L3.
 keywords:
-- sieve
-- ablation
-- model comparison
-- annotation levels
+  - sieve
+  - ablation
+  - model comparison
+  - annotation levels
 tools:
-- ablation_compare.py:
-    description: Utility script to summarize ablation performance across levels.
-    homepage: https://github.com/lescailab/sieve-nextflow
-    documentation: https://github.com/lescailab/sieve-nextflow
-    licence:
-    - MIT
+  - ablation_compare.py:
+      description: Utility script to summarize ablation performance across levels.
+      homepage: https://github.com/lescailab/sieve-nextflow
+      documentation: https://github.com/lescailab/sieve-nextflow
+      licence:
+        - MIT
 input:
-- - meta:
-      type: map
-      description: Cohort-level metadata map
-- - run_dirs:
-      type: directory
-      description: Ablation run directories containing results/config files
-output:
-  ablation_summary:
   - - meta:
         type: map
         description: Cohort-level metadata map
-    - ablation_summary.tsv:
-        type: file
-        description: Tabular summary of ablation performance by level
-    - ablation_summary.yaml:
-        type: file
-        description: YAML summary of ablation comparison and best level
+  - - run_dirs:
+        type: directory
+        description: Ablation run directories containing results/config files
+output:
+  ablation_summary:
+    - - meta:
+          type: map
+          description: Cohort-level metadata map
+      - ablation_summary.tsv:
+          type: file
+          description: Tabular summary of ablation performance by level
+      - ablation_summary.yaml:
+          type: file
+          description: YAML summary of ablation comparison and best level
   versions: &1
-  - - "${task.process}":
-        type: string
-        description: The name of the process
-    - sieve:
-        type: string
-        description: The name of the tool
-    - 1.0.0:
-        type: string
-        description: The version of the tool
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
 authors:
-- "@lescai"
+  - "@lescai"
 topics:
   versions: *1

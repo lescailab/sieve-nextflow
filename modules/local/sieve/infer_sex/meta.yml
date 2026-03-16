@@ -1,52 +1,52 @@
 name: sieve_infer_sex
 description: Infer sample sex from a bgzipped indexed VCF using SIEVE.
 keywords:
-- sieve
-- infer sex
-- vcf
+  - sieve
+  - infer sex
+  - vcf
 tools:
-- sieve:
-    description: Sparse Interpretable Exome Variant Explainer
-    homepage: https://anaconda.org/lescailab/sieve
-    documentation: https://anaconda.org/lescailab/sieve
-    licence:
-    - MIT
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence:
+        - MIT
 input:
-- - meta:
-      type: map
-      description: Sample metadata map
-  - vcf:
-      type: file
-      description: Input bgzipped multi-sample VCF
-- - genome_build:
-      type: string
-      description: Genome build (GRCh37 or GRCh38)
+  - - meta:
+        type: map
+        description: Sample metadata map
+    - vcf:
+        type: file
+        description: Input bgzipped multi-sample VCF
+  - - genome_build:
+        type: string
+        description: Genome build (GRCh37 or GRCh38)
 output:
   sex_map:
-  - - meta:
-        type: map
-        description: Sample metadata map
-    - sample_sex.tsv:
-        type: file
-        description: Per-sample sex map TSV
+    - - meta:
+          type: map
+          description: Sample metadata map
+      - sample_sex.tsv:
+          type: file
+          description: Per-sample sex map TSV
   diagnostics:
-  - - meta:
-        type: map
-        description: Sample metadata map
-    - infer_sex_diagnostics/*:
-        type: file
-        description: Optional diagnostics files produced by SIEVE
+    - - meta:
+          type: map
+          description: Sample metadata map
+      - infer_sex_diagnostics/*:
+          type: file
+          description: Optional diagnostics files produced by SIEVE
   versions: &1
-  - - "${task.process}":
-        type: string
-        description: The name of the process
-    - sieve:
-        type: string
-        description: The name of the tool
-    - 1.0.0:
-        type: string
-        description: The version of the tool
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
 authors:
-- "@lescai"
+  - "@lescai"
 topics:
   versions: *1

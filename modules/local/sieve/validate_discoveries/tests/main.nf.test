@@ -36,4 +36,32 @@ input[0] = [
             )
         }
     }
+
+    test("stub run without optional references") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true),
+    [],
+    [],
+    []
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.validation != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
 }

@@ -62,7 +62,7 @@ workflow ABLATION {
     ch_versions = ch_versions.mix(SIEVE_TRAIN_SINGLE_ABLATION.out.versions)
     ch_plot_sources = ch_plot_sources.mix(SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload.map { _meta, run_dir -> run_dir })
 
-    // Metrics comparison: collect L0-L2 selection payloads for ABLATION_COMPARE
+    // Metrics comparison: collect selection payloads for all ablation levels
     ch_ablation_selection_dirs = SIEVE_TRAIN_SINGLE_ABLATION.out.selection_payload
         .map { _meta, run_dir -> run_dir }
         .collect()
@@ -73,7 +73,7 @@ workflow ABLATION {
     )
     ch_versions = ch_versions.mix(SIEVE_ABLATION_COMPARE.out.versions)
 
-    // Run explainability on each ablation model (L0-L2)
+    // Run explainability on each ablation model across all configured levels
     ch_ablation_explain_input = SIEVE_TRAIN_SINGLE_ABLATION.out.train_artifacts
         .map { meta, _results, config, checkpoint ->
             tuple(meta, checkpoint, config)

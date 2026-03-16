@@ -30,18 +30,24 @@ workflow VALIDATION {
     // Validate discoveries against reference databases
     //
     if (targetValidation) {
+        def missingOptionalRefToken = '__SIEVE_OPTIONAL_REF_MISSING__'
+
         ch_discovery_validation_input = ch_real_rankings
             .combine(ch_ref_clinvar)
             .combine(ch_ref_gwas)
             .combine(ch_ref_go_mapping)
             .map { meta, variant_rankings, gene_rankings, _interactions, clinvar, gwas, go ->
+                def clinvarInput = clinvar == missingOptionalRefToken ? [] : clinvar
+                def gwasInput = gwas == missingOptionalRefToken ? [] : gwas
+                def goInput = go == missingOptionalRefToken ? [] : go
+
                 tuple(
                     [id: meta.id, run_id: 'discoveries_validation', stage: 'validation'],
                     variant_rankings,
                     gene_rankings,
-                    clinvar,
-                    gwas,
-                    go
+                    clinvarInput,
+                    gwasInput,
+                    goInput
                 )
             }
 

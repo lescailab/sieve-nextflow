@@ -230,11 +230,12 @@ workflow PREPROCESS {
 
     if (targetValidation) {
         def hasProvidedRefs = params.clinvar_tsv || params.gwas_tsv || params.go_mapping_json
+        def missingOptionalRefToken = '__SIEVE_OPTIONAL_REF_MISSING__'
 
         if (hasProvidedRefs) {
-            ch_ref_clinvar     = params.clinvar_tsv     ? channel.value(file(params.clinvar_tsv, checkIfExists: true))     : channel.value(file('NO_FILE'))
-            ch_ref_gwas        = params.gwas_tsv        ? channel.value(file(params.gwas_tsv, checkIfExists: true))        : channel.value(file('NO_FILE2'))
-            ch_ref_go_mapping  = params.go_mapping_json ? channel.value(file(params.go_mapping_json, checkIfExists: true)) : channel.value(file('NO_FILE3'))
+            ch_ref_clinvar     = params.clinvar_tsv     ? channel.value(file(params.clinvar_tsv, checkIfExists: true))     : channel.value(missingOptionalRefToken)
+            ch_ref_gwas        = params.gwas_tsv        ? channel.value(file(params.gwas_tsv, checkIfExists: true))        : channel.value(missingOptionalRefToken)
+            ch_ref_go_mapping  = params.go_mapping_json ? channel.value(file(params.go_mapping_json, checkIfExists: true)) : channel.value(missingOptionalRefToken)
         } else {
             SIEVE_DOWNLOAD_REFERENCES(
                 ch_selection_meta,

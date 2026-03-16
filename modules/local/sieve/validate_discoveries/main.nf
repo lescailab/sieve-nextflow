@@ -17,13 +17,13 @@ process SIEVE_VALIDATE_DISCOVERIES {
     script:
     def args = task.ext.args ?: ''
     def advancedArgs = []
-    if (clinvar_tsv.name != 'NO_FILE') {
+    if (clinvar_tsv) {
         advancedArgs << "--clinvar ${clinvar_tsv}"
     }
-    if (gwas_tsv.name != 'NO_FILE2') {
+    if (gwas_tsv) {
         advancedArgs << "--gwas ${gwas_tsv}"
     }
-    if (go_mapping_json.name != 'NO_FILE3') {
+    if (go_mapping_json) {
         advancedArgs << "--go-mapping ${go_mapping_json}"
     }
     def advancedArgString = advancedArgs.join(' ')

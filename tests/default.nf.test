@@ -146,4 +146,38 @@ nextflow_pipeline {
             )
         }
     }
+
+    test("validation step accepts partial provided references - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                vcf = null
+                phenotypes = null
+                infer_sex = false
+                sex_map = null
+                preprocessed_data = "${projectDir}/assets/testdata/small_reprocessed_test.pt"
+                best_params = null
+                best_checkpoint = "${projectDir}/assets/testdata/component_fixtures/cv/cv_output/fold_1/best_model.pt"
+                checkpoint_config = "${projectDir}/assets/testdata/test_model/L3_run/config.yaml"
+                clinvar_tsv = "${projectDir}/assets/testdata/test_biomart.tsv"
+                gwas_tsv = null
+                go_mapping_json = null
+                execute_step = "validation"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/explainability/analysis/validation_output/validation_report.yaml").exists() },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_DOWNLOAD_REFERENCES") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") }
+            )
+        }
+    }
 }

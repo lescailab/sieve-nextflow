@@ -22,13 +22,27 @@ process SIEVE_TRAIN_CV {
     """
     mkdir -p cv_output
 
+    # Unpack best_params YAML into individual CLI flags
+    # Skip keys already passed explicitly (level, annotation_level)
+    PARAM_FLAGS=\$(awk -F': ' '
+        /^[[:space:]]*#/ {next}
+        /^[[:space:]]*\$/ {next}
+        NF>=2 {
+            key=\$1; gsub(/^[[:space:]]+|[[:space:]]+\$/, "", key)
+            val=\$2; gsub(/^[[:space:]]+|[[:space:]]+\$/, "", val)
+            if (key == "level" || key == "annotation_level") next
+            gsub(/_/, "-", key)
+            printf "--%s %s ", key, val
+        }
+    ' ${best_params})
+
     sieve-train \
         --preprocessed-data ${preprocessed} \
         --sex-map ${sex_map} \
         --output-dir cv_output \
-        --annotation-level ${level} \
+        --level ${level} \
         --cv ${cv_folds} \
-        --config ${best_params} \
+        \${PARAM_FLAGS} \
         ${args}
 
     if ! find cv_output -maxdepth 1 -type d -name 'fold_*' | grep -q .; then

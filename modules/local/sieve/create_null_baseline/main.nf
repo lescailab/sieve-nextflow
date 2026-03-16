@@ -3,7 +3,7 @@ process SIEVE_CREATE_NULL_BASELINE {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
     tuple val(meta), path(preprocessed), val(seed)
@@ -18,7 +18,7 @@ process SIEVE_CREATE_NULL_BASELINE {
     script:
     def args = task.ext.args ?: ''
     """
-    sieve_cmd.sh create_null_baseline \
+    sieve-create-null-baseline \
         --input ${preprocessed} \
         --output preprocessed_NULL.pt \
         --seed ${seed} \
@@ -26,8 +26,7 @@ process SIEVE_CREATE_NULL_BASELINE {
 
     [[ -f preprocessed_NULL.pt ]] || { echo "ERROR: create_null_baseline did not produce preprocessed_NULL.pt" >&2; exit 1; }
 
-    sieve_version=\$(sieve_cmd.sh --version 2>/dev/null | head -n 1 || true)
-    [[ -z "\${sieve_version}" ]] && sieve_version="unknown"
+    sieve_version=\$(sieve-create-null-baseline --version 2>/dev/null | head -n 1 || echo "unknown")
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -256,22 +256,19 @@
                 "clinvar_tsv": {
                     "type": "string",
                     "format": "file-path",
-                    "exists": true,
-                    "description": "Optional ClinVar TSV for discovery validation.",
+                    "description": "Optional ClinVar TSV for discovery validation. Downloaded automatically if not provided.",
                     "hidden": true
                 },
                 "gwas_tsv": {
                     "type": "string",
                     "format": "file-path",
-                    "exists": true,
-                    "description": "Optional GWAS TSV for discovery validation.",
+                    "description": "Optional GWAS TSV for discovery validation. Downloaded automatically if not provided.",
                     "hidden": true
                 },
                 "go_mapping_json": {
                     "type": "string",
                     "format": "file-path",
-                    "exists": true,
-                    "description": "Optional GO mapping JSON for discovery validation.",
+                    "description": "Optional GO mapping JSON for discovery validation. Downloaded automatically if not provided.",
                     "hidden": true
                 }
             }

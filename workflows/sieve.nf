@@ -16,6 +16,7 @@ include { SIEVE_COMPARE_ATTRIBUTIONS as SIEVE_COMPARE_ATTRIBUTIONS_RAW } from '.
 include { SIEVE_COMPARE_ATTRIBUTIONS as SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED } from '../modules/local/sieve/compare_attributions/main'
 include { SIEVE_VALIDATE_EPISTASIS } from '../modules/local/sieve/validate_epistasis/main'
 include { SIEVE_VALIDATE_DISCOVERIES } from '../modules/local/sieve/validate_discoveries/main'
+include { SIEVE_DOWNLOAD_REFERENCES } from '../modules/local/sieve/download_references/main'
 include { SIEVE_SELECT_BEST_PARAMS } from '../modules/local/sieve/select_best_params/main'
 include { SIEVE_SELECT_BEST_CHECKPOINT } from '../modules/local/sieve/select_best_checkpoint/main'
 include { SIEVE_ABLATION_COMPARE } from '../modules/local/sieve/ablation_compare/main'
@@ -564,16 +565,40 @@ workflow SIEVE {
     }
 
     if (targetValidation) {
-        ch_discovery_validation_input = ch_real_rankings.map { meta, variant_rankings, gene_rankings, _interactions ->
-            tuple(
-                [id: meta.id, run_id: 'discoveries_validation', stage: 'validation'],
-                variant_rankings,
-                gene_rankings,
-                params.clinvar_tsv,
-                params.gwas_tsv,
-                params.go_mapping_json
+        def hasProvidedRefs = params.clinvar_tsv || params.gwas_tsv || params.go_mapping_json
+
+        if (hasProvidedRefs) {
+            // Use user-provided reference files (e.g. from test profile testdata)
+            ch_ref_clinvar     = params.clinvar_tsv     ? channel.value(file(params.clinvar_tsv, checkIfExists: true))     : channel.value(file('NO_FILE'))
+            ch_ref_gwas        = params.gwas_tsv        ? channel.value(file(params.gwas_tsv, checkIfExists: true))        : channel.value(file('NO_FILE2'))
+            ch_ref_go_mapping  = params.go_mapping_json ? channel.value(file(params.go_mapping_json, checkIfExists: true)) : channel.value(file('NO_FILE3'))
+        } else {
+            // Download reference databases when not provided
+            SIEVE_DOWNLOAD_REFERENCES(
+                ch_selection_meta,
+                params.genome_build
             )
+            ch_versions = ch_versions.mix(SIEVE_DOWNLOAD_REFERENCES.out.versions)
+
+            ch_ref_clinvar    = SIEVE_DOWNLOAD_REFERENCES.out.references.map { _meta, clinvar, _gwas, _go -> clinvar }
+            ch_ref_gwas       = SIEVE_DOWNLOAD_REFERENCES.out.references.map { _meta, _clinvar, gwas, _go -> gwas }
+            ch_ref_go_mapping = SIEVE_DOWNLOAD_REFERENCES.out.references.map { _meta, _clinvar, _gwas, go -> go }
         }
+
+        ch_discovery_validation_input = ch_real_rankings
+            .combine(ch_ref_clinvar)
+            .combine(ch_ref_gwas)
+            .combine(ch_ref_go_mapping)
+            .map { meta, variant_rankings, gene_rankings, _interactions, clinvar, gwas, go ->
+                tuple(
+                    [id: meta.id, run_id: 'discoveries_validation', stage: 'validation'],
+                    variant_rankings,
+                    gene_rankings,
+                    clinvar,
+                    gwas,
+                    go
+                )
+            }
 
         SIEVE_VALIDATE_DISCOVERIES(ch_discovery_validation_input)
         ch_versions = ch_versions.mix(SIEVE_VALIDATE_DISCOVERIES.out.versions)

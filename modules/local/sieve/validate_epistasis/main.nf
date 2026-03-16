@@ -4,7 +4,7 @@ process SIEVE_VALIDATE_EPISTASIS {
     label 'process_gpu'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:aa9863cbe135b566' : 'ghcr.io/lescailab/sieve-container:aa9863cbe135b566'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
     tuple val(meta), path(interactions_csv), path(checkpoint), path(config), path(preprocessed)
@@ -21,7 +21,7 @@ process SIEVE_VALIDATE_EPISTASIS {
     """
     mkdir -p epistasis_output
 
-    sieve_cmd.sh validate_epistasis \
+    sieve-validate-epistasis \
         --interactions ${interactions_csv} \
         --checkpoint ${checkpoint} \
         --config ${config} \
@@ -41,8 +41,7 @@ EOF_EPI
 
     cp epistasis_validation.csv epistasis_output/epistasis_validation.csv
 
-    sieve_version=\$(sieve_cmd.sh --version 2>/dev/null | head -n 1 || true)
-    [[ -z "\${sieve_version}" ]] && sieve_version="unknown"
+    sieve_version=\$(sieve-validate-epistasis --version 2>/dev/null | head -n 1 || echo "unknown")
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

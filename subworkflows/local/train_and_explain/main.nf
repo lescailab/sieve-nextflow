@@ -11,11 +11,12 @@ include { SIEVE_EXPLAIN as SIEVE_EXPLAIN_NULL                                   
 include { SIEVE_COMPARE_ATTRIBUTIONS as SIEVE_COMPARE_ATTRIBUTIONS_RAW              } from '../../../modules/local/sieve/compare_attributions/main'
 include { SIEVE_COMPARE_ATTRIBUTIONS as SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED        } from '../../../modules/local/sieve/compare_attributions/main'
 include { SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS                                       } from '../../../modules/local/sieve/filter_sex_chrom_attributions/main'
+include { resolveExecuteSteps } from '../../../lib/sieve_helpers'
 
 workflow TRAIN_AND_EXPLAIN {
 
     take:
-    ch_selection_meta          // channel: val([id: cohort_id])
+    _ch_selection_meta         // channel: val([id: cohort_id])
     ch_preprocessed_keyed      // channel: [ val(cohort_id), path(preprocessed) ]
     ch_sex_map_keyed           // channel: [ val(cohort_id), path(sex_map) ]
     ch_best_params_path_keyed  // channel: [ val(cohort_id), path(best_params) ]
@@ -28,18 +29,17 @@ workflow TRAIN_AND_EXPLAIN {
 
     def cohortMeta = [id: params.cohort_id ?: 'cohort']
 
-    def selectedSteps = SieveStepUtils.resolveExecuteSteps(params.execute_step)
+    def selectedSteps = resolveExecuteSteps(params.execute_step)
 
     def targetCv = selectedSteps.contains('cv')
     def targetExplain = selectedSteps.contains('explain')
-    def targetAblation = selectedSteps.contains('ablation')
     def targetNull = selectedSteps.contains('null')
     def targetEpistasis = selectedSteps.contains('epistasis')
     def targetValidation = selectedSteps.contains('validation')
 
     def useProvidedBestCheckpoint = (params.best_checkpoint && params.checkpoint_config) as boolean
 
-    def needExplain = targetExplain || targetEpistasis || targetValidation || targetNull || targetAblation
+    def needExplain = targetExplain || targetEpistasis || targetValidation || targetNull
     def needBestCheckpoint = targetCv || needExplain
 
     def baseTrainingParams = [

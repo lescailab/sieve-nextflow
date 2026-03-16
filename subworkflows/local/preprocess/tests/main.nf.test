@@ -1,0 +1,31 @@
+nextflow_workflow {
+
+    name "Test Workflow PREPROCESS"
+    script "../main.nf"
+    workflow "PREPROCESS"
+    config "./nextflow.config"
+
+    tag "subworkflows"
+    tag "local"
+    tag "preprocess"
+
+    test("stub run") {
+
+        options "-stub-run"
+
+        when {
+            workflow {
+                """
+input[0] = channel.of([ id: 'cohort' ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.preprocessed != null }
+            )
+        }
+    }
+}

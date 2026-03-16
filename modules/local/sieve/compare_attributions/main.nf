@@ -10,8 +10,7 @@ process SIEVE_COMPARE_ATTRIBUTIONS {
 
     output:
     tuple val(meta), path('comparison_summary.yaml'), path('comparison_output'), emit: comparison
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

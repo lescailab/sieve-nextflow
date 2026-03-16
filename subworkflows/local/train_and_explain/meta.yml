@@ -1,0 +1,69 @@
+name: TRAIN_AND_EXPLAIN
+description: Train cross-validation models, select the best checkpoint, run explainability,
+  and compare a null baseline.
+keywords:
+- sieve
+- training
+- explainability
+- null baseline
+components:
+- sieve/train/cv
+- sieve/select/best/checkpoint
+- sieve/explain
+- sieve/create/null/baseline
+- sieve/train/single
+- sieve/compare/attributions
+- sieve/filter/sex/chrom/attributions
+- resolveexecutesteps
+input:
+- _ch_selection_meta:
+    type: channel
+    description: Channel emitting cohort-level metadata maps.
+- ch_preprocessed_keyed:
+    type: channel
+    description: Keyed channel of preprocessed tensors.
+- ch_sex_map_keyed:
+    type: channel
+    description: Keyed channel of sex maps.
+- ch_best_params_path_keyed:
+    type: channel
+    description: Keyed channel of best-parameter YAML files.
+- ch_best_params_map_keyed:
+    type: channel
+    description: Keyed channel of parsed hyperparameter maps.
+output:
+- published_best_model:
+    type: channel
+    description: Channel of best-model artifacts selected from CV or provided inputs.
+- published_explainability_best:
+    type: channel
+    description: Channel of explainability outputs for the best checkpoint.
+- published_null_model:
+    type: channel
+    description: Channel of published null-model artifacts.
+- published_null_comparison:
+    type: channel
+    description: Channel of published null-comparison outputs.
+- published_null_comparison_sex_fixed:
+    type: channel
+    description: Channel of published autosome-only null-comparison outputs.
+- real_rankings:
+    type: channel
+    description: Channel of explainability ranking tuples from the best checkpoint.
+- null_attributions_npz:
+    type: channel
+    description: Optional channel containing null-attribution matrices.
+- null_variant_rankings:
+    type: channel
+    description: Optional channel containing null-model variant rankings.
+- best_checkpoint_keyed:
+    type: channel
+    description: Keyed channel of checkpoint/config tuples.
+- versions:
+    type: channel
+    description: Channel of software version entries emitted by nested modules.
+- plot_sources:
+    type: channel
+    description: Channel of directories that may contain plots for downstream collection.
+authors:
+- "@lescai"

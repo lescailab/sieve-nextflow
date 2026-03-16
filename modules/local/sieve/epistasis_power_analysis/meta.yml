@@ -1,0 +1,65 @@
+name: sieve_epistasis_power_analysis
+description: Estimate epistasis detection power from co-occurrence and validation
+  outputs.
+keywords:
+- sieve
+- epistasis
+- power
+- cooccurrence
+tools:
+- sieve:
+    description: Sparse Interpretable Exome Variant Explainer
+    homepage: https://anaconda.org/lescailab/sieve
+    documentation: https://anaconda.org/lescailab/sieve
+    licence:
+    - MIT
+input:
+- - meta:
+      type: map
+      description: Metadata map for the cohort
+  - cooccurrence_pairs:
+      type: file
+      description: Pairwise co-occurrence summary CSV
+  - cooccurrence_summary:
+      type: file
+      description: Co-occurrence summary by MAF bin
+- - null_attributions_npz:
+      type: file
+      description: Optional null attribution matrix file
+- - epistasis_results:
+      type: file
+      description: Optional epistasis validation results file
+output:
+  power_analysis:
+  - - meta:
+        type: map
+        description: Metadata map for the cohort
+    - power_output:
+        type: directory
+        description: Directory containing power analysis outputs
+    - power_analysis_summary.yaml:
+        type: file
+        description: Summary YAML describing estimated epistasis power
+  versions:
+  - - "${task.process}":
+        type: string
+        description: The name of the process
+    - sieve:
+        type: string
+        description: The name of the tool
+    - 1.0.0:
+        type: string
+        description: The version of the tool
+topics:
+  versions:
+  - - "${task.process}":
+        type: string
+        description: The name of the process
+    - sieve:
+        type: string
+        description: The name of the tool
+    - 1.0.0:
+        type: string
+        description: The version of the tool
+authors:
+- "@lescai"

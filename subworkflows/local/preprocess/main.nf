@@ -3,10 +3,12 @@
 //
 
 include { SIEVE_INFER_SEX                                   } from '../../../modules/local/sieve/infer_sex/main'
+include { SIEVE_EMIT_SEX_MAP                                } from '../../../modules/local/sieve/emit_sex_map/main'
 include { SIEVE_PREPROCESS                                  } from '../../../modules/local/sieve/preprocess/main'
 include { SIEVE_TRAIN_SINGLE as SIEVE_TRAIN_SINGLE_GRID     } from '../../../modules/local/sieve/train_single/main'
 include { SIEVE_SELECT_BEST_PARAMS                          } from '../../../modules/local/sieve/select_best_params/main'
 include { SIEVE_DOWNLOAD_REFERENCES                         } from '../../../modules/local/sieve/download_references/main'
+include { buildTrainingGrid; extractTrainingParams; resolveExecuteSteps } from '../../../lib/sieve_helpers'
 
 workflow PREPROCESS {
 
@@ -20,7 +22,7 @@ workflow PREPROCESS {
 
     def cohortMeta = [id: params.cohort_id ?: 'cohort']
 
-    def selectedSteps = SieveStepUtils.resolveExecuteSteps(params.execute_step)
+    def selectedSteps = resolveExecuteSteps(params.execute_step)
 
     def targetSex = selectedSteps.contains('sex')
     def targetPreprocess = selectedSteps.contains('preprocess')
@@ -49,8 +51,10 @@ workflow PREPROCESS {
     ch_effective_sex_map = channel.empty()
 
     if (needSexMap) {
+        ch_resolved_sex_map = channel.empty()
+
         if (useProvidedSexMap) {
-            ch_effective_sex_map = channel.value(
+            ch_resolved_sex_map = channel.value(
                 tuple(
                     cohortMeta,
                     file(params.sex_map, checkIfExists: true)
@@ -74,10 +78,14 @@ workflow PREPROCESS {
                 ch_vcf_for_sex,
                 params.genome_build
             )
-            ch_effective_sex_map = SIEVE_INFER_SEX.out.sex_map
+            ch_resolved_sex_map = SIEVE_INFER_SEX.out.sex_map
             ch_versions = ch_versions.mix(SIEVE_INFER_SEX.out.versions)
             ch_plot_sources = ch_plot_sources.mix(SIEVE_INFER_SEX.out.diagnostics.map { _meta, diagnostic -> diagnostic })
         }
+
+        SIEVE_EMIT_SEX_MAP(ch_resolved_sex_map)
+        ch_effective_sex_map = SIEVE_EMIT_SEX_MAP.out.sex_map
+        ch_versions = ch_versions.mix(SIEVE_EMIT_SEX_MAP.out.versions)
     }
 
     //
@@ -162,7 +170,7 @@ workflow PREPROCESS {
                 )
             )
         } else {
-            def trainingGrid = SieveTrainingUtils.buildTrainingGrid(
+            def trainingGrid = buildTrainingGrid(
                 baseTrainingParams,
                 params.grid_lr,
                 params.grid_lambda_attr,
@@ -209,7 +217,7 @@ workflow PREPROCESS {
         }
 
         ch_best_params_map_keyed = ch_best_params_path_keyed.map { cohort_id, best_params_path ->
-            tuple(cohort_id, SieveTrainingUtils.extractTrainingParams(best_params_path))
+            tuple(cohort_id, extractTrainingParams(best_params_path))
         }
     }
 

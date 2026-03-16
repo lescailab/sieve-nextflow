@@ -1,0 +1,55 @@
+nextflow_process {
+
+    name "Test Process SIEVE_TRAIN_SINGLE"
+    script "../main.nf"
+    process "SIEVE_TRAIN_SINGLE"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "train_single"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort', run_id: 'grid_001', level: 'L3' ],
+    file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true),
+    file("${projectDir}/assets/testdata/sex_map.tsv", checkIfExists: true),
+    [
+        run_id: 'grid_001',
+        lr: 0.0001,
+        lambda_attr: 0.1,
+        latent_dim: 32,
+        hidden_dim: 64,
+        num_attention_layers: 1,
+        batch_size: 16,
+        chunk_size: 3000,
+        aggregation_method: 'mean',
+        epochs: 100,
+        gradient_accumulation_steps: 4,
+        gradient_clip: 1.0,
+        seed: 42,
+        device: 'cuda',
+        early_stopping: 10
+    ],
+    'L3',
+    0.2
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.train_artifacts != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

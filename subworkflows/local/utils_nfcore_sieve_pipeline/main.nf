@@ -11,7 +11,9 @@
 include { UTILS_NFSCHEMA_PLUGIN } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap } from 'plugin/nf-schema'
 include { UTILS_NFCORE_PIPELINE } from '../../nf-core/utils_nfcore_pipeline'
+include { completionEmail; completionSummary } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE } from '../../nf-core/utils_nextflow_pipeline'
+include { imNotification; validateSieveArguments } from '../../../lib/sieve_helpers'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -24,7 +26,7 @@ workflow PIPELINE_INITIALISATION {
     take:
     version           // boolean: Display version and exit
     validate_params   // boolean: Boolean whether to validate parameters against the schema at runtime
-    monochrome_logs   // boolean: Do not use coloured log outputs
+    _monochrome_logs  // boolean: Do not use coloured log outputs
     nextflow_cli_args // array: List of positional nextflow CLI args
     outdir            // string: Path to output directory
     vcf               // string: Path to bgzipped indexed VCF
@@ -87,7 +89,7 @@ workflow PIPELINE_INITIALISATION {
         command
     )
 
-    SieveArgumentValidator.validateSieveArguments(
+    validateSieveArguments(
         vcf,
         phenotypes,
         genome_build,
@@ -128,29 +130,23 @@ workflow PIPELINE_COMPLETION {
 
     main:
     summary_params = paramsSummaryMap(workflow, parameters_schema: 'nextflow_schema.json')
-    workflow_meta = workflow
-    params_map = params
-    logger = log
 
     workflow.onComplete {
         if (email || email_on_fail) {
-            NfcoreTemplateUtils.completionEmail(
+            completionEmail(
                 summary_params,
                 email,
                 email_on_fail,
                 plaintext_email,
                 outdir,
                 monochrome_logs,
-                [],
-                workflow_meta,
-                params_map,
-                logger
+                []
             )
         }
 
-        NfcoreTemplateUtils.completionSummary(workflow_meta, logger, monochrome_logs)
+        completionSummary(monochrome_logs)
         if (hook_url) {
-            NfcoreTemplateUtils.imNotification(summary_params, hook_url, workflow_meta, logger)
+            imNotification(summary_params, hook_url)
         }
     }
 

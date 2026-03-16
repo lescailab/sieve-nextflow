@@ -1,0 +1,78 @@
+name: sieve_aggregate_gene_interactions
+description: Aggregate SIEVE gene-level interaction signals into summary tables and
+  network files.
+keywords:
+- sieve
+- epistasis
+- gene interactions
+- network
+tools:
+- sieve:
+    description: Sparse Interpretable Exome Variant Explainer
+    homepage: https://anaconda.org/lescailab/sieve
+    documentation: https://anaconda.org/lescailab/sieve
+    licence:
+    - MIT
+input:
+- - meta:
+      type: map
+      description: Metadata map for the cohort
+  - preprocessed:
+      type: file
+      description: Preprocessed tensor used to contextualize interactions
+  - variant_rankings:
+      type: file
+      description: Variant ranking CSV from explainability
+  - gene_rankings:
+      type: file
+      description: Gene ranking CSV from explainability
+- - null_rankings:
+      type: file
+      description: Optional null-model variant rankings CSV
+- - cooccurrence_pairs:
+      type: file
+      description: Optional co-occurrence summary CSV
+output:
+  gene_interactions:
+  - - meta:
+        type: map
+        description: Metadata map for the cohort
+    - gene_interactions_output:
+        type: directory
+        description: Directory containing aggregated interaction outputs
+    - gene_pair_interactions.csv:
+        type: file
+        description: Tabular summary of prioritized gene pairs
+  network:
+  - - meta:
+        type: map
+        description: Metadata map for the cohort
+    - gene_interaction_network_edges.csv:
+        type: file
+        description: Edge list for the gene interaction network
+    - gene_interaction_network_nodes.csv:
+        type: file
+        description: Node table for the gene interaction network
+  versions:
+  - - "${task.process}":
+        type: string
+        description: The name of the process
+    - sieve:
+        type: string
+        description: The name of the tool
+    - 1.0.0:
+        type: string
+        description: The version of the tool
+topics:
+  versions:
+  - - "${task.process}":
+        type: string
+        description: The name of the process
+    - sieve:
+        type: string
+        description: The name of the tool
+    - 1.0.0:
+        type: string
+        description: The version of the tool
+authors:
+- "@lescai"

@@ -14,7 +14,6 @@ workflow ABLATION {
     ch_preprocessed_keyed      // channel: [ val(cohort_id), path(preprocessed) ]
     ch_sex_map_keyed           // channel: [ val(cohort_id), path(sex_map) ]
     ch_best_params_map_keyed   // channel: [ val(cohort_id), val(params_map) ]
-    ch_real_rankings           // channel: [ val(meta), path(variant), path(gene), path(interactions) ]
 
     main:
 
@@ -37,9 +36,8 @@ workflow ABLATION {
         num_attention_layers: params.train_num_attention_layers as Integer,
     ].findAll { _key, value -> value != null }
 
-    // Train only L0-L2 from scratch; L3 reuses the best checkpoint via explain
     ch_ablation_specs = channel
-        .fromList(['L0', 'L1', 'L2'])
+        .fromList(['L0', 'L1', 'L2', 'L3'])
         .map { level ->
             tuple(
                 cohortMeta.id,
@@ -94,21 +92,14 @@ workflow ABLATION {
     SIEVE_EXPLAIN_ABLATION(ch_ablation_explain_input)
     ch_versions = ch_versions.mix(SIEVE_EXPLAIN_ABLATION.out.versions)
 
-    // Collect L0-L2 rankings and rename with level prefix
-    ch_ablation_L0L2_rankings = SIEVE_EXPLAIN_ABLATION.out.rankings
+    // Collect rankings and rename with level prefix
+    ch_ablation_rankings = SIEVE_EXPLAIN_ABLATION.out.rankings
         .map { meta, variant_rankings, gene_rankings, _interactions ->
             tuple(meta.level, variant_rankings, gene_rankings)
         }
 
-    // L3 rankings come from the explain_real output on the best checkpoint
-    ch_ablation_L3_rankings = ch_real_rankings
-        .map { _meta, variant_rankings, gene_rankings, _interactions ->
-            tuple('L3', variant_rankings, gene_rankings)
-        }
-
-    // Merge all levels and collect ranking files with level prefixes
-    ch_all_ablation_ranking_files = ch_ablation_L0L2_rankings
-        .mix(ch_ablation_L3_rankings)
+    // Collect ranking files with level prefixes
+    ch_all_ablation_ranking_files = ch_ablation_rankings
         .flatMap { level, variant_rankings, gene_rankings ->
             [[level, 'variant', variant_rankings], [level, 'gene', gene_rankings]]
         }

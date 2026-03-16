@@ -1,0 +1,24 @@
+name: PIPELINE_INITIALISATION
+description: Pipeline-specific initialization and completion helpers layered on top
+  of nf-core utility subworkflows.
+keywords:
+- sieve
+- utility
+- initialisation
+- completion
+components:
+- utils_nfschema_plugin
+- utils_nfcore_pipeline
+- utils_nextflow_pipeline
+input:
+- pipeline_workflow_inputs:
+    type: channel
+    description: This file defines multiple helper workflows; see `PIPELINE_INITIALISATION`
+      and `PIPELINE_COMPLETION` for the concrete inputs.
+output:
+- versions:
+    type: channel
+    description: Dummy versions channel emitted by `PIPELINE_INITIALISATION` for lint
+      compatibility.
+authors:
+- "@lescai"

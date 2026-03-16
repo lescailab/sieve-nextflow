@@ -11,8 +11,7 @@ process SIEVE_SELECT_BEST_PARAMS {
 
     output:
     tuple val(meta), path('best_params.yaml'), path('best_run_id.txt'), path('train_grid_summary.tsv'), emit: best_params
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

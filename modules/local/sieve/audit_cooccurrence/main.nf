@@ -12,8 +12,7 @@ process SIEVE_AUDIT_COOCCURRENCE {
     tuple val(meta), path('cooccurrence_output'),          emit: cooccurrence_dir
     tuple val(meta), path('cooccurrence_per_pair.csv'),    emit: cooccurrence_pairs
     tuple val(meta), path('cooccurrence_by_maf_bin.csv'),  emit: cooccurrence_summary
-    path 'versions.yml',                                   emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

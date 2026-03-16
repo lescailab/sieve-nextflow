@@ -8,6 +8,7 @@ include { TRAIN_AND_EXPLAIN } from '../subworkflows/local/train_and_explain/main
 include { ABLATION          } from '../subworkflows/local/ablation/main'
 include { EPISTASIS         } from '../subworkflows/local/epistasis/main'
 include { VALIDATION        } from '../subworkflows/local/validation/main'
+include { resolveExecuteSteps; softwareVersionsToYAML } from '../lib/sieve_helpers'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,7 +26,7 @@ workflow SIEVE {
     def cohortMeta = [id: params.cohort_id ?: 'cohort']
     def ch_selection_meta = channel.value([id: cohortMeta.id])
 
-    def selectedSteps = SieveStepUtils.resolveExecuteSteps(params.execute_step)
+    def selectedSteps = resolveExecuteSteps(params.execute_step)
     log.info("Executing SIEVE steps: ${selectedSteps.join(', ')}")
 
     def targetExplain = selectedSteps.contains('explain')
@@ -35,7 +36,7 @@ workflow SIEVE {
     def targetValidation = selectedSteps.contains('validation')
     def targetPlots = selectedSteps.contains('plots')
 
-    def needExplain = targetExplain || targetEpistasis || targetValidation || targetNull || targetAblation
+    def needExplain = targetExplain || targetEpistasis || targetValidation || targetNull
     def needBestCheckpoint = selectedSteps.contains('cv') || needExplain
 
     //
@@ -89,8 +90,7 @@ workflow SIEVE {
             ch_selection_meta,
             PREPROCESS.out.preprocessed_keyed,
             PREPROCESS.out.sex_map_keyed,
-            PREPROCESS.out.best_params_map_keyed,
-            ch_real_rankings
+            PREPROCESS.out.best_params_map_keyed
         )
         ch_versions = ch_versions.mix(ABLATION.out.versions)
         ch_plot_sources = ch_plot_sources.mix(ABLATION.out.plot_sources)
@@ -135,7 +135,7 @@ workflow SIEVE {
         ch_published_plots = VALIDATION.out.published_plots
     }
 
-    NfcoreTemplateUtils.softwareVersionsToYAML(ch_versions, workflow)
+    softwareVersionsToYAML(ch_versions)
         .collectFile(
             name: 'nf_core_sieve_software_versions.yml',
             sort: true,

@@ -7,7 +7,7 @@ process SIEVE_AGGREGATE_GENE_INTERACTIONS {
 
     input:
     tuple val(meta), path(preprocessed), path(variant_rankings), path(gene_rankings)
-    path null_rankings
+    path null_rankings, stageAs: 'null_sieve_variant_rankings.csv'
     path cooccurrence_pairs
 
     output:

@@ -15,6 +15,9 @@ include { SIEVE_CREATE_NULL_BASELINE } from '../modules/local/sieve/create_null_
 include { SIEVE_COMPARE_ATTRIBUTIONS as SIEVE_COMPARE_ATTRIBUTIONS_RAW } from '../modules/local/sieve/compare_attributions/main'
 include { SIEVE_COMPARE_ATTRIBUTIONS as SIEVE_COMPARE_ATTRIBUTIONS_SEX_FIXED } from '../modules/local/sieve/compare_attributions/main'
 include { SIEVE_VALIDATE_EPISTASIS } from '../modules/local/sieve/validate_epistasis/main'
+include { SIEVE_AUDIT_COOCCURRENCE } from '../modules/local/sieve/audit_cooccurrence/main'
+include { SIEVE_EPISTASIS_POWER_ANALYSIS } from '../modules/local/sieve/epistasis_power_analysis/main'
+include { SIEVE_AGGREGATE_GENE_INTERACTIONS } from '../modules/local/sieve/aggregate_gene_interactions/main'
 include { SIEVE_VALIDATE_DISCOVERIES } from '../modules/local/sieve/validate_discoveries/main'
 include { SIEVE_DOWNLOAD_REFERENCES } from '../modules/local/sieve/download_references/main'
 include { SIEVE_SELECT_BEST_PARAMS } from '../modules/local/sieve/select_best_params/main'
@@ -538,6 +541,21 @@ workflow SIEVE {
     ch_published_explainability_analysis = channel.empty()
 
     if (targetEpistasis) {
+
+        //
+        // Audit co-occurrence structure (runs in parallel with explain steps)
+        //
+        ch_audit_input = ch_preprocessed.map { meta, preprocessed ->
+            tuple([id: meta.id, run_id: 'audit_cooccurrence', stage: 'epistasis'], preprocessed)
+        }
+
+        SIEVE_AUDIT_COOCCURRENCE(ch_audit_input)
+        ch_versions = ch_versions.mix(SIEVE_AUDIT_COOCCURRENCE.out.versions)
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_AUDIT_COOCCURRENCE.out.cooccurrence_dir.map { _meta, cooccurrence_dir -> cooccurrence_dir })
+
+        //
+        // Validate epistasis (existing — needs non-empty interactions from explain)
+        //
         ch_nonempty_interactions_keyed = ch_real_rankings
             .map { meta, _variant_rankings, _gene_rankings, interactions ->
                 tuple(meta.id, interactions)
@@ -560,6 +578,87 @@ workflow SIEVE {
         ch_published_explainability_analysis = ch_published_explainability_analysis.mix(
             SIEVE_VALIDATE_EPISTASIS.out.epistasis.map { _meta, epistasis_validation, epistasis_dir ->
                 [epistasis_validation, epistasis_dir]
+            }
+        )
+
+        //
+        // Epistasis power analysis (needs audit outputs + optional null attributions + optional epistasis results)
+        //
+        ch_cooccurrence_keyed = SIEVE_AUDIT_COOCCURRENCE.out.cooccurrence_pairs
+            .join(SIEVE_AUDIT_COOCCURRENCE.out.cooccurrence_summary, by: 0)
+            .map { meta, pairs, summary ->
+                tuple(meta.id, pairs, summary)
+            }
+
+        // Optional: null attributions.npz from null explain_dir (if null baseline was run)
+        ch_null_attributions_npz = targetNull
+            ? SIEVE_EXPLAIN_NULL.out.explain_dir.map { _meta, explain_dir ->
+                  def npz = explain_dir.resolve('attributions.npz')
+                  npz.exists() ? npz : file('NO_FILE')
+              }
+            : channel.value(file('NO_FILE'))
+
+        // Optional: epistasis validation CSV (if validate_epistasis produced results)
+        ch_epistasis_csv = SIEVE_VALIDATE_EPISTASIS.out.epistasis
+            .map { _meta, epistasis_csv, _dir -> epistasis_csv }
+            .ifEmpty(file('NO_FILE2'))
+
+        ch_power_input = ch_cooccurrence_keyed
+            .map { _key, pairs, summary ->
+                tuple([id: _key, run_id: 'epistasis_power', stage: 'epistasis'], pairs, summary)
+            }
+
+        SIEVE_EPISTASIS_POWER_ANALYSIS(
+            ch_power_input,
+            ch_null_attributions_npz,
+            ch_epistasis_csv
+        )
+        ch_versions = ch_versions.mix(SIEVE_EPISTASIS_POWER_ANALYSIS.out.versions)
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_EPISTASIS_POWER_ANALYSIS.out.power_analysis.map { _meta, power_dir, _summary -> power_dir })
+
+        ch_published_explainability_analysis = ch_published_explainability_analysis.mix(
+            SIEVE_EPISTASIS_POWER_ANALYSIS.out.power_analysis.map { _meta, power_dir, power_summary ->
+                [power_summary, power_dir]
+            }
+        )
+
+        //
+        // Aggregate gene-level interactions (needs rankings + preprocessed + optional null rankings + optional cooccurrence)
+        //
+        ch_gene_interactions_input = ch_real_rankings
+            .map { meta, variant_rankings, gene_rankings, _interactions ->
+                tuple(meta.id, variant_rankings, gene_rankings)
+            }
+            .join(ch_preprocessed_keyed, by: 0)
+            .map { key, variant_rankings, gene_rankings, preprocessed ->
+                tuple([id: key, run_id: 'gene_interactions', stage: 'epistasis'], preprocessed, variant_rankings, gene_rankings)
+            }
+
+        // Optional: null variant rankings (if null baseline was run)
+        ch_null_rankings_for_agg = targetNull
+            ? SIEVE_EXPLAIN_NULL.out.rankings.map { _meta, variant_rankings, _gene_rankings, _interactions -> variant_rankings }
+            : channel.value(file('NO_FILE'))
+
+        // Optional: cooccurrence per-pair CSV from audit
+        ch_cooccur_pairs_for_agg = SIEVE_AUDIT_COOCCURRENCE.out.cooccurrence_pairs
+            .map { _meta, pairs -> pairs }
+
+        SIEVE_AGGREGATE_GENE_INTERACTIONS(
+            ch_gene_interactions_input,
+            ch_null_rankings_for_agg,
+            ch_cooccur_pairs_for_agg
+        )
+        ch_versions = ch_versions.mix(SIEVE_AGGREGATE_GENE_INTERACTIONS.out.versions)
+        ch_plot_sources = ch_plot_sources.mix(SIEVE_AGGREGATE_GENE_INTERACTIONS.out.gene_interactions.map { _meta, interactions_dir, _csv -> interactions_dir })
+
+        ch_published_explainability_analysis = ch_published_explainability_analysis.mix(
+            SIEVE_AGGREGATE_GENE_INTERACTIONS.out.gene_interactions.map { _meta, interactions_dir, interactions_csv ->
+                [interactions_csv, interactions_dir]
+            }
+        )
+        ch_published_explainability_analysis = ch_published_explainability_analysis.mix(
+            SIEVE_AGGREGATE_GENE_INTERACTIONS.out.network.map { _meta, edges, nodes ->
+                [edges, nodes]
             }
         )
     }

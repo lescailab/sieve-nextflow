@@ -20,8 +20,8 @@ process SIEVE_AGGREGATE_GENE_INTERACTIONS {
 
     script:
     def args = task.ext.args ?: ''
-    def null_arg = null_rankings.name != 'NO_FILE' ? "--null-rankings ${null_rankings}" : ''
-    def cooccur_arg = cooccurrence_pairs.name != 'NO_FILE2' ? "--cooccurrence ${cooccurrence_pairs}" : ''
+    def null_arg = null_rankings ? "--null-rankings ${null_rankings}" : ''
+    def cooccur_arg = cooccurrence_pairs ? "--cooccurrence ${cooccurrence_pairs}" : ''
     """
     mkdir -p gene_interactions_output
 

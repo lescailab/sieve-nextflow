@@ -19,8 +19,8 @@ process SIEVE_EPISTASIS_POWER_ANALYSIS {
 
     script:
     def args = task.ext.args ?: ''
-    def null_attr_arg = null_attributions_npz.name != 'NO_FILE' ? "--null-attributions-npz ${null_attributions_npz}" : ''
-    def epistasis_arg = epistasis_results.name != 'NO_FILE2' ? "--epistasis-results ${epistasis_results}" : ''
+    def null_attr_arg = null_attributions_npz ? "--null-attributions-npz ${null_attributions_npz}" : ''
+    def epistasis_arg = epistasis_results ? "--epistasis-results ${epistasis_results}" : ''
     """
     mkdir -p power_output
 

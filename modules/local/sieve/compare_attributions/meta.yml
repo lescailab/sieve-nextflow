@@ -1,5 +1,6 @@
-name: "sieve_compare_attributions"
-description: Compare real and null variant attributions from SIEVE explainability outputs.
+name: sieve_compare_attributions
+description: Compare real and null variant attributions from SIEVE explainability
+  outputs.
 keywords:
   - sieve
   - explainability
@@ -10,7 +11,8 @@ tools:
       description: Sparse Interpretable Exome Variant Explainer
       homepage: https://anaconda.org/lescailab/sieve
       documentation: https://anaconda.org/lescailab/sieve
-      licence: ["MIT"]
+      licence:
+        - MIT
 input:
   - - meta:
         type: map
@@ -22,19 +24,27 @@ input:
         type: file
         description: Variant ranking CSV from null baseline explainability
 output:
-  - comparison:
-      - - meta:
-            type: map
-            description: Metadata map
-        - comparison_summary.yaml:
-            type: file
-            description: Attribution comparison summary
-        - comparison_output:
-            type: directory
-            description: Full attribution comparison outputs
-  - versions:
-      - versions.yml:
+  comparison:
+    - - meta:
+          type: map
+          description: Metadata map
+      - comparison_summary.yaml:
           type: file
-          description: Software versions used by the process
+          description: Attribution comparison summary
+      - comparison_output:
+          type: directory
+          description: Full attribution comparison outputs
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
 authors:
   - "@lescai"
+topics:
+  versions: *1

@@ -13,8 +13,7 @@ process SIEVE_AGGREGATE_GENE_INTERACTIONS {
     output:
     tuple val(meta), path('gene_interactions_output'), path('gene_pair_interactions.csv'), emit: gene_interactions
     tuple val(meta), path('gene_interaction_network_edges.csv'), path('gene_interaction_network_nodes.csv'), emit: network
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

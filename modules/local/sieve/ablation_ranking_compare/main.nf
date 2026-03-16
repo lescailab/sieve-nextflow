@@ -11,8 +11,7 @@ process SIEVE_ABLATION_RANKING_COMPARE {
 
     output:
     tuple val(meta), path('ablation_ranking_comparison.yaml'), path('ablation_jaccard_matrix.tsv'), path('level_specific_variants.tsv'), emit: ranking_comparison
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

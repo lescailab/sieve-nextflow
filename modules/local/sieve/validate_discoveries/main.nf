@@ -10,21 +10,20 @@ process SIEVE_VALIDATE_DISCOVERIES {
 
     output:
     tuple val(meta), path('validation_report.yaml'), path('validation_output'), emit: validation
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
     def advancedArgs = []
-    if (clinvar_tsv.name != 'NO_FILE') {
+    if (clinvar_tsv) {
         advancedArgs << "--clinvar ${clinvar_tsv}"
     }
-    if (gwas_tsv.name != 'NO_FILE2') {
+    if (gwas_tsv) {
         advancedArgs << "--gwas ${gwas_tsv}"
     }
-    if (go_mapping_json.name != 'NO_FILE3') {
+    if (go_mapping_json) {
         advancedArgs << "--go-mapping ${go_mapping_json}"
     }
     def advancedArgString = advancedArgs.join(' ')

@@ -1,0 +1,35 @@
+nextflow_process {
+
+    name "Test Process SIEVE_EMIT_SEX_MAP"
+    script "../main.nf"
+    process "SIEVE_EMIT_SEX_MAP"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "emit_sex_map"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/sex_map.tsv", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.sex_map != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

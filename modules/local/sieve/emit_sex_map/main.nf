@@ -10,8 +10,7 @@ process SIEVE_EMIT_SEX_MAP {
 
     output:
     tuple val(meta), path('sample_sex.tsv'), emit: sex_map
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('python'), val('3.11'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

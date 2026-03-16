@@ -10,8 +10,7 @@ process SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS {
 
     output:
     tuple val(meta), path('real_autosomal_variant_rankings.csv'), path('null_autosomal_variant_rankings.csv'), path('sex_chromosome_filter_summary.yaml'), emit: filtered_rankings
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('python'), val('3.11'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

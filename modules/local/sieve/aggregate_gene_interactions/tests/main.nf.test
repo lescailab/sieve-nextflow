@@ -1,0 +1,39 @@
+nextflow_process {
+
+    name "Test Process SIEVE_AGGREGATE_GENE_INTERACTIONS"
+    script "../main.nf"
+    process "SIEVE_AGGREGATE_GENE_INTERACTIONS"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "aggregate_gene_interactions"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true)
+]
+input[1] = file("${projectDir}/assets/testdata/sex_map.tsv", checkIfExists: true)
+input[2] = file("${projectDir}/assets/testdata/test_biomart.tsv", checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.gene_interactions != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

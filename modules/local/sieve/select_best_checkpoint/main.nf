@@ -10,8 +10,7 @@ process SIEVE_SELECT_BEST_CHECKPOINT {
 
     output:
     tuple val(meta), path('best_checkpoint.pt'), path('best_fold_config.yaml'), path('best_fold_id.txt'), path('cv_folds_summary.tsv'), emit: best_checkpoint
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

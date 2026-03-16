@@ -1,0 +1,38 @@
+nextflow_process {
+
+    name "Test Process SIEVE_ABLATION_COMPARE"
+    script "../main.nf"
+    process "SIEVE_ABLATION_COMPARE"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "ablation_compare"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [ id: 'cohort' ]
+input[1] = [
+    file("${projectDir}/assets/testdata/component_fixtures/ablation/ablation_L0_selection_payload", checkIfExists: true),
+    file("${projectDir}/assets/testdata/component_fixtures/ablation/ablation_L1_selection_payload", checkIfExists: true),
+    file("${projectDir}/assets/testdata/component_fixtures/ablation/ablation_L2_selection_payload", checkIfExists: true),
+    file("${projectDir}/assets/testdata/component_fixtures/ablation/ablation_L3_selection_payload", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.ablation_summary != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

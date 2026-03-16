@@ -1,0 +1,39 @@
+nextflow_process {
+
+    name "Test Process SIEVE_TRAIN_CV"
+    script "../main.nf"
+    process "SIEVE_TRAIN_CV"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "train_cv"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort', run_id: 'cv_main', level: 'L3' ],
+    file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true),
+    file("${projectDir}/assets/testdata/sex_map.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/test_model/L3_run/config.yaml", checkIfExists: true),
+    'L3',
+    2
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.cv_bundle != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

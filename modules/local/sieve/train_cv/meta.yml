@@ -1,4 +1,4 @@
-name: "sieve_train_cv"
+name: sieve_train_cv
 description: Train SIEVE with cross-validation using selected hyperparameters.
 keywords:
   - sieve
@@ -10,7 +10,8 @@ tools:
       description: Sparse Interpretable Exome Variant Explainer
       homepage: https://anaconda.org/lescailab/sieve
       documentation: https://anaconda.org/lescailab/sieve
-      licence: ["MIT"]
+      licence:
+        - MIT
 input:
   - - meta:
         type: map
@@ -31,26 +32,34 @@ input:
         type: integer
         description: Number of CV folds
 output:
-  - cv_bundle:
-      - - meta:
-            type: map
-            description: Metadata map for the CV run
-        - cv_output:
-            type: directory
-            description: CV output directory containing per-fold files
-        - cv_results.yaml:
-            type: file
-            description: CV-level metrics summary
-  - fold_dirs:
-      - - meta:
-            type: map
-            description: Metadata map for the CV run
-        - cv_output/fold_*:
-            type: directory
-            description: Per-fold output directories
-  - versions:
-      - versions.yml:
+  cv_bundle:
+    - - meta:
+          type: map
+          description: Metadata map for the CV run
+      - cv_output:
+          type: directory
+          description: CV output directory containing per-fold files
+      - cv_results.yaml:
           type: file
-          description: Software versions used by the process
+          description: CV-level metrics summary
+  fold_dirs:
+    - - meta:
+          type: map
+          description: Metadata map for the CV run
+      - cv_output/fold_*:
+          type: directory
+          description: Per-fold output directories
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
 authors:
   - "@lescai"
+topics:
+  versions: *1

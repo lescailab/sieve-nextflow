@@ -12,8 +12,7 @@ process SIEVE_EXPLAIN {
     output:
     tuple val(meta), path('sieve_variant_rankings.csv'), path('sieve_gene_rankings.csv'), path('sieve_interactions.csv'), emit: rankings
     tuple val(meta), path('explain_output'), emit: explain_dir
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

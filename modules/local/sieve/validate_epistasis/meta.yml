@@ -1,4 +1,4 @@
-name: "sieve_validate_epistasis"
+name: sieve_validate_epistasis
 description: Validate epistatic interactions discovered by SIEVE explainability.
 keywords:
   - sieve
@@ -9,7 +9,8 @@ tools:
       description: Sparse Interpretable Exome Variant Explainer
       homepage: https://anaconda.org/lescailab/sieve
       documentation: https://anaconda.org/lescailab/sieve
-      licence: ["MIT"]
+      licence:
+        - MIT
 input:
   - - meta:
         type: map
@@ -27,19 +28,27 @@ input:
         type: file
         description: Preprocessed tensor file
 output:
-  - epistasis:
-      - - meta:
-            type: map
-            description: Metadata map
-        - epistasis_validation.csv:
-            type: file
-            description: Epistasis validation table
-        - epistasis_output:
-            type: directory
-            description: Full epistasis validation output directory
-  - versions:
-      - versions.yml:
+  epistasis:
+    - - meta:
+          type: map
+          description: Metadata map
+      - epistasis_validation.csv:
           type: file
-          description: Software versions used by the process
+          description: Epistasis validation table
+      - epistasis_output:
+          type: directory
+          description: Full epistasis validation output directory
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
 authors:
   - "@lescai"
+topics:
+  versions: *1

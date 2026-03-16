@@ -1,4 +1,4 @@
-name: "sieve_explain"
+name: sieve_explain
 description: Run SIEVE explainability from a selected checkpoint and configuration.
 keywords:
   - sieve
@@ -10,7 +10,8 @@ tools:
       description: Sparse Interpretable Exome Variant Explainer
       homepage: https://anaconda.org/lescailab/sieve
       documentation: https://anaconda.org/lescailab/sieve
-      licence: ["MIT"]
+      licence:
+        - MIT
 input:
   - - meta:
         type: map
@@ -28,29 +29,37 @@ input:
         type: boolean
         description: Flag to run in null-baseline mode
 output:
-  - rankings:
-      - - meta:
-            type: map
-            description: Metadata map for explain run
-        - sieve_variant_rankings.csv:
-            type: file
-            description: Variant attribution ranking table
-        - sieve_gene_rankings.csv:
-            type: file
-            description: Gene attribution ranking table
-        - sieve_interactions.csv:
-            type: file
-            description: Interaction attribution table
-  - explain_dir:
-      - - meta:
-            type: map
-            description: Metadata map for explain run
-        - explain_output:
-            type: directory
-            description: Explainability output directory
-  - versions:
-      - versions.yml:
+  rankings:
+    - - meta:
+          type: map
+          description: Metadata map for explain run
+      - sieve_variant_rankings.csv:
           type: file
-          description: Software versions used by the process
+          description: Variant attribution ranking table
+      - sieve_gene_rankings.csv:
+          type: file
+          description: Gene attribution ranking table
+      - sieve_interactions.csv:
+          type: file
+          description: Interaction attribution table
+  explain_dir:
+    - - meta:
+          type: map
+          description: Metadata map for explain run
+      - explain_output:
+          type: directory
+          description: Explainability output directory
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
 authors:
   - "@lescai"
+topics:
+  versions: *1

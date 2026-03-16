@@ -11,8 +11,7 @@ process SIEVE_COLLECT_PLOTS {
 
     output:
     tuple val(meta), path('plots'), path('plots_manifest.tsv'), emit: plot_bundle
-    path 'versions.yml', emit: versions, topic: 'versions'
-
+    tuple val("${task.process}"), val('python'), val('3.11'), emit: versions, topic: versions
     when:
     task.ext.when == null || task.ext.when
 

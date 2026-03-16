@@ -1,5 +1,6 @@
-name: "sieve_collect_plots"
-description: Collect and normalize plot files from multiple pipeline output directories into a single bundle.
+name: sieve_collect_plots
+description: Collect and normalize plot files from multiple pipeline output directories
+  into a single bundle.
 keywords:
   - sieve
   - plots
@@ -10,28 +11,38 @@ tools:
       description: Python scripting language
       homepage: https://www.python.org
       documentation: https://docs.python.org/3/
-      licence: ["PSF-2.0"]
+      licence:
+        - PSF-2.0
 input:
   - - meta:
         type: map
         description: Metadata map for the cohort
     - plot_sources:
         type: list
-        description: One or more file or directory paths to scan recursively for plot files
+        description: One or more file or directory paths to scan recursively for plot
+          files
 output:
-  - plot_bundle:
-      - - meta:
-            type: map
-            description: Metadata map for the cohort
-        - plots:
-            type: directory
-            description: Unified directory containing copied plot files
-        - plots_manifest.tsv:
-            type: file
-            description: Manifest of source and published plot paths
-  - versions:
-      - versions.yml:
+  plot_bundle:
+    - - meta:
+          type: map
+          description: Metadata map for the cohort
+      - plots:
+          type: directory
+          description: Unified directory containing copied plot files
+      - plots_manifest.tsv:
           type: file
-          description: Software versions used by the process
+          description: Manifest of source and published plot paths
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - python:
+          type: string
+          description: The name of the tool
+      - "3.11":
+          type: string
+          description: The version of the tool
 authors:
   - "@lescai"
+topics:
+  versions: *1

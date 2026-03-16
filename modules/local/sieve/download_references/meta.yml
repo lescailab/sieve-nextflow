@@ -1,0 +1,60 @@
+name: sieve_download_references
+description: Download and normalize bundled biological reference resources for SIEVE
+  validation.
+keywords:
+  - sieve
+  - references
+  - clinvar
+  - gwas
+  - ontology
+tools:
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence:
+        - MIT
+input:
+  - - meta:
+        type: map
+        description: Metadata map for the cohort
+  - - genome_build:
+        type: string
+        description: Reference genome build to use when normalizing downloaded resources
+output:
+  references:
+    - - meta:
+          type: map
+          description: Metadata map for the cohort
+      - parsed_clinvar.tsv:
+          type: file
+          description: Normalized ClinVar TSV
+      - parsed_gwas.tsv:
+          type: file
+          description: Normalized GWAS TSV
+      - parsed_go.json:
+          type: file
+          description: Normalized Gene Ontology JSON mapping
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
+authors:
+  - "@lescai"

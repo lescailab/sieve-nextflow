@@ -1,0 +1,38 @@
+nextflow_process {
+
+    name "Test Process SIEVE_EPISTASIS_POWER_ANALYSIS"
+    script "../main.nf"
+    process "SIEVE_EPISTASIS_POWER_ANALYSIS"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "epistasis_power_analysis"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/test_gwas.tsv", checkIfExists: true)
+]
+input[1] = file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true)
+input[2] = file("${projectDir}/assets/testdata/test_gwas_simple.tsv", checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.power_analysis != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

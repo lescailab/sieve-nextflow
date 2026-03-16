@@ -1,4 +1,4 @@
-name: "sieve_validate_discoveries"
+name: sieve_validate_discoveries
 description: Validate SIEVE-discovered variants/genes against optional reference resources.
 keywords:
   - sieve
@@ -10,7 +10,8 @@ tools:
       description: Sparse Interpretable Exome Variant Explainer
       homepage: https://anaconda.org/lescailab/sieve
       documentation: https://anaconda.org/lescailab/sieve
-      licence: ["MIT"]
+      licence:
+        - MIT
 input:
   - - meta:
         type: map
@@ -31,19 +32,27 @@ input:
         type: string
         description: Optional GO mapping JSON path
 output:
-  - validation:
-      - - meta:
-            type: map
-            description: Metadata map
-        - validation_report.yaml:
-            type: file
-            description: Discovery validation summary report
-        - validation_output:
-            type: directory
-            description: Full validation output directory
-  - versions:
-      - versions.yml:
+  validation:
+    - - meta:
+          type: map
+          description: Metadata map
+      - validation_report.yaml:
           type: file
-          description: Software versions used by the process
+          description: Discovery validation summary report
+      - validation_output:
+          type: directory
+          description: Full validation output directory
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.0.0:
+          type: string
+          description: The version of the tool
 authors:
   - "@lescai"
+topics:
+  versions: *1

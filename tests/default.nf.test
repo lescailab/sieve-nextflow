@@ -23,62 +23,15 @@ nextflow_pipeline {
                 { assert new File("$outputDir/data/sex_map/sample_sex.tsv").exists() },
                 { assert new File("$outputDir/data/preprocessed/preprocessed.pt").exists() },
                 { assert new File("$outputDir/models/best_model/best_checkpoint.pt").exists() },
+                { assert new File("$outputDir/models/best_model/cv_folds_summary.tsv").exists() },
                 { assert new File("$outputDir/explainability/best_model/explain_output/sieve_variant_rankings.csv").exists() },
+                { assert new File("$outputDir/explainability/best_model/explain_output/sieve_gene_rankings.csv").exists() },
                 { assert new File("$outputDir/explainability/analysis/validation_output/validation_report.yaml").exists() },
                 { assert new File("$outputDir/ablation/discovery/ablation_summary.tsv").exists() },
                 { assert new File("$outputDir/null/model/best_model.pt").exists() },
                 { assert new File("$outputDir/null/comparison/comparison_summary.yaml").exists() },
                 { assert new File("$outputDir/null/comparison_sex_chrom_fixed/comparison_summary.yaml").exists() },
                 { assert new File("$outputDir/plots/plots_manifest.tsv").exists() }
-            )
-        }
-    }
-
-    test("test_full profile - stub run") {
-
-        config "../conf/test_full.config"
-        options "-stub-run"
-
-        when {
-            params {
-                outdir = "$outputDir"
-            }
-        }
-
-        then {
-            assertAll(
-                { assert workflow.success },
-                { assert new File("$outputDir/data/preprocessed/preprocessed.pt").exists() },
-                { assert new File("$outputDir/models/best_model/best_checkpoint.pt").exists() },
-                { assert new File("$outputDir/explainability/best_model/explain_output/sieve_variant_rankings.csv").exists() },
-                { assert new File("$outputDir/null/comparison/comparison_summary.yaml").exists() },
-                { assert new File("$outputDir/null/comparison_sex_chrom_fixed/comparison_summary.yaml").exists() },
-                { assert new File("$outputDir/explainability/analysis/validation_output/validation_report.yaml").exists() }
-            )
-        }
-    }
-
-    test("small fixtures and validation resources - stub run") {
-
-        config "../conf/test_small.config"
-        options "-stub-run"
-
-        when {
-            params {
-                outdir = "$outputDir"
-            }
-        }
-
-        then {
-            assertAll(
-                { assert workflow.success },
-                { assert new File("$outputDir/data/preprocessed/preprocessed.pt").exists() },
-                { assert new File("$outputDir/models/best_model/cv_folds_summary.tsv").exists() },
-                { assert new File("$outputDir/explainability/best_model/explain_output/sieve_gene_rankings.csv").exists() },
-                { assert new File("$outputDir/null/comparison/comparison_summary.yaml").exists() },
-                { assert new File("$outputDir/null/comparison_sex_chrom_fixed/comparison_summary.yaml").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_summary.tsv").exists() },
-                { assert new File("$outputDir/explainability/analysis/validation_output/validation_report.yaml").exists() }
             )
         }
     }

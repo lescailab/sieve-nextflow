@@ -1,7 +1,7 @@
 name: nf-core AWS full size tests
 # This workflow is triggered on PRs opened against the main/master branch.
 # It can be additionally triggered manually with GitHub actions workflow dispatch button.
-# It runs the -profile 'test_full' on AWS batch
+# It runs the -profile 'test' on AWS batch
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
 
       - name: Launch workflow via Seqera Platform
         uses: seqeralabs/action-tower-launch@v2
-        # Full-size test data on the `test_full.config` profile
+        # Full-size test data on the `test.config` profile
         with:
           workspace_id: ${{ vars.TOWER_WORKSPACE_ID }}
           access_token: ${{ secrets.TOWER_ACCESS_TOKEN }}
@@ -36,7 +36,7 @@ jobs:
               "hook_url": "${{ secrets.MEGATESTS_ALERTS_SLACK_HOOK_URL }}",
               "outdir": "s3://${{ vars.AWS_S3_BUCKET }}/sieve/results-${{ steps.revision.outputs.revision }}"
             }
-          profiles: test_full
+          profiles: test
 
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:

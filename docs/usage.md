@@ -86,7 +86,6 @@ Generic software profiles:
 - `apptainer`
 - `conda`
 - `test`
-- `test_full`
 
 Recommended quick validation:
 

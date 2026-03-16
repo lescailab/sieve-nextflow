@@ -1,8 +1,10 @@
+channel_priority: flexible
 channels:
- - pytorch
- - nvidia
- - bioconda
- - conda-forge
- - lescailab
+  - conda-forge
+  - bioconda
+  - nvidia
+  - lescailab
 dependencies:
-  - lescailab::sieve==1.0.0
+  - lescailab::sieve
+  - pytorch::pytorch>=2.0.0
+  - pytorch::pytorch-cuda>=11.8

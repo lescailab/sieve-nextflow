@@ -60,6 +60,7 @@ sampleB	control
 Sex handling:
 
 - Default: `--infer_sex true` (pipeline infers `sample_sex.tsv`)
+- Optional: provide `--known_sex sample_metadata.tsv` to pass recorded sex metadata into `sieve-infer-sex` for concordance checks during inference only; it does not replace the inferred `sample_sex.tsv` output
 - Optional: provide `--sex_map sample_sex.tsv` to skip inference
 - If `--infer_sex false`, `--sex_map` is required
 

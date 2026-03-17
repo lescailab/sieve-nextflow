@@ -130,6 +130,7 @@ def validateSieveArguments(
     phenotypes,
     genomeBuild,
     inferSex,
+    knownSex,
     sexMap,
     preprocessedData,
     bestParams,
@@ -194,6 +195,10 @@ def validateSieveArguments(
         }
     }
 
+    if (knownSex) {
+        assertExistingFile(knownSex, '--known_sex', fail)
+    }
+
     if (sexMap) {
         assertExistingFile(sexMap, '--sex_map', fail)
         if (inferSex) {
@@ -208,6 +213,11 @@ def validateSieveArguments(
 
     if (needSexMap && !sexMap && !inferSex) {
         fail.call('The selected execution steps require sex information. Provide --sex_map or set --infer_sex true.')
+    }
+
+    def willRunSexInference = needSexMap && !sexMap && inferSex
+    if (knownSex && !willRunSexInference) {
+        logHandle?.warn('Parameter --known_sex is only used when the pipeline runs sex inference. It will be ignored for the current inputs and selected steps.')
     }
 
     if (needsRawVcf) {

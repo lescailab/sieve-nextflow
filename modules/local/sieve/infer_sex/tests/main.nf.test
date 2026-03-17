@@ -19,7 +19,35 @@ nextflow_process {
 input[0] = [
     [ id: 'cohort' ],
     file("${projectDir}/assets/testdata/small_test_data.vcf.gz", checkIfExists: true),
-    file("${projectDir}/assets/testdata/small_test_data.vcf.gz.csi", checkIfExists: true)
+    file("${projectDir}/assets/testdata/small_test_data.vcf.gz.csi", checkIfExists: true),
+    []
+]
+input[1] = 'GRCh38'
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.sex_map != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+
+    test("stub run with known sex concordance file") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/small_test_data.vcf.gz", checkIfExists: true),
+    file("${projectDir}/assets/testdata/small_test_data.vcf.gz.csi", checkIfExists: true),
+    file("${projectDir}/assets/testdata/known_sex.tsv", checkIfExists: true)
 ]
 input[1] = 'GRCh38'
                 """

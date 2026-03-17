@@ -71,7 +71,8 @@ workflow PREPROCESS {
                     def idx = file("${vcf}.tbi").exists() ? file("${vcf}.tbi") :
                               file("${vcf}.csi").exists() ? file("${vcf}.csi") :
                               []
-                    tuple(cohortMeta, vcf, idx)
+                    def knownSex = params.known_sex ? file(params.known_sex, checkIfExists: true) : []
+                    tuple(cohortMeta, vcf, idx, knownSex)
                 }
 
             SIEVE_INFER_SEX(

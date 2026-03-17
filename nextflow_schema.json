@@ -47,6 +47,13 @@
                     "default": true,
                     "fa_icon": "fas fa-venus-mars"
                 },
+                "known_sex": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "description": "Optional TSV of recorded sample sex metadata passed to sex inference for concordance checking only. It does not replace or pre-populate the inferred sample_sex.tsv output.",
+                    "fa_icon": "fas fa-file-lines"
+                },
                 "sex_map": {
                     "type": "string",
                     "format": "file-path",

@@ -18,6 +18,12 @@ input:
     - vcf:
         type: file
         description: Input bgzipped multi-sample VCF
+    - vcf_index:
+        type: file
+        description: Optional VCF index (.tbi or .csi)
+    - known_sex:
+        type: file
+        description: Optional TSV of recorded sample sexes used only for concordance checking against the inferred output
   - - genome_build:
         type: string
         description: Genome build (GRCh37 or GRCh38)

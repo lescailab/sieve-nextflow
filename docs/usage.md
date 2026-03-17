@@ -46,6 +46,12 @@ Default behavior is sex inference:
 --infer_sex true
 ```
 
+Optional concordance checking during sex inference:
+
+```bash
+--infer_sex true --known_sex sample_metadata.tsv
+```
+
 To skip inference, provide a sex map:
 
 ```bash
@@ -53,6 +59,7 @@ To skip inference, provide a sex map:
 ```
 
 If `--sex_map` is provided, it is used directly and inference/map creation steps are skipped.
+`--known_sex` is only used when the pipeline actually runs `sieve-infer-sex`; it should point to a TSV with `sample_id` in the first column and a sex label in the second column. This file is used only for concordance reporting and does not replace or seed the inferred `sample_sex.tsv` output.
 
 ## Step selection
 

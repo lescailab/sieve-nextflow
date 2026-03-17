@@ -124,6 +124,7 @@ nextflow_pipeline {
                 checkpoint_config = null
                 preprocessed_data = null
                 sex_map = null
+                known_sex = "${projectDir}/assets/testdata/known_sex.tsv"
                 infer_sex = true
             }
         }

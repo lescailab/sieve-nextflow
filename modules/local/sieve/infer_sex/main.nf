@@ -6,7 +6,7 @@ process SIEVE_INFER_SEX {
     container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
 
     input:
-    tuple val(meta), path(vcf), path(vcf_index)
+    tuple val(meta), path(vcf), path(vcf_index), path(known_sex)
     val genome_build
 
     output:
@@ -18,14 +18,15 @@ process SIEVE_INFER_SEX {
 
     script:
     def args = task.ext.args ?: ''
+    def knownSexArg = known_sex ? "--known-sex ${known_sex}" : ''
+    def cliArgs = [knownSexArg, args].findAll { it }.join(' ')
     """
     mkdir -p infer_sex_diagnostics
 
     sieve-infer-sex \
         --vcf ${vcf} \
         --output-dir infer_sex_diagnostics \
-        --genome-build ${genome_build} \
-        ${args}
+        --genome-build ${genome_build} ${cliArgs}
 
     sex_map_candidate=""
     if [[ -f infer_sex_diagnostics/sample_sex.tsv ]]; then

@@ -77,6 +77,7 @@ workflow {
         params.phenotypes,
         params.genome_build,
         params.infer_sex,
+        params.known_sex,
         params.sex_map,
         params.preprocessed_data,
         params.best_params,

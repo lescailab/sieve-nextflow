@@ -33,6 +33,7 @@ workflow PIPELINE_INITIALISATION {
     phenotypes        // string: Path to phenotype TSV
     genome_build      // string: GRCh37 or GRCh38
     infer_sex         // boolean: whether to infer sex when sex_map not provided
+    known_sex         // string: Optional known sex TSV used for sex-inference concordance checks
     sex_map           // string: Optional precomputed sex map TSV
     preprocessed_data // string: Optional preprocessed dataset (.pt)
     best_params       // string: Optional best-parameter YAML to skip grid search
@@ -94,6 +95,7 @@ workflow PIPELINE_INITIALISATION {
         phenotypes,
         genome_build,
         infer_sex,
+        known_sex,
         sex_map,
         preprocessed_data,
         best_params,

@@ -21,7 +21,6 @@ Author: Francesco Lescai
 
 import argparse
 import json
-import os
 import sys
 import tempfile
 from pathlib import Path
@@ -36,12 +35,16 @@ except ImportError:
     sys.exit(1)
 
 # Ensembl BioMart URLs
-BIOMART_URL = 'http://www.ensembl.org/biomart/martservice'
+BIOMART_URL = 'https://www.ensembl.org/biomart/martservice'
 
 # GO annotation file URLs (alternative sources)
 GO_ANNOTATION_URLS = {
-    'human': 'http://current.geneontology.org/annotations/goa_human.gaf.gz',
-    'mouse': 'http://current.geneontology.org/annotations/mgi.gaf.gz',
+    'human': 'https://current.geneontology.org/annotations/goa_human.gaf.gz',
+    'mouse': 'https://current.geneontology.org/annotations/mgi.gaf.gz',
+}
+
+REQUEST_HEADERS = {
+    'Accept': '*/*',
 }
 
 # GO aspect filters
@@ -58,30 +61,39 @@ def download_with_progress(url: str, output_path: Path, method: str = 'GET',
     """Download file with progress bar."""
     print(f"Downloading from {url[:80]}...")
 
-    def reporthook(block_num, block_size, total_size):
-        """Progress callback."""
-        if total_size > 0:
-            downloaded = block_num * block_size
-            percent = min(100, downloaded * 100.0 / total_size)
-            mb_downloaded = downloaded / (1024 * 1024)
-            mb_total = total_size / (1024 * 1024)
-            sys.stdout.write(f"\r  Progress: {percent:.1f}% ({mb_downloaded:.1f}/{mb_total:.1f} MB)")
-            sys.stdout.flush()
-        else:
-            downloaded = block_num * block_size
-            mb_downloaded = downloaded / (1024 * 1024)
-            sys.stdout.write(f"\r  Downloaded: {mb_downloaded:.1f} MB")
-            sys.stdout.flush()
-
     try:
-        if method == 'POST' and data:
-            # For BioMart POST requests
-            req = urllib.request.Request(url, data=data, method='POST')
-            with urllib.request.urlopen(req) as response:
-                with open(output_path, 'wb') as out_file:
-                    out_file.write(response.read())
-        else:
-            urllib.request.urlretrieve(url, output_path, reporthook)
+        request_data = data if method == 'POST' else None
+        req = urllib.request.Request(
+            url,
+            data=request_data,
+            headers=REQUEST_HEADERS,
+            method=method,
+        )
+
+        with urllib.request.urlopen(req) as response:
+            total_size_header = response.headers.get('Content-Length')
+            total_size = int(total_size_header) if total_size_header else -1
+            downloaded = 0
+
+            with open(output_path, 'wb') as out_file:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+
+                    out_file.write(chunk)
+                    downloaded += len(chunk)
+
+                    mb_downloaded = downloaded / (1024 * 1024)
+                    if total_size > 0:
+                        percent = min(100, downloaded * 100.0 / total_size)
+                        mb_total = total_size / (1024 * 1024)
+                        sys.stdout.write(
+                            f"\r  Progress: {percent:.1f}% ({mb_downloaded:.1f}/{mb_total:.1f} MB)"
+                        )
+                    else:
+                        sys.stdout.write(f"\r  Downloaded: {mb_downloaded:.1f} MB")
+                    sys.stdout.flush()
 
         print()  # Newline after progress
         print(f"Downloaded to {output_path}")

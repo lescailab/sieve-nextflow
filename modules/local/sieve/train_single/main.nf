@@ -45,6 +45,8 @@ process SIEVE_TRAIN_SINGLE {
         ${trainParamArgs} \
         ${args}
 
+    sync
+
     results_candidate=\$(find train_output -maxdepth 3 -type f \\( -name 'results.yaml' -o -name '*results*.yaml' \\) | head -n 1 || true)
     config_candidate=\$(find train_output -maxdepth 3 -type f \\( -name 'config.yaml' -o -name '*config*.yaml' \\) | head -n 1 || true)
     model_candidate=\$(find train_output -maxdepth 5 -type f \\( -name 'best_model.pt' -o -name '*checkpoint*.pt' -o -name '*.pt' \\) | head -n 1 || true)

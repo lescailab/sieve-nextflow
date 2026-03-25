@@ -18,6 +18,10 @@ except ImportError:  # pragma: no cover - runtime guard
 
 
 AUC_KEYS = (
+    "best_val_auc",
+    "best_auc",
+    "best_roc_auc",
+    "best_val_roc_auc",
     "auc",
     "roc_auc",
     "metrics.auc",
@@ -30,6 +34,10 @@ AUC_KEYS = (
 )
 
 ACC_KEYS = (
+    "best_val_accuracy",
+    "best_accuracy",
+    "best_val_acc",
+    "best_acc",
     "accuracy",
     "acc",
     "metrics.accuracy",
@@ -42,6 +50,8 @@ ACC_KEYS = (
 )
 
 LOSS_KEYS = (
+    "best_val_loss",
+    "best_loss",
     "loss",
     "metrics.loss",
     "validation.loss",

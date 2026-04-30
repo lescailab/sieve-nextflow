@@ -1,0 +1,1074 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Extended documentation for the lescailab/sieve Nextflow pipeline">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Documentation Enhancement Suggestions for docs/output.md - SIEVE Guidelines</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="red">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#documentation-enhancement-suggestions-for-docsoutputmd" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SIEVE Guidelines" class="md-header__button md-logo" aria-label="SIEVE Guidelines" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SIEVE Guidelines
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Documentation Enhancement Suggestions for docs/output.md
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="red"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="red"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/lescailab/sieve-nextflow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SIEVE Guidelines" class="md-nav__button md-logo" aria-label="SIEVE Guidelines" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SIEVE Guidelines
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/lescailab/sieve-nextflow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pipeline-overview.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../running-the-pipeline.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running the pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inputs.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inputs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflow-steps.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../outputs-detailed.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Detailed outputs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reproducibility.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extending-the-pipeline.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending the pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#additions-needed-for-recent-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additions Needed for Recent Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additions Needed for Recent Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-ablation-ranking-comparison-new-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Ablation Ranking Comparison (NEW Feature)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-plot-collection-and-aggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Plot Collection and Aggregation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Plot Collection and Aggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sources:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#special-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Special Cases:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage Tips:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-output-block-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Output Block Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-troubleshooting-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Troubleshooting Section
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-file-format-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. File Format Specifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#best_paramsyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        best_params.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sieve_variant_rankingscsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sieve_variant_rankings.csv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ablation_jaccard_matrixtsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ablation_jaccard_matrix.tsv
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="documentation-enhancement-suggestions-for-docsoutputmd">Documentation Enhancement Suggestions for docs/output.md<a class="headerlink" href="#documentation-enhancement-suggestions-for-docsoutputmd" title="Permanent link">&para;</a></h1>
+<h2 id="additions-needed-for-recent-features">Additions Needed for Recent Features<a class="headerlink" href="#additions-needed-for-recent-features" title="Permanent link">&para;</a></h2>
+<h3 id="1-ablation-ranking-comparison-new-feature">1. Ablation Ranking Comparison (NEW Feature)<a class="headerlink" href="#1-ablation-ranking-comparison-new-feature" title="Permanent link">&para;</a></h3>
+<p>Add to the <code>ablation/</code> section:</p>
+<div class="highlight"><pre><span></span><code><span class="gu">## Ablation Analysis Outputs</span>
+
+<span class="gu">### Directory: `ablation/`</span>
+
+The ablation analysis trains models at different annotation levels (L0-L3) to assess the impact of annotation granularity on model performance.
+
+<span class="gu">#### Structure:</span>
+
+<span class="k">-</span><span class="w"> </span><span class="sb">`runs/`</span> - Training outputs for each annotation level
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="sb">`L0/`</span> - Level 0 (basic functional annotations)
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="sb">`L1/`</span> - Level 1 (moderate annotations)
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="sb">`L2/`</span> - Level 2 (detailed annotations)
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="sb">`L3/`</span> - Level 3 (comprehensive annotations)
+<span class="k">-</span><span class="w"> </span><span class="sb">`summary/`</span>
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="gs">**`ablation_summary.tsv`**</span> - Performance metrics across all levels
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="gs">**`ablation_summary.yaml`**</span> - Structured summary with best level identification
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="gs">**`ablation_ranking_comparison.yaml`**</span> - ⭐ NEW: Variant ranking comparison metrics
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="gs">**`ablation_jaccard_matrix.tsv`**</span> - ⭐ NEW: Jaccard similarity between annotation levels
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="gs">**`level_specific_variants.tsv`**</span> - ⭐ NEW: Variants uniquely ranked high at each level
+
+<span class="gu">#### Key Outputs Explained:</span>
+
+<span class="gs">**ablation_summary.tsv**</span>
+
+<span class="k">-</span><span class="w"> </span>Tab-separated metrics (AUC, accuracy, loss) for each annotation level
+<span class="k">-</span><span class="w"> </span>Includes paths to full results for each level
+
+<span class="gs">**ablation_ranking_comparison.yaml**</span>
+
+<span class="k">-</span><span class="w"> </span>Jaccard similarity matrices comparing top-K variants across levels (K=50,100,200,500)
+<span class="k">-</span><span class="w"> </span>Level-specific variant counts (variants highly ranked only at one level)
+<span class="k">-</span><span class="w"> </span>Thresholds: high-rank (&lt;100), low-rank (&gt;500)
+
+<span class="gs">**ablation_jaccard_matrix.tsv**</span>
+
+<span class="k">-</span><span class="w"> </span>Pairwise Jaccard similarity between annotation levels
+<span class="k">-</span><span class="w"> </span>Columns: <span class="sb">`top_k`</span>, <span class="sb">`level_a`</span>, <span class="sb">`level_b`</span>, <span class="sb">`jaccard`</span>, <span class="sb">`overlap`</span>, <span class="sb">`size_a`</span>, <span class="sb">`size_b`</span>, <span class="sb">`union`</span>
+<span class="k">-</span><span class="w"> </span>Use to identify which levels produce similar vs. distinct variant priorities
+
+<span class="gs">**level_specific_variants.tsv**</span>
+
+<span class="k">-</span><span class="w"> </span>Variants that are highly ranked (top 100) at one annotation level but poorly ranked (&gt;500) at others
+<span class="k">-</span><span class="w"> </span>Columns: <span class="sb">`variant_id`</span>, <span class="sb">`gene`</span>, <span class="sb">`chrom`</span>, <span class="sb">`pos`</span>, <span class="sb">`specific_to_level`</span>, <span class="sb">`rank_at_specific_level`</span>, <span class="sb">`rank_at_L0`</span>, <span class="sb">`rank_at_L1`</span>, <span class="sb">`rank_at_L2`</span>, <span class="sb">`rank_at_L3`</span>, <span class="sb">`mean_attribution_at_specific_level`</span>
+<span class="k">-</span><span class="w"> </span><span class="gs">**Interpretation**</span>: These variants may represent annotation-level-specific biological signals
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>L0-specific: Might be driven by basic functional impact
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>L3-specific: May require comprehensive annotations to be prioritized
+
+<span class="gu">#### Use Cases:</span>
+
+<span class="k">1.</span> <span class="gs">**Assessing annotation value**</span>: Compare performance metrics across levels to determine if richer annotations improve discovery
+<span class="k">2.</span> <span class="gs">**Identifying robust variants**</span>: High Jaccard similarity across levels suggests variants are robustly prioritized regardless of annotation complexity
+<span class="k">3.</span> <span class="gs">**Finding annotation-dependent signals**</span>: Level-specific variants indicate features that only emerge with certain annotation granularity
+<span class="k">4.</span> <span class="gs">**Resource optimization**</span>: If L1 performs nearly as well as L3, you might save computational resources
+</code></pre></div>
+<h3 id="2-plot-collection-and-aggregation">2. Plot Collection and Aggregation<a class="headerlink" href="#2-plot-collection-and-aggregation" title="Permanent link">&para;</a></h3>
+<p>Add a new section:</p>
+<div class="highlight"><pre><span></span><code><span class="gu">## Plots and Visualizations</span>
+
+<span class="gu">### Directory: `plots/`</span>
+
+All publication-ready plots generated throughout the pipeline are collected and organized in a central location.
+
+<span class="gu">#### Structure:</span>
+
+<span class="k">-</span><span class="w"> </span><span class="sb">`plots/`</span> - Aggregated plot directory
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="sb">`0001__*.png`</span> - Sequentially numbered plot files
+<span class="w">  </span><span class="k">-</span><span class="w"> </span><span class="sb">`0002__*.svg`</span> - Multiple formats supported (PNG, SVG, PDF, EPS, TIFF)
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>...
+<span class="k">-</span><span class="w"> </span><span class="sb">`plots_manifest.tsv`</span> - Index of all collected plots
+
+<span class="gu">#### plots_manifest.tsv Format:</span>
+
+<span class="sb">```tsv</span>
+<span class="s">source_root source_file published_plot</span>
+<span class="s">data/preprocessed   data/preprocessed/phenotype_distribution.png    plots/0001__phenotype_distribution.png</span>
+<span class="s">explainability/analysis explainability/analysis/top_genes_barplot.svg   plots/0002__top_genes_barplot.svg</span>
+<span class="s">ablation/summary    ablation/summary/performance_comparison.png plots/0003__performance_comparison.png</span>
+<span class="sb">```</span>
+</code></pre></div>
+<h4 id="sources">Sources:<a class="headerlink" href="#sources" title="Permanent link">&para;</a></h4>
+<p>Plots are automatically collected from:</p>
+<ul>
+<li>Preprocessing diagnostics (sample distributions, quality metrics)</li>
+<li>Training convergence curves</li>
+<li>Explainability visualizations (gene rankings, variant impacts)</li>
+<li>Ablation performance comparisons</li>
+<li>Null baseline comparisons</li>
+<li>Discovery validation plots</li>
+</ul>
+<h4 id="special-cases">Special Cases:<a class="headerlink" href="#special-cases" title="Permanent link">&para;</a></h4>
+<ul>
+<li>If no plots are found, a placeholder file <code>0000__no_plots_found.txt</code> is created</li>
+<li>This ensures downstream processes complete successfully even when plot generation is skipped or fails</li>
+<li>Designed to work robustly with cloud storage backends (S3, GCS, Azure)</li>
+</ul>
+<h4 id="usage-tips">Usage Tips:<a class="headerlink" href="#usage-tips" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Use <code>plots_manifest.tsv</code> to programmatically locate specific plot types</li>
+<li>Plot numbers are assigned in the order they're discovered (may vary between runs)</li>
+<li>Original filenames are preserved after the sequential number prefix for easy identification</li>
+</ul>
+<div class="highlight"><pre><span></span><code>### 3. Enhanced Null Baseline Section
+
+Expand the existing `null_baseline/` section:
+
+```markdown
+## Null Baseline Comparison
+
+### Directory: `null_baseline/`
+
+The null baseline analysis creates permuted datasets to establish statistical significance of variant attributions.
+
+#### Structure:
+- `dataset/`
+  - **`preprocessed_NULL.pt`** - Phenotype-permuted dataset (preserves genotypes)
+- `train/`
+  - Null model training artifacts (uses same hyperparameters as best model)
+- `explain/`
+  - `sieve_variant_rankings_NULL.csv` - Variant rankings from null model
+  - `sieve_gene_rankings_NULL.csv` - Gene rankings from null model
+  - Generated with `--is-null-baseline` flag
+- `comparison/`
+  - **`comparison_summary.yaml`** - Statistical comparison metrics
+  - **`real_vs_null_attributions.tsv`** - Side-by-side attribution comparison
+  - **`significant_variants.csv`** - Variants with attributions significantly higher than null
+- `comparison_sex_chrom_fixed/` (if generated)
+  - Same structure but with sex chromosome variants excluded from comparison
+
+#### Interpretation:
+- **Purpose**: Distinguish true biological signals from spurious correlations
+- **Method**: Permute case/control labels → retrain → compare attributions
+- **Significant variants**: Those with real attributions substantially exceeding null distribution
+- **Expected behavior**: Null model should perform near-random (AUC ≈ 0.5); high attributions in null suggest overfitting or data leakage
+
+#### Key Metrics in comparison_summary.yaml:
+- `mean_attribution_real` vs `mean_attribution_null`
+- `significant_variant_count` - Number of variants exceeding null baseline threshold
+- `enrichment_ratio` - Fold-enrichment of high-attribution variants in real vs null
+</code></pre></div>
+<h3 id="4-output-block-documentation">4. Output Block Documentation<a class="headerlink" href="#4-output-block-documentation" title="Permanent link">&para;</a></h3>
+<p>Add a new section explaining the Nextflow output structure:</p>
+<div class="highlight"><pre><span></span><code><span class="gu">## Nextflow Output Channels</span>
+
+The pipeline uses Nextflow&#39;s <span class="sb">`output {}`</span> block to organize results by category:
+
+| Output Channel              | Directory                          | Description                                       |
+| --------------------------- | ---------------------------------- | ------------------------------------------------- |
+| <span class="sb">`sex_map`</span>                   | <span class="sb">`data/sex_map/`</span>                    | Sex inference or user-provided sex mapping        |
+| <span class="sb">`preprocessed_dataset`</span>      | <span class="sb">`data/preprocessed/`</span>               | Encoded VCF data ready for training               |
+| <span class="sb">`best_model`</span>                | <span class="sb">`models/best_model/`</span>               | Best checkpoint and configuration                 |
+| <span class="sb">`explainability_best_model`</span> | <span class="sb">`explainability/best_model/`</span>       | Variant/gene attributions from best model         |
+| <span class="sb">`explainability_analysis`</span>   | <span class="sb">`explainability/analysis/`</span>         | Discovery validation and epistasis results        |
+| <span class="sb">`ablation_discovery`</span>        | <span class="sb">`ablation/discovery/`</span>              | Ablation training runs and performance comparison |
+| <span class="sb">`null_model`</span>                | <span class="sb">`null/model/`</span>                      | Null baseline training artifacts                  |
+| <span class="sb">`null_comparison`</span>           | <span class="sb">`null/comparison/`</span>                 | Real vs null attribution comparison               |
+| <span class="sb">`null_comparison_sex_fixed`</span> | <span class="sb">`null/comparison_sex_chrom_fixed/`</span> | Comparison excluding sex chromosomes              |
+| <span class="sb">`plots`</span>                     | <span class="sb">`plots/`</span>                           | All publication-ready visualizations              |
+| <span class="sb">`pipeline_versions`</span>         | <span class="sb">`pipeline_info/`</span>                   | Software versions and execution metadata          |
+
+<span class="gu">### Programmatic Access:</span>
+
+When running via Seqera Platform or with <span class="sb">`-with-tower`</span>, these outputs are published as named artifacts that can be:
+
+<span class="k">-</span><span class="w"> </span>Downloaded individually
+<span class="k">-</span><span class="w"> </span>Used as inputs for downstream analyses
+<span class="k">-</span><span class="w"> </span>Tracked across workflow executions
+<span class="k">-</span><span class="w"> </span>Shared with collaborators
+</code></pre></div>
+<h3 id="5-troubleshooting-section">5. Troubleshooting Section<a class="headerlink" href="#5-troubleshooting-section" title="Permanent link">&para;</a></h3>
+<p>Add a troubleshooting section:</p>
+<div class="highlight"><pre><span></span><code><span class="gu">## Troubleshooting Output Issues</span>
+
+<span class="gu">### Missing outputs</span>
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**Symptom**</span>: Expected output directory is empty
+<span class="k">-</span><span class="w"> </span><span class="gs">**Cause**</span>: Step may have been skipped due to <span class="sb">`--execute_step`</span> parameter or upstream artifact injection
+<span class="k">-</span><span class="w"> </span><span class="gs">**Solution**</span>: Check pipeline logs; verify you haven&#39;t provided shortcuts that skip steps (e.g., <span class="sb">`--best_checkpoint`</span> skips CV training)
+
+<span class="gu">### Empty plots directory</span>
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**Symptom**</span>: <span class="sb">`plots/`</span> contains only <span class="sb">`0000__no_plots_found.txt`</span>
+<span class="k">-</span><span class="w"> </span><span class="gs">**Cause**</span>: No plot files were generated by any process (may be expected in stub/test runs)
+<span class="k">-</span><span class="w"> </span><span class="gs">**Solution**</span>: Normal behavior when running with <span class="sb">`-stub-run`</span> or when plot generation is disabled
+
+<span class="gu">### Missing epistasis outputs</span>
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**Symptom**</span>: <span class="sb">`epistasis/`</span> directory doesn&#39;t exist
+<span class="k">-</span><span class="w"> </span><span class="gs">**Cause**</span>: Epistasis validation only runs when explainability finds gene-gene interactions
+<span class="k">-</span><span class="w"> </span><span class="gs">**Solution**</span>: Check <span class="sb">`explainability/real/sieve_interactions.csv`</span> - if empty/missing, epistasis is skipped (by design)
+
+<span class="gu">### Null baseline comparison incomplete</span>
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**Symptom**</span>: <span class="sb">`null_baseline/comparison/`</span> is missing
+<span class="k">-</span><span class="w"> </span><span class="gs">**Cause**</span>: Null training or explanation may have failed
+<span class="k">-</span><span class="w"> </span><span class="gs">**Solution**</span>: Check logs in <span class="sb">`work/`</span> directory for errors; verify preprocessed data is valid
+
+<span class="gu">### Version information missing</span>
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**Symptom**</span>: <span class="sb">`pipeline_info/nf_core_sieve_software_versions.yml`</span> is incomplete
+<span class="k">-</span><span class="w"> </span><span class="gs">**Cause**</span>: Some processes may have failed to emit versions
+<span class="k">-</span><span class="w"> </span><span class="gs">**Solution**</span>: Check execution report; versions from successful processes will still be recorded
+</code></pre></div>
+<h3 id="6-file-format-specifications">6. File Format Specifications<a class="headerlink" href="#6-file-format-specifications" title="Permanent link">&para;</a></h3>
+<p>Add detailed format documentation:</p>
+<div class="highlight"><pre><span></span><code><span class="gu">## File Format Specifications</span>
+
+<span class="gu">### sample_sex.tsv</span>
+
+<span class="sb">```tsv</span>
+<span class="s">sample_id   sex method  confidence</span>
+<span class="s">sample001   male    inferred    0.95</span>
+<span class="s">sample002   female  inferred    0.92</span>
+<span class="s">sample003   male    user_provided   1.00</span>
+<span class="sb">```</span>
+</code></pre></div>
+<ul>
+<li><code>sex</code>: male/female</li>
+<li><code>method</code>: inferred (from chromosome ratios) or user_provided</li>
+<li><code>confidence</code>: 0-1 score (1.0 for user-provided)</li>
+</ul>
+<h3 id="best_paramsyaml">best_params.yaml<a class="headerlink" href="#best_paramsyaml" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nt">lr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0001</span>
+<span class="nt">lambda_attr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="nt">latent_dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="nt">hidden_dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
+<span class="nt">num_attention_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">annotation_level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">L3</span>
+<span class="nt">batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16</span>
+<span class="c1"># ... additional training parameters</span>
+</code></pre></div>
+<ul>
+<li>Used to configure cross-validation training</li>
+<li>Can be provided via <code>--best_params</code> to skip grid search</li>
+</ul>
+<h3 id="sieve_variant_rankingscsv">sieve_variant_rankings.csv<a class="headerlink" href="#sieve_variant_rankingscsv" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>variant_id,gene,chrom,pos,ref,alt,mean_attribution,rank,annotation_level,phenotype_correlation
+1:12345_A/T,GENE1,1,12345,A,T,0.85,1,L3,case-enriched
+</code></pre></div>
+<ul>
+<li>Primary explainability output</li>
+<li>Ranked by mean_attribution (higher = more influential for prediction)</li>
+<li>Top-ranked variants are discovery candidates</li>
+</ul>
+<h3 id="ablation_jaccard_matrixtsv">ablation_jaccard_matrix.tsv<a class="headerlink" href="#ablation_jaccard_matrixtsv" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>top_k   level_a level_b jaccard overlap size_a  size_b  union
+50  L0  L1  0.35    21  50  50  60
+100 L2  L3  0.60    67  100 100 112
+</code></pre></div>
+<ul>
+<li>Jaccard similarity = overlap / union</li>
+<li>Higher values indicate similar variant rankings between levels</li>
+<li>Helps assess reproducibility across annotation complexity</li>
+</ul>
+<div class="highlight"><pre><span></span><code>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

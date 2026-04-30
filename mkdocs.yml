@@ -3,8 +3,8 @@ site_description: Extended documentation for the lescailab/sieve Nextflow pipeli
 repo_url: https://github.com/lescailab/sieve-nextflow
 edit_uri: ""
 
-docs_dir: docs
-site_dir: ../site/guidelines
+docs_dir: guidelines
+site_dir: site
 
 theme:
   name: material

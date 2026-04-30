@@ -2,7 +2,7 @@
 
 This page describes published files produced by `main.nf` through the workflow `output` block. Paths are relative to `--outdir`; the cohort directory is controlled by `--cohort_id` and defaults to `cohort`.
 
-Detailed interpretation guidance is in the [extended output guide](../guidelines/docs/outputs-detailed.md).
+Detailed interpretation guidance is in the [extended output guide](../guidelines/outputs-detailed.md).
 
 ## Directory layout
 

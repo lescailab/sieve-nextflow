@@ -60,7 +60,7 @@ nextflow run lescailab/sieve-nextflow \
 
 - [Usage](docs/usage.md): verified parameters, profiles, and common execution patterns
 - [Output](docs/output.md): published output directories and key files
-- [Guidelines](guidelines/docs/index.md): in-depth MkDocs Material documentation for concepts, workflow steps, troubleshooting, and extension work
+- [Guidelines](guidelines/index.md): in-depth MkDocs Material documentation for concepts, workflow steps, troubleshooting, and extension work
 
 ## Credits
 

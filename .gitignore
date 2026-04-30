@@ -13,4 +13,7 @@ null/
 .nf-test/
 .nf-test*
 
+## mkdocs build output
+site/
+
 .*PIPELINE.md

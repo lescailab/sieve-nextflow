@@ -1,6 +1,6 @@
 # lescailab/sieve: Usage
 
-This page lists the verified command-line interface exposed by `main.nf`, `nextflow.config`, `nextflow_schema.json`, and the SIEVE argument validator. For a deeper walk-through, see the [guidelines](../guidelines/docs/running-the-pipeline.md).
+This page lists the verified command-line interface exposed by `main.nf`, `nextflow.config`, `nextflow_schema.json`, and the SIEVE argument validator. For a deeper walk-through, see the [guidelines](../guidelines/running-the-pipeline.md).
 
 ## Execution entry point
 
@@ -110,7 +110,7 @@ Allowed step names are:
 - `validation`
 - `plots`
 
-Later steps still need their upstream data channels. If you omit upstream steps, provide the corresponding shortcut artifacts where the pipeline exposes them. See [workflow steps](../guidelines/docs/workflow-steps.md) for the dependency map.
+Later steps still need their upstream data channels. If you omit upstream steps, provide the corresponding shortcut artifacts where the pipeline exposes them. See [workflow steps](../guidelines/workflow-steps.md) for the dependency map.
 
 **`ablation` note:** selecting `ablation` automatically triggers null-baseline dataset creation (`SIEVE_CREATE_NULL_BASELINE`) so that per-level null comparisons always run. Adding `null` to the step list additionally runs the full L3 null training and attribution comparison.
 

@@ -1,7 +1,7 @@
 <h1>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/nf-core-sieve_logo_dark.png">
-    <img alt="lescailab/sieve" src="docs/images/nf-core-sieve_logo_light.png">
+    <source media="(prefers-color-scheme: dark)" srcset="assets/lescailab-sieve_logo_dark.png">
+    <img alt="lescailab/sieve" src="assets/lescailab-sieve_logo_light.png">
   </picture>
 </h1>
 

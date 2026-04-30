@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block announce %}
+  <a class="sieve-announce" href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}">
+    <span class="sieve-announce__visual" aria-hidden="true">
+      <img src="{{ 'assets/images/sieve-top-banner.png' | url }}" alt="" />
+    </span>
+    <span class="sieve-announce__copy">
+      <strong>lescailab/sieve</strong> - interpretable exome variant discovery with transparent sparse attention
+    </span>
+  </a>
+{% endblock %}

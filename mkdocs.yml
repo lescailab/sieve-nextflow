@@ -8,6 +8,7 @@ site_dir: site
 
 theme:
   name: material
+  custom_dir: guidelines/overrides
   palette:
     - scheme: default
       primary: red
@@ -22,6 +23,9 @@ theme:
 
 plugins:
   - search
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - admonition

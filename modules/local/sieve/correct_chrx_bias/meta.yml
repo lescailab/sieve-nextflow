@@ -1,0 +1,42 @@
+name: sieve_correct_chrx_bias
+description: Apply post-hoc chrX ploidy-bias correction to significance-annotated SIEVE rankings.
+keywords:
+  - sieve
+  - chrX
+  - attribution correction
+tools:
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence:
+        - MIT
+input:
+  - - meta:
+        type: map
+        description: Metadata map
+    - rankings_with_significance:
+        type: file
+        description: Significance-annotated variant rankings
+output:
+  corrected:
+    - - meta:
+          type: map
+          description: Metadata map
+      - corrected:
+          type: directory
+          description: Directory containing chrX-corrected rankings and plots
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.2.0:
+          type: string
+          description: The version of the tool
+authors:
+  - "@lescai"
+topics:
+  versions: *1

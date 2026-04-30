@@ -1,13 +1,13 @@
 nextflow_process {
 
-    name "Test Process SIEVE_COMPARE_ATTRIBUTIONS"
+    name "Test Process SIEVE_PLOT_ABLATION_COMPARISON"
     script "../main.nf"
-    process "SIEVE_COMPARE_ATTRIBUTIONS"
+    process "SIEVE_PLOT_ABLATION_COMPARISON"
     config "./nextflow.config"
 
     tag "modules"
     tag "local"
-    tag "compare_attributions"
+    tag "plot_ablation_comparison"
 
     test("stub run") {
 
@@ -19,7 +19,8 @@ nextflow_process {
 input[0] = [
     [ id: 'cohort' ],
     file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
-    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true)
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/test_model/L3_run/config.yaml", checkIfExists: true)
 ]
                 """
             }
@@ -28,8 +29,7 @@ input[0] = [
         then {
             assertAll(
                 { assert process.success },
-                { assert process.out.comparison != null },
-                { assert process.out.significance_rankings != null },
+                { assert process.out.plot != null },
                 { assert process.out.versions != null }
             )
         }

@@ -1,0 +1,62 @@
+name: sieve_generate_gene_list
+description: Generate ablation-level gene lists from corrected and bootstrap-calibrated SIEVE rankings.
+keywords:
+  - sieve
+  - gene list
+  - ablation
+tools:
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence:
+        - MIT
+input:
+  - - meta:
+        type: map
+        description: Metadata map
+    - variant_rankings_with_significance:
+        type: file
+        description: Variant rankings annotated with null-comparison significance
+    - corrected_variant_rankings:
+        type: file
+        description: ChrX-corrected variant rankings
+    - calibrated_rankings:
+        type: file
+        description: Bootstrap-calibrated variant rankings
+output:
+  gene_list_delta:
+    - - meta:
+          type: map
+          description: Metadata map
+      - gene_list_by_delta_rank.tsv:
+          type: file
+          description: Gene list ranked by bootstrap delta rank
+  gene_list_zattr:
+    - - meta:
+          type: map
+          description: Metadata map
+      - gene_list_by_z_attribution.tsv:
+          type: file
+          description: Gene list ranked by z attribution
+  variant_rankings:
+    - - meta:
+          type: map
+          description: Metadata map
+      - variant_significance_rankings.csv:
+          type: file
+          description: Variant significance rankings for publication
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.2.0:
+          type: string
+          description: The version of the tool
+authors:
+  - "@lescai"
+topics:
+  versions: *1

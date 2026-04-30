@@ -3,7 +3,7 @@ process SIEVE_INFER_SEX {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:803e8d8c7e63be61' : 'ghcr.io/lescailab/sieve-container:803e8d8c7e63be61'}"
 
     input:
     tuple val(meta), path(vcf), path(vcf_index), path(known_sex)
@@ -19,7 +19,7 @@ process SIEVE_INFER_SEX {
     script:
     def args = task.ext.args ?: ''
     def knownSexArg = known_sex ? "--known-sex ${known_sex}" : ''
-    def cliArgs = [knownSexArg, args].findAll { it }.join(' ')
+    def cliArgs = [knownSexArg, args].findAll { arg -> arg }.join(' ')
     """
     mkdir -p infer_sex_diagnostics
 

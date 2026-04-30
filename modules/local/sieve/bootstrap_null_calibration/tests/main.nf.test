@@ -1,13 +1,13 @@
 nextflow_process {
 
-    name "Test Process SIEVE_COMPARE_ATTRIBUTIONS"
+    name "Test Process SIEVE_BOOTSTRAP_NULL_CALIBRATION"
     script "../main.nf"
-    process "SIEVE_COMPARE_ATTRIBUTIONS"
+    process "SIEVE_BOOTSTRAP_NULL_CALIBRATION"
     config "./nextflow.config"
 
     tag "modules"
     tag "local"
-    tag "compare_attributions"
+    tag "bootstrap_null_calibration"
 
     test("stub run") {
 
@@ -17,7 +17,7 @@ nextflow_process {
             process {
                 """
 input[0] = [
-    [ id: 'cohort' ],
+    [ id: 'cohort', run_id: 'bootstrap_calibration', level: 'L3' ],
     file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
     file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true)
 ]
@@ -28,8 +28,7 @@ input[0] = [
         then {
             assertAll(
                 { assert process.success },
-                { assert process.out.comparison != null },
-                { assert process.out.significance_rankings != null },
+                { assert process.out.calibrated != null },
                 { assert process.out.versions != null }
             )
         }

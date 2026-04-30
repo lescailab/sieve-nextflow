@@ -3,7 +3,7 @@ process SIEVE_PREPROCESS {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:04d9d6e221e64045' : 'ghcr.io/lescailab/sieve-container:04d9d6e221e64045'}"
+    container "${(workflow.containerEngine in ['singularity', 'apptainer']) && !task.ext.singularity_pull_docker_container ? 'oras://ghcr.io/lescailab/sieve-container:803e8d8c7e63be61' : 'ghcr.io/lescailab/sieve-container:803e8d8c7e63be61'}"
 
     input:
     tuple val(meta), path(vcf), path(phenotypes), path(sex_map)

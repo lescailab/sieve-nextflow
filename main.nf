@@ -32,17 +32,61 @@ workflow NFCORE_SIEVE {
     SIEVE()
 
     emit:
-    sex_map                   = SIEVE.out.sex_map
-    preprocessed_dataset      = SIEVE.out.preprocessed_dataset
-    best_model                = SIEVE.out.best_model
-    explainability_best_model = SIEVE.out.explainability_best_model
-    explainability_analysis   = SIEVE.out.explainability_analysis
-    ablation_discovery        = SIEVE.out.ablation_discovery
-    null_model                = SIEVE.out.null_model
-    null_comparison           = SIEVE.out.null_comparison
-    null_comparison_sex_fixed = SIEVE.out.null_comparison_sex_fixed
-    plots                     = SIEVE.out.plots
-    pipeline_versions         = SIEVE.out.pipeline_versions
+    sex_map                          = SIEVE.out.sex_map
+    preprocessed_dataset             = SIEVE.out.preprocessed_dataset
+    real_training                    = SIEVE.out.real_training
+    real_cv_folds                    = SIEVE.out.real_cv_folds
+    real_attributions                = SIEVE.out.real_attributions
+    null_training_l3                 = SIEVE.out.null_training_l3
+    null_attributions_l3             = SIEVE.out.null_attributions_l3
+    null_comparison_l3               = SIEVE.out.null_comparison_l3
+    null_comparison_corrected_l3     = SIEVE.out.null_comparison_corrected_l3
+    bootstrap_calibration_l3         = SIEVE.out.bootstrap_calibration_l3
+    ablation_training_l0             = SIEVE.out.ablation_training_l0
+    ablation_training_l1             = SIEVE.out.ablation_training_l1
+    ablation_training_l2             = SIEVE.out.ablation_training_l2
+    ablation_training_l3             = SIEVE.out.ablation_training_l3
+    ablation_attributions_l0         = SIEVE.out.ablation_attributions_l0
+    ablation_attributions_l1         = SIEVE.out.ablation_attributions_l1
+    ablation_attributions_l2         = SIEVE.out.ablation_attributions_l2
+    ablation_attributions_l3         = SIEVE.out.ablation_attributions_l3
+    ablation_null_training_l0        = SIEVE.out.ablation_null_training_l0
+    ablation_null_training_l1        = SIEVE.out.ablation_null_training_l1
+    ablation_null_training_l2        = SIEVE.out.ablation_null_training_l2
+    ablation_null_training_l3        = SIEVE.out.ablation_null_training_l3
+    ablation_null_attributions_l0    = SIEVE.out.ablation_null_attributions_l0
+    ablation_null_attributions_l1    = SIEVE.out.ablation_null_attributions_l1
+    ablation_null_attributions_l2    = SIEVE.out.ablation_null_attributions_l2
+    ablation_null_attributions_l3    = SIEVE.out.ablation_null_attributions_l3
+    ablation_comparison_l0           = SIEVE.out.ablation_comparison_l0
+    ablation_comparison_l1           = SIEVE.out.ablation_comparison_l1
+    ablation_comparison_l2           = SIEVE.out.ablation_comparison_l2
+    ablation_comparison_l3           = SIEVE.out.ablation_comparison_l3
+    ablation_comparison_corrected_l0 = SIEVE.out.ablation_comparison_corrected_l0
+    ablation_comparison_corrected_l1 = SIEVE.out.ablation_comparison_corrected_l1
+    ablation_comparison_corrected_l2 = SIEVE.out.ablation_comparison_corrected_l2
+    ablation_comparison_corrected_l3 = SIEVE.out.ablation_comparison_corrected_l3
+    ablation_bootstrap_l0            = SIEVE.out.ablation_bootstrap_l0
+    ablation_bootstrap_l1            = SIEVE.out.ablation_bootstrap_l1
+    ablation_bootstrap_l2            = SIEVE.out.ablation_bootstrap_l2
+    ablation_bootstrap_l3            = SIEVE.out.ablation_bootstrap_l3
+    ablation_gene_delta_l0           = SIEVE.out.ablation_gene_delta_l0
+    ablation_gene_delta_l1           = SIEVE.out.ablation_gene_delta_l1
+    ablation_gene_delta_l2           = SIEVE.out.ablation_gene_delta_l2
+    ablation_gene_delta_l3           = SIEVE.out.ablation_gene_delta_l3
+    ablation_gene_zattr_l0           = SIEVE.out.ablation_gene_zattr_l0
+    ablation_gene_zattr_l1           = SIEVE.out.ablation_gene_zattr_l1
+    ablation_gene_zattr_l2           = SIEVE.out.ablation_gene_zattr_l2
+    ablation_gene_zattr_l3           = SIEVE.out.ablation_gene_zattr_l3
+    ablation_variant_significance_l0 = SIEVE.out.ablation_variant_significance_l0
+    ablation_variant_significance_l1 = SIEVE.out.ablation_variant_significance_l1
+    ablation_variant_significance_l2 = SIEVE.out.ablation_variant_significance_l2
+    ablation_variant_significance_l3 = SIEVE.out.ablation_variant_significance_l3
+    ablation_comparison_summary      = SIEVE.out.ablation_comparison_summary
+    epistasis_audit                  = SIEVE.out.epistasis_audit
+    gene_interactions                = SIEVE.out.gene_interactions
+    validation                       = SIEVE.out.validation
+    pipeline_versions                = SIEVE.out.pipeline_versions
 }
 
 /*
@@ -101,31 +145,129 @@ workflow {
     )
 
     publish:
-    sex_map                   = NFCORE_SIEVE.out.sex_map
-    preprocessed_dataset      = NFCORE_SIEVE.out.preprocessed_dataset
-    best_model                = NFCORE_SIEVE.out.best_model
-    explainability_best_model = NFCORE_SIEVE.out.explainability_best_model
-    explainability_analysis   = NFCORE_SIEVE.out.explainability_analysis
-    ablation_discovery        = NFCORE_SIEVE.out.ablation_discovery
-    null_model                = NFCORE_SIEVE.out.null_model
-    null_comparison           = NFCORE_SIEVE.out.null_comparison
-    null_comparison_sex_fixed = NFCORE_SIEVE.out.null_comparison_sex_fixed
-    plots                     = NFCORE_SIEVE.out.plots
-    pipeline_versions         = NFCORE_SIEVE.out.pipeline_versions
+    sex_map                          = NFCORE_SIEVE.out.sex_map
+    preprocessed_dataset             = NFCORE_SIEVE.out.preprocessed_dataset
+    real_training                    = NFCORE_SIEVE.out.real_training
+    real_cv_folds                    = NFCORE_SIEVE.out.real_cv_folds
+    real_attributions                = NFCORE_SIEVE.out.real_attributions
+    null_training_l3                 = NFCORE_SIEVE.out.null_training_l3
+    null_attributions_l3             = NFCORE_SIEVE.out.null_attributions_l3
+    null_comparison_l3               = NFCORE_SIEVE.out.null_comparison_l3
+    null_comparison_corrected_l3     = NFCORE_SIEVE.out.null_comparison_corrected_l3
+    bootstrap_calibration_l3         = NFCORE_SIEVE.out.bootstrap_calibration_l3
+    ablation_training_l0             = NFCORE_SIEVE.out.ablation_training_l0
+    ablation_training_l1             = NFCORE_SIEVE.out.ablation_training_l1
+    ablation_training_l2             = NFCORE_SIEVE.out.ablation_training_l2
+    ablation_training_l3             = NFCORE_SIEVE.out.ablation_training_l3
+    ablation_attributions_l0         = NFCORE_SIEVE.out.ablation_attributions_l0
+    ablation_attributions_l1         = NFCORE_SIEVE.out.ablation_attributions_l1
+    ablation_attributions_l2         = NFCORE_SIEVE.out.ablation_attributions_l2
+    ablation_attributions_l3         = NFCORE_SIEVE.out.ablation_attributions_l3
+    ablation_null_training_l0        = NFCORE_SIEVE.out.ablation_null_training_l0
+    ablation_null_training_l1        = NFCORE_SIEVE.out.ablation_null_training_l1
+    ablation_null_training_l2        = NFCORE_SIEVE.out.ablation_null_training_l2
+    ablation_null_training_l3        = NFCORE_SIEVE.out.ablation_null_training_l3
+    ablation_null_attributions_l0    = NFCORE_SIEVE.out.ablation_null_attributions_l0
+    ablation_null_attributions_l1    = NFCORE_SIEVE.out.ablation_null_attributions_l1
+    ablation_null_attributions_l2    = NFCORE_SIEVE.out.ablation_null_attributions_l2
+    ablation_null_attributions_l3    = NFCORE_SIEVE.out.ablation_null_attributions_l3
+    ablation_comparison_l0           = NFCORE_SIEVE.out.ablation_comparison_l0
+    ablation_comparison_l1           = NFCORE_SIEVE.out.ablation_comparison_l1
+    ablation_comparison_l2           = NFCORE_SIEVE.out.ablation_comparison_l2
+    ablation_comparison_l3           = NFCORE_SIEVE.out.ablation_comparison_l3
+    ablation_comparison_corrected_l0 = NFCORE_SIEVE.out.ablation_comparison_corrected_l0
+    ablation_comparison_corrected_l1 = NFCORE_SIEVE.out.ablation_comparison_corrected_l1
+    ablation_comparison_corrected_l2 = NFCORE_SIEVE.out.ablation_comparison_corrected_l2
+    ablation_comparison_corrected_l3 = NFCORE_SIEVE.out.ablation_comparison_corrected_l3
+    ablation_bootstrap_l0            = NFCORE_SIEVE.out.ablation_bootstrap_l0
+    ablation_bootstrap_l1            = NFCORE_SIEVE.out.ablation_bootstrap_l1
+    ablation_bootstrap_l2            = NFCORE_SIEVE.out.ablation_bootstrap_l2
+    ablation_bootstrap_l3            = NFCORE_SIEVE.out.ablation_bootstrap_l3
+    ablation_gene_delta_l0           = NFCORE_SIEVE.out.ablation_gene_delta_l0
+    ablation_gene_delta_l1           = NFCORE_SIEVE.out.ablation_gene_delta_l1
+    ablation_gene_delta_l2           = NFCORE_SIEVE.out.ablation_gene_delta_l2
+    ablation_gene_delta_l3           = NFCORE_SIEVE.out.ablation_gene_delta_l3
+    ablation_gene_zattr_l0           = NFCORE_SIEVE.out.ablation_gene_zattr_l0
+    ablation_gene_zattr_l1           = NFCORE_SIEVE.out.ablation_gene_zattr_l1
+    ablation_gene_zattr_l2           = NFCORE_SIEVE.out.ablation_gene_zattr_l2
+    ablation_gene_zattr_l3           = NFCORE_SIEVE.out.ablation_gene_zattr_l3
+    ablation_variant_significance_l0 = NFCORE_SIEVE.out.ablation_variant_significance_l0
+    ablation_variant_significance_l1 = NFCORE_SIEVE.out.ablation_variant_significance_l1
+    ablation_variant_significance_l2 = NFCORE_SIEVE.out.ablation_variant_significance_l2
+    ablation_variant_significance_l3 = NFCORE_SIEVE.out.ablation_variant_significance_l3
+    ablation_comparison_summary      = NFCORE_SIEVE.out.ablation_comparison_summary
+    epistasis_audit                  = NFCORE_SIEVE.out.epistasis_audit
+    gene_interactions                = NFCORE_SIEVE.out.gene_interactions
+    validation                       = NFCORE_SIEVE.out.validation
+    pipeline_versions                = NFCORE_SIEVE.out.pipeline_versions
 }
 
 output {
-    sex_map { path 'data/sex_map' }
-    preprocessed_dataset { path 'data/preprocessed' }
-    best_model { path 'models/best_model' }
-    explainability_best_model { path 'explainability/best_model' }
-    explainability_analysis { path 'explainability/analysis' }
-    ablation_discovery { path 'ablation/discovery' }
-    null_model { path 'null/model' }
-    null_comparison { path 'null/comparison' }
-    null_comparison_sex_fixed { path 'null/comparison_sex_chrom_fixed' }
-    plots { path 'plots' }
-    pipeline_versions { path 'pipeline_info' }
+    sex_map                          { path "${params.cohort_id}/data" }
+    preprocessed_dataset             { path "${params.cohort_id}/data" }
+
+    real_training                    { path "${params.cohort_id}/real_experiments/L3/training" }
+    real_cv_folds                    { path "${params.cohort_id}/real_experiments/L3/cross_fold" }
+    real_attributions                { path "${params.cohort_id}/real_experiments/L3/attributions" }
+
+    null_training_l3                 { path "${params.cohort_id}/null_baselines/L3/training" }
+    null_attributions_l3             { path "${params.cohort_id}/null_baselines/L3/attributions" }
+    null_comparison_l3               { path "${params.cohort_id}/attribution_comparison/L3" }
+    null_comparison_corrected_l3     { path "${params.cohort_id}/attribution_comparison/L3" }
+    bootstrap_calibration_l3         { path "${params.cohort_id}/attribution_comparison/L3" }
+
+    ablation_training_l0             { path "${params.cohort_id}/real_experiments/L0/training" }
+    ablation_training_l1             { path "${params.cohort_id}/real_experiments/L1/training" }
+    ablation_training_l2             { path "${params.cohort_id}/real_experiments/L2/training" }
+    ablation_training_l3             { path "${params.cohort_id}/real_experiments/L3/training" }
+    ablation_attributions_l0         { path "${params.cohort_id}/real_experiments/L0/attributions" }
+    ablation_attributions_l1         { path "${params.cohort_id}/real_experiments/L1/attributions" }
+    ablation_attributions_l2         { path "${params.cohort_id}/real_experiments/L2/attributions" }
+    ablation_attributions_l3         { path "${params.cohort_id}/real_experiments/L3/attributions" }
+
+    ablation_null_training_l0        { path "${params.cohort_id}/null_baselines/L0/training" }
+    ablation_null_training_l1        { path "${params.cohort_id}/null_baselines/L1/training" }
+    ablation_null_training_l2        { path "${params.cohort_id}/null_baselines/L2/training" }
+    ablation_null_training_l3        { path "${params.cohort_id}/null_baselines/L3/training" }
+    ablation_null_attributions_l0    { path "${params.cohort_id}/null_baselines/L0/attributions" }
+    ablation_null_attributions_l1    { path "${params.cohort_id}/null_baselines/L1/attributions" }
+    ablation_null_attributions_l2    { path "${params.cohort_id}/null_baselines/L2/attributions" }
+    ablation_null_attributions_l3    { path "${params.cohort_id}/null_baselines/L3/attributions" }
+
+    ablation_comparison_l0           { path "${params.cohort_id}/attribution_comparison/L0" }
+    ablation_comparison_l1           { path "${params.cohort_id}/attribution_comparison/L1" }
+    ablation_comparison_l2           { path "${params.cohort_id}/attribution_comparison/L2" }
+    ablation_comparison_l3           { path "${params.cohort_id}/attribution_comparison/L3" }
+    ablation_comparison_corrected_l0 { path "${params.cohort_id}/attribution_comparison/L0" }
+    ablation_comparison_corrected_l1 { path "${params.cohort_id}/attribution_comparison/L1" }
+    ablation_comparison_corrected_l2 { path "${params.cohort_id}/attribution_comparison/L2" }
+    ablation_comparison_corrected_l3 { path "${params.cohort_id}/attribution_comparison/L3" }
+    ablation_bootstrap_l0            { path "${params.cohort_id}/attribution_comparison/L0" }
+    ablation_bootstrap_l1            { path "${params.cohort_id}/attribution_comparison/L1" }
+    ablation_bootstrap_l2            { path "${params.cohort_id}/attribution_comparison/L2" }
+    ablation_bootstrap_l3            { path "${params.cohort_id}/attribution_comparison/L3" }
+
+    ablation_gene_delta_l0           { path "${params.cohort_id}/ablation/gene_significance_rankings_delta/L0" }
+    ablation_gene_delta_l1           { path "${params.cohort_id}/ablation/gene_significance_rankings_delta/L1" }
+    ablation_gene_delta_l2           { path "${params.cohort_id}/ablation/gene_significance_rankings_delta/L2" }
+    ablation_gene_delta_l3           { path "${params.cohort_id}/ablation/gene_significance_rankings_delta/L3" }
+    ablation_gene_zattr_l0           { path "${params.cohort_id}/ablation/gene_significance_rankings_zattr/L0" }
+    ablation_gene_zattr_l1           { path "${params.cohort_id}/ablation/gene_significance_rankings_zattr/L1" }
+    ablation_gene_zattr_l2           { path "${params.cohort_id}/ablation/gene_significance_rankings_zattr/L2" }
+    ablation_gene_zattr_l3           { path "${params.cohort_id}/ablation/gene_significance_rankings_zattr/L3" }
+    ablation_variant_significance_l0 { path "${params.cohort_id}/ablation/variants_significance_rankings" }
+    ablation_variant_significance_l1 { path "${params.cohort_id}/ablation/variants_significance_rankings" }
+    ablation_variant_significance_l2 { path "${params.cohort_id}/ablation/variants_significance_rankings" }
+    ablation_variant_significance_l3 { path "${params.cohort_id}/ablation/variants_significance_rankings" }
+
+    ablation_comparison_summary      { path "${params.cohort_id}/ablation/comparison_levels" }
+
+    epistasis_audit                  { path "${params.cohort_id}/epistasis/L3/epistasis_audit" }
+    gene_interactions                { path "${params.cohort_id}/epistasis/L3/gene_interactions" }
+
+    validation                       { path "${params.cohort_id}/validation" }
+
+    pipeline_versions                { path "pipeline_info" }
 }
 
 /*

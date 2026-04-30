@@ -1,13 +1,13 @@
 nextflow_process {
 
-    name "Test Process SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS"
+    name "Test Process SIEVE_GENERATE_GENE_LIST"
     script "../main.nf"
-    process "SIEVE_FILTER_SEX_CHROM_ATTRIBUTIONS"
+    process "SIEVE_GENERATE_GENE_LIST"
     config "./nextflow.config"
 
     tag "modules"
     tag "local"
-    tag "filter_sex_chrom_attributions"
+    tag "generate_gene_list"
 
     test("stub run") {
 
@@ -17,9 +17,10 @@ nextflow_process {
             process {
                 """
 input[0] = [
-    [ id: 'cohort' ],
+    [ id: 'cohort', run_id: 'gene_list_L3', level: 'L3' ],
     file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
-    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true)
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_go.json", checkIfExists: true)
 ]
                 """
             }
@@ -28,7 +29,9 @@ input[0] = [
         then {
             assertAll(
                 { assert process.success },
-                { assert process.out.filtered_rankings != null },
+                { assert process.out.gene_list_delta != null },
+                { assert process.out.gene_list_zattr != null },
+                { assert process.out.variant_rankings != null },
                 { assert process.out.versions != null }
             )
         }

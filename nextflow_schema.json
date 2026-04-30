@@ -150,6 +150,13 @@
                     "description": "Random seed for null baseline generation.",
                     "hidden": true
                 },
+                "null_bootstrap": {
+                    "type": "integer",
+                    "default": 1000,
+                    "minimum": 100,
+                    "description": "Number of bootstrap iterations for null calibration.",
+                    "hidden": true
+                },
                 "cohort_id": {
                     "type": "string",
                     "default": "cohort",

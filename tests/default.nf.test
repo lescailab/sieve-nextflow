@@ -20,18 +20,18 @@ nextflow_pipeline {
                 { assert workflow.success },
                 { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
                 { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_COLLECT_PLOTS") },
-                { assert new File("$outputDir/data/sex_map/sample_sex.tsv").exists() },
-                { assert new File("$outputDir/data/preprocessed/preprocessed.pt").exists() },
-                { assert new File("$outputDir/models/best_model/best_checkpoint.pt").exists() },
-                { assert new File("$outputDir/models/best_model/cv_folds_summary.tsv").exists() },
-                { assert new File("$outputDir/explainability/best_model/explain_output/sieve_variant_rankings.csv").exists() },
-                { assert new File("$outputDir/explainability/best_model/explain_output/sieve_gene_rankings.csv").exists() },
-                { assert new File("$outputDir/explainability/analysis/validation_output/validation_report.yaml").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_summary.tsv").exists() },
-                { assert new File("$outputDir/null/model/best_model.pt").exists() },
-                { assert new File("$outputDir/null/comparison/comparison_summary.yaml").exists() },
-                { assert new File("$outputDir/null/comparison_sex_chrom_fixed/comparison_summary.yaml").exists() },
-                { assert new File("$outputDir/plots/plots_manifest.tsv").exists() }
+                { assert new File("$outputDir/cohort/data/sample_sex.tsv").exists() },
+                { assert new File("$outputDir/cohort/data/preprocessed.pt").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/best_checkpoint.pt").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/cv_folds_summary.tsv").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/attributions/explain_output/sieve_variant_rankings.csv").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/attributions/explain_output/sieve_gene_rankings.csv").exists() },
+                { assert new File("$outputDir/cohort/validation/validation_output/validation_report.yaml").exists() },
+                { assert new File("$outputDir/cohort/ablation/comparison_levels/ablation_summary.tsv").exists() },
+                { assert new File("$outputDir/cohort/null_baselines/L3/training/best_model.pt").exists() },
+                { assert new File("$outputDir/cohort/attribution_comparison/L3/comparison_summary.yaml").exists() },
+                { assert new File("$outputDir/cohort/attribution_comparison/L3/corrected/corrected_variant_rankings.csv").exists() },
+                { assert new File("$outputDir/cohort/validation/plots_manifest.tsv").exists() }
             )
         }
     }
@@ -60,10 +60,10 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
-                { assert new File("$outputDir/explainability/best_model/explain_output/sieve_variant_rankings.csv").exists() },
-                { assert !new File("$outputDir/ablation").exists() },
-                { assert !new File("$outputDir/null").exists() },
-                { assert !new File("$outputDir/plots").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/attributions/explain_output/sieve_variant_rankings.csv").exists() },
+                { assert !new File("$outputDir/cohort/ablation").exists() },
+                { assert !new File("$outputDir/cohort/null_baselines").exists() },
+                { assert !new File("$outputDir/cohort/validation").exists() },
                 { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_TRAIN_CV") },
                 { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") }
             )
@@ -94,14 +94,13 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_summary.tsv").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_L0_selection_payload/results.yaml").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_L1_selection_payload/results.yaml").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_L2_selection_payload/results.yaml").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_L3_selection_payload/results.yaml").exists() },
-                { assert !new File("$outputDir/models/best_model").exists() },
-                { assert !new File("$outputDir/explainability").exists() },
-                { assert !new File("$outputDir/null").exists() },
+                { assert new File("$outputDir/cohort/ablation/comparison_levels/ablation_summary.tsv").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L0/training/ablation_L0_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L1/training/ablation_L1_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L2/training/ablation_L2_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/ablation_L3_selection_payload/results.yaml").exists() },
+                { assert !new File("$outputDir/cohort/real_experiments/L3/training/best_checkpoint.pt").exists() },
+                { assert !new File("$outputDir/cohort/null_baselines").exists() },
                 { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_INFER_SEX") },
                 { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_PREPROCESS") },
                 { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") },
@@ -133,15 +132,14 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
-                { assert new File("$outputDir/data/sex_map/sample_sex.tsv").exists() },
-                { assert new File("$outputDir/data/preprocessed/preprocessed.pt").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_summary.tsv").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_L0_selection_payload/results.yaml").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_L1_selection_payload/results.yaml").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_L2_selection_payload/results.yaml").exists() },
-                { assert new File("$outputDir/ablation/discovery/ablation_L3_selection_payload/results.yaml").exists() },
-                { assert !new File("$outputDir/models/best_model").exists() },
-                { assert !new File("$outputDir/explainability").exists() },
+                { assert new File("$outputDir/cohort/data/sample_sex.tsv").exists() },
+                { assert new File("$outputDir/cohort/data/preprocessed.pt").exists() },
+                { assert new File("$outputDir/cohort/ablation/comparison_levels/ablation_summary.tsv").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L0/training/ablation_L0_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L1/training/ablation_L1_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L2/training/ablation_L2_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/ablation_L3_selection_payload/results.yaml").exists() },
+                { assert !new File("$outputDir/cohort/real_experiments/L3/training/best_checkpoint.pt").exists() },
                 { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") },
                 { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_TRAIN_CV") }
             )
@@ -175,7 +173,7 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
-                { assert new File("$outputDir/explainability/analysis/validation_output/validation_report.yaml").exists() },
+                { assert new File("$outputDir/cohort/validation/validation_output/validation_report.yaml").exists() },
                 { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_DOWNLOAD_REFERENCES") },
                 { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") }
             )

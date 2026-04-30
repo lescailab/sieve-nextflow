@@ -1,75 +1,103 @@
 # lescailab/sieve: Usage
 
-## Input combinations
+This page lists the verified command-line interface exposed by `main.nf`, `nextflow.config`, `nextflow_schema.json`, and the SIEVE argument validator. For a deeper walk-through, see the [guidelines](../guidelines/docs/running-the-pipeline.md).
 
-`lescailab/sieve` can run from raw inputs or from downstream artifacts.
+## Execution entry point
 
-Raw-input mode:
+Run the pipeline with `nextflow run lescailab/sieve-nextflow` or, from a local checkout, `nextflow run .`.
 
-- `--vcf`: bgzipped indexed multi-sample VCF (`.vcf.gz` + `.tbi` or `.csi`)
-- `--phenotypes`: TSV with columns `sample_id` and `phenotype`
-- `--genome_build`: `GRCh37` or `GRCh38`
-- `--outdir`: output directory
+Verified smoke test:
 
-Minimal command:
+```bash
+nextflow run . \
+  -profile test \
+  -stub-run \
+  --outdir results_stub
+```
+
+## Required inputs
+
+The required inputs depend on the selected steps and any shortcut artifacts you provide.
+
+Raw-input mode requires:
+
+| Parameter | Requirement |
+| --- | --- |
+| `--vcf` | Existing `.vcf.gz` file with matching `.vcf.gz.tbi` or `.vcf.gz.csi` index. |
+| `--phenotypes` | Existing tab-separated file: two columns (sample ID, integer label `1` or `2`), no header row. The Nextflow layer checks only that the file exists; detailed parsing is performed by `sieve-preprocess`. |
+| `--genome_build` | `GRCh37` or `GRCh38`. Default: `GRCh38`. |
+| `--sex_map` or `--infer_sex true` | If `--sex_map` is absent, the pipeline must infer sex from `--vcf`. If `--infer_sex false`, `--sex_map` is required. |
+
+Example raw-input command:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
-  -profile docker \
-  --vcf cohort.vcf.gz \
-  --phenotypes phenotypes.tsv \
+  -profile docker,gpu \
+  --vcf /path/to/data.vcf.gz \
+  --phenotypes /path/to/phenotypes.tsv \
   --genome_build GRCh38 \
   --outdir results
 ```
 
-`phenotypes.tsv` example:
-
-```tsv
-sample_id	phenotype
-sampleA	case
-sampleB	control
-```
-
-Artifact shortcuts:
-
-- `--preprocessed_data <dataset.pt>`: skip preprocessing from VCF
-- `--best_params <best_params.yaml>`: skip grid search
-- `--best_checkpoint <checkpoint.pt> --checkpoint_config <config.yaml>`: skip grid and CV checkpoint selection
-
-`--vcf` and `--phenotypes` become optional when the selected stages can be satisfied by provided downstream artifacts.
-
 ## Sex handling
 
-Default behavior is sex inference:
+Default behavior:
 
 ```bash
 --infer_sex true
 ```
 
-Optional concordance checking during sex inference:
+Provide recorded sex metadata only for concordance checking during sex inference:
 
 ```bash
---infer_sex true --known_sex sample_metadata.tsv
+--known_sex /path/to/known_sex.tsv
 ```
 
-To skip inference, provide a sex map:
+Skip sex inference with a prepared sex map:
 
 ```bash
---infer_sex false --sex_map sample_sex.tsv
+--infer_sex false --sex_map /path/to/sample_sex.tsv
 ```
 
-If `--sex_map` is provided, it is used directly and inference/map creation steps are skipped.
-`--known_sex` is only used when the pipeline actually runs `sieve-infer-sex`; it should point to a TSV with `sample_id` in the first column and a sex label in the second column. This file is used only for concordance reporting and does not replace or seed the inferred `sample_sex.tsv` output.
+If both `--sex_map` and `--infer_sex true` are supplied, the pipeline uses `--sex_map` and logs a warning.
+
+## Artifact shortcuts
+
+These inputs skip upstream work when the selected steps can be satisfied from existing files:
+
+| Parameter | Expected file | Effect |
+| --- | --- | --- |
+| `--preprocessed_data` | `.pt` | Skips VCF preprocessing. |
+| `--best_params` | `.yaml` or `.yml` | Skips internal hyperparameter grid search. |
+| `--best_checkpoint` with `--checkpoint_config` | `.pt` plus `.yaml` or `.yml` | Skips CV checkpoint training and selection. Both parameters are required together. |
+
+Example using downstream artifacts:
+
+```bash
+nextflow run lescailab/sieve-nextflow \
+  -profile docker,gpu \
+  --preprocessed_data /path/to/preprocessed.pt \
+  --sex_map /path/to/sample_sex.tsv \
+  --best_checkpoint /path/to/best_model.pt \
+  --checkpoint_config /path/to/config.yaml \
+  --outdir results
+```
 
 ## Step selection
 
-Use `--execute_step` to run only selected parts of the pipeline:
+By default, `--execute_step` is unset and the pipeline requests all defined steps:
 
-```bash
---execute_step ablation,plots
+```text
+sex, preprocess, grid, cv, explain, ablation, null, epistasis, validation, plots
 ```
 
-Allowed values:
+Limit execution with a comma-separated list:
+
+```bash
+--execute_step explain,null,validation
+```
+
+Allowed step names are:
 
 - `sex`
 - `preprocess`
@@ -82,91 +110,77 @@ Allowed values:
 - `validation`
 - `plots`
 
-Dependencies are resolved automatically (for example, selecting `ablation` triggers upstream requirements unless satisfied by supplied artifacts).
+Later steps still need their upstream data channels. If you omit upstream steps, provide the corresponding shortcut artifacts where the pipeline exposes them. See [workflow steps](../guidelines/docs/workflow-steps.md) for the dependency map.
+
+**`ablation` note:** selecting `ablation` automatically triggers null-baseline dataset creation (`SIEVE_CREATE_NULL_BASELINE`) so that per-level null comparisons always run. Adding `null` to the step list additionally runs the full L3 null training and attribution comparison.
 
 ## Profiles
 
-Generic software profiles:
+Common profiles defined in `nextflow.config`:
 
-- `docker`
-- `singularity`
-- `apptainer`
-- `conda`
-- `test`
+| Profile | Purpose |
+| --- | --- |
+| `test` | Bundled minimal test data from `conf/test.config`. |
+| `test_full` | Includes `conf/test_full.config`, currently mirroring `test`. |
+| `docker` | Run processes in Docker containers. |
+| `singularity` / `apptainer` | Run processes with Singularity or Apptainer. |
+| `conda` / `mamba` | Build module Conda environments. |
+| `gpu` | Adds GPU runtime options and process accelerators for GPU-capable profiles. |
+| `wave` | Enables Wave with frozen conda/container strategy. |
+| `google_batch_a100_no_fusion` | Google Batch executor with A100 GPU machines; standard GCS file staging (Fusion disabled). Combine with `docker,gpu`. |
+| `debug` | Enables additional process-name validation and debug settings. |
 
-Recommended quick validation:
-
-```bash
-nextflow run lescailab/sieve-nextflow -profile test -stub-run --outdir test_results
-```
-
-## Advanced options
-
-### Pipeline-wide training defaults
-
-The following parameters are applied pipeline-wide across grid search, CV, ablation, and null-model training:
-
-- `--cv_folds` (default `5`)
-- `--val_split` (default `0.2`)
-- `--null_seed` (default `42`)
-- `--train_epochs` (default `100`)
-- `--train_batch_size` (default `16`)
-- `--train_chunk_size` (default `3000`)
-- `--train_aggregation_method` (default `mean`)
-- `--train_gradient_accumulation_steps` (default `4`)
-- `--train_gradient_clip` (default `1.0`)
-- `--train_seed` (default `42`)
-- `--train_device` (default `cuda`)
-- `--train_early_stopping` (default `10`)
-- `--train_hidden_dim` (default `64`)
-- `--train_num_attention_layers` (default `1`)
-
-Memory impact notes:
-
-- `train_batch_size` and `train_chunk_size` have the strongest effect on GPU memory usage.
-- These values are fixed pipeline-wide by default and are intentionally not expanded in the optimization grid.
-
-### Hyperparameter search grid
-
-The internal search grid focuses on:
-
-- `--lr` via `--grid_lr` (default `[0.00001, 0.0001]`)
-- `--lambda-attr` via `--grid_lambda_attr` (default `[0.01, 0.1, 0.5, 1.0]`)
-- `--latent-dim` via `--grid_latent_dim` (default `[32, 64]`)
-- `--hidden-dim` via `--grid_hidden_dim` (default `[64, 128]`)
-- `--num-attention-layers` via `--grid_num_attention_layers` (default `[1, 2]`)
-
-`hidden` and `layers` are intentionally restricted to a small range around the base defaults.
-
-Example override:
+Combine profiles with commas:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
-  -profile docker \
-  --vcf cohort.vcf.gz \
-  --phenotypes phenotypes.tsv \
-  --genome_build GRCh38 \
-  --grid_lr 0.00001,0.0001 \
-  --grid_lambda_attr 0.1,0.5 \
-  --grid_latent_dim 32,64 \
-  --train_batch_size 16 \
-  --train_chunk_size 3000 \
-  --train_device cpu \
+  -profile docker,gpu \
+  --vcf /path/to/data.vcf.gz \
+  --phenotypes /path/to/phenotypes.tsv \
   --outdir results
 ```
 
-### Optional validation resources
+## Advanced parameters
+
+Training defaults are configured in `nextflow.config` and exposed in `nextflow_schema.json`. The most commonly adjusted values are:
+
+| Parameter | Default |
+| --- | --- |
+| `--cohort_id` | `cohort` |
+| `--default_train_level` | `L3` |
+| `--cv_folds` | `5` |
+| `--val_split` | `0.2` |
+| `--train_device` | `cuda` |
+| `--train_epochs` | `100` |
+| `--train_batch_size` | `16` |
+| `--train_chunk_size` | `3000` |
+| `--null_seed` | `42` |
+| `--null_bootstrap` | `1000` |
+
+The internal grid-search parameters are:
+
+- `--grid_lr`
+- `--grid_lambda_attr`
+- `--grid_latent_dim`
+- `--grid_hidden_dim`
+- `--grid_num_attention_layers`
+
+Optional validation resources:
 
 - `--clinvar_tsv`
 - `--gwas_tsv`
 - `--go_mapping_json`
 
-## Reproducibility
+If none of the validation resources are supplied and `validation` is selected, the workflow runs the reference-download module to fetch all three. If any subset is supplied, the missing resources are omitted rather than downloaded; partial downloads are not triggered.
 
-Use versioned pipeline releases:
+## Parameter files
+
+Use a YAML or JSON parameter file for repeatable runs:
 
 ```bash
-nextflow run lescailab/sieve-nextflow -r <release> ...
+nextflow run lescailab/sieve-nextflow \
+  -profile docker,gpu \
+  -params-file params.yml
 ```
 
-Reuse fixed parameter sets via `-params-file` (`YAML` or `JSON`) for reproducible reruns.
+Keep dataset-specific paths in local parameter files or execution commands, not in committed documentation.

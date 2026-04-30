@@ -63,7 +63,7 @@ workflow SIEVE {
     ch_best_checkpoint_keyed = channel.empty()
     ch_null_preprocessed_keyed = channel.empty()
 
-    if (needBestCheckpoint || needExplain || targetNull) {
+    if (needBestCheckpoint || needExplain || targetNull || targetAblation) {
         TRAIN_AND_EXPLAIN(
             ch_selection_meta,
             PREPROCESS.out.preprocessed_keyed,

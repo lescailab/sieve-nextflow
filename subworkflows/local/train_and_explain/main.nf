@@ -34,6 +34,7 @@ workflow TRAIN_AND_EXPLAIN {
     def targetCv = selectedSteps.contains('cv')
     def targetExplain = selectedSteps.contains('explain')
     def targetNull = selectedSteps.contains('null')
+    def targetAblation = selectedSteps.contains('ablation')
     def targetEpistasis = selectedSteps.contains('epistasis')
     def targetValidation = selectedSteps.contains('validation')
 
@@ -158,7 +159,7 @@ workflow TRAIN_AND_EXPLAIN {
     ch_null_attributions_npz = channel.value([])
     ch_null_variant_rankings = channel.value([])
 
-    if (targetNull) {
+    if (targetNull || targetAblation) {
         ch_null_baseline_input = ch_preprocessed_keyed.map { cohort_id, preprocessed ->
             tuple([id: cohort_id, run_id: 'null_baseline_dataset', stage: 'null_baseline'], preprocessed, params.null_seed)
         }
@@ -169,7 +170,9 @@ workflow TRAIN_AND_EXPLAIN {
         ch_null_preprocessed_keyed = SIEVE_CREATE_NULL_BASELINE.out.null_preprocessed.map { meta, preprocessed_null ->
             tuple(meta.id, preprocessed_null)
         }
+    }
 
+    if (targetNull) {
         ch_null_train_spec = channel.value(
             tuple(
                 cohortMeta.id,

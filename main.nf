@@ -106,9 +106,18 @@ workflow {
     def cmdLine = workflow.commandLine.toString()
     def tokens = cmdLine.tokenize(' ')
     def runIdx = tokens.indexOf('run')
-    // Filter tokens: skip 'nextflow', 'run', the script name, flags/options, and assignments
+    // Filter tokens: skip 'nextflow', 'run', the script name, flags/options, assignments,
+    // and values that immediately follow a flag (option arguments).
+    def optionValuePositions = [] as Set
+    tokens.eachWithIndex { token, idx ->
+        if (idx > runIdx + 1 && token.startsWith('-') && !token.contains('=')) {
+            if (idx + 1 < tokens.size() && !tokens[idx + 1].startsWith('-')) {
+                optionValuePositions << (idx + 1)
+            }
+        }
+    }
     def cli_args = tokens.indexed().findAll { idx, token ->
-        idx > runIdx + 1 && !token.startsWith('-') && !token.contains('=')
+        idx > runIdx + 1 && !token.startsWith('-') && !token.contains('=') && !(idx in optionValuePositions)
     }.collect { _idx, token -> token }
 
     PIPELINE_INITIALISATION(

@@ -50,7 +50,7 @@ These files document runtime parameters, software versions, process timing, and 
 Local modules point to a pinned container image:
 
 ```text
-ghcr.io/lescailab/sieve-container:803e8d8c7e63be61
+ghcr.io/lescailab/sieve-container:97c6b69bbe1c73b2
 ```
 
 Use a container profile for portable execution:

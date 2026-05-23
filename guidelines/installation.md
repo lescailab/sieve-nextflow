@@ -29,7 +29,7 @@ The plugin validates parameters against `nextflow_schema.json` and renders the h
 Local SIEVE modules define both:
 
 - `conda "${moduleDir}/environment.yml"`
-- a container image pinned as `ghcr.io/lescailab/sieve-container:803e8d8c7e63be61`
+- a container image pinned as `ghcr.io/lescailab/sieve-container:97c6b69bbe1c73b2`
 
 Use one of the software profiles:
 

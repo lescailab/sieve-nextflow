@@ -43,7 +43,7 @@ output:
       - sieve:
           type: string
           description: The name of the tool
-      - 1.0.0:
+      - 1.3.0:
           type: string
           description: The version of the tool
 authors:

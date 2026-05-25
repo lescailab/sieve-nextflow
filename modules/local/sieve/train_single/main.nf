@@ -13,7 +13,7 @@ process SIEVE_TRAIN_SINGLE {
     tuple val(meta), path('results.yaml'), path('config.yaml'), path('best_model.pt'), emit: train_artifacts
     tuple val(meta), path('training_history.yaml'), optional: true, emit: history
     tuple val(meta), path('*_selection_payload'), emit: selection_payload
-    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
+    path "versions.yml", emit: versions, topic: 'versions'
     when:
     task.ext.when == null || task.ext.when
 

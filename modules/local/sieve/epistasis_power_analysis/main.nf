@@ -12,7 +12,7 @@ process SIEVE_EPISTASIS_POWER_ANALYSIS {
 
     output:
     tuple val(meta), path('power_output'), path('power_analysis_summary.yaml'), emit: power_analysis
-    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
+    path "versions.yml", emit: versions, topic: 'versions'
     when:
     task.ext.when == null || task.ext.when
 

@@ -47,6 +47,29 @@ Sync with upstream `sieve-project` v1.2.0 → v1.3.0 and add execution shortcuts
 - `nextflow_schema.json` lowered `cv_folds` minimum from 2 to 0 to allow
   single-training mode.
 
+### `Fixed`
+
+- **Module conda env pins bumped from `lescailab::sieve==1.0.0` to
+  `lescailab::sieve==1.3.0`** across all 17 sieve-CLI modules, aligning
+  the conda profile with the container profile.
+- **Hard-coded `('sieve','1.0.0')` versions tuples replaced with
+  `path "versions.yml", emit: versions, topic: 'versions'`** in all 13
+  modules that previously emitted a stale literal (plus `emit_sex_map`,
+  `emit_best_params`, `collect_plots`); pipeline software provenance is
+  now driven by each module's runtime `versions.yml`.
+- **All `meta.yml` tool-version blocks updated to `1.3.0`** (was a mix
+  of `1.0.0` and `1.2.0`).
+- `SIEVE_EMIT_BEST_PARAMS` now passes the in-memory params map to Python
+  via a side `params.json` file instead of single-quote-interpolating it
+  into the heredoc, removing the injection / breakage risk around
+  values containing quotes, backslashes, or newlines.
+- `validate_discoveries/meta.yml` now declares the optional reference
+  inputs as `type: file` to match the actual `path()` channels.
+- `subworkflows/nf-core/utils_nfschema_plugin/tests/nextflow.config`
+  realigned to `nf-schema@2.5.1` to match the pipeline pin.
+- `guidelines/installation.md` corrected the `mkdocs serve` command —
+  `mkdocs.yml` lives at the repository root, not under `guidelines/`.
+
 ## v1.0.0dev - 2026-03-05
 
 Initial release of lescailab/sieve, created with the [nf-core](https://nf-co.re/) template.

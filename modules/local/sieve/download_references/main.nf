@@ -11,7 +11,7 @@ process SIEVE_DOWNLOAD_REFERENCES {
 
     output:
     tuple val(meta), path('parsed_clinvar.tsv'), path('parsed_gwas.tsv'), path('parsed_go.json'), emit: references
-    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
+    path "versions.yml", emit: versions, topic: 'versions'
     when:
     task.ext.when == null || task.ext.when
 

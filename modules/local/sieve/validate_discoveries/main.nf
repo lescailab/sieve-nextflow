@@ -10,7 +10,7 @@ process SIEVE_VALIDATE_DISCOVERIES {
 
     output:
     tuple val(meta), path('validation_report.yaml'), path('validation_output'), emit: validation
-    tuple val("${task.process}"), val('sieve'), val('1.0.0'), emit: versions, topic: versions
+    path "versions.yml", emit: versions, topic: 'versions'
     when:
     task.ext.when == null || task.ext.when
 

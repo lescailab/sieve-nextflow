@@ -23,14 +23,14 @@ input:
         type: file
         description: Gene ranking CSV from explainability
     - clinvar_tsv:
-        type: string
-        description: Optional ClinVar TSV path
+        type: file
+        description: Optional ClinVar TSV (path or empty list when not provided)
     - gwas_tsv:
-        type: string
-        description: Optional GWAS TSV path
+        type: file
+        description: Optional GWAS TSV (path or empty list when not provided)
     - go_mapping_json:
-        type: string
-        description: Optional GO mapping JSON path
+        type: file
+        description: Optional GO mapping JSON (path or empty list when not provided)
 output:
   validation:
     - - meta:
@@ -49,7 +49,7 @@ output:
       - sieve:
           type: string
           description: The name of the tool
-      - 1.0.0:
+      - 1.3.0:
           type: string
           description: The version of the tool
 authors:

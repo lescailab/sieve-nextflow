@@ -92,10 +92,10 @@ The guidelines use Material for MkDocs. Install it in a documentation environmen
 pip install mkdocs-material
 ```
 
-Preview the site from the repository root:
+Preview the site from the repository root (`mkdocs.yml` lives at the repo root and is configured with `docs_dir: guidelines/`):
 
 ```bash
-mkdocs serve -f guidelines/mkdocs.yml
+mkdocs serve
 ```
 
 The local `nf-core_3.5.2` environment used for pipeline tooling does not currently provide `mkdocs`.

@@ -56,6 +56,31 @@ nextflow run lescailab/sieve-nextflow \
   --outdir results
 ```
 
+## Execution modes
+
+The pipeline supports three top-level modes for the training side of the workflow:
+
+1. **Grid search + cross-validation (default).** The Cartesian product of `--grid_lr × --grid_lambda_attr × --grid_latent_dim × --grid_hidden_dim × --grid_num_attention_layers` is trained, the best hyperparameters are picked, and a `--cv_folds`-fold cross-validation produces the final checkpoint.
+2. **Fixed hyperparameters + cross-validation.** Skip the grid by supplying all three of `--train_lr`, `--train_lambda_attr`, and `--train_latent_dim` on the command line. The pipeline materialises a synthetic `best_params.yaml` and runs CV directly.
+3. **Fixed hyperparameters + single training (no CV).** Same as mode 2, plus `--cv_folds 1` (or `--cv_folds 0`). The main model is trained once with `--val_split` as the train/validation split.
+
+```bash
+# Mode 2 — skip grid, keep CV
+nextflow run lescailab/sieve-nextflow -profile docker,gpu \
+  --vcf data.vcf.gz --phenotypes pheno.tsv --genome_build GRCh38 \
+  --train_lr 1e-4 --train_lambda_attr 0.1 --train_latent_dim 64
+
+# Mode 3 — skip grid AND skip CV
+nextflow run lescailab/sieve-nextflow -profile docker,gpu \
+  --vcf data.vcf.gz --phenotypes pheno.tsv --genome_build GRCh38 \
+  --train_lr 1e-4 --train_lambda_attr 0.1 --train_latent_dim 64 \
+  --cv_folds 1
+```
+
+## Top-k gene / variant selection
+
+After null-baseline comparison, delta-rank derived from bootstrap-resampled null attributions (`sieve-bootstrap-null-calibration`) is the primary engine for top-k gene and top-k variant selection. The main-branch run publishes `gene_list_by_delta_rank.tsv`, `gene_list_by_z_attribution.tsv` (secondary diagnostic), and `variant_significance_rankings.csv` under `<cohort>/discovery/`. Tune the engine via `--bootstrap_top_k`, `--bootstrap_gene_delta_rank_aggregation`, `--bootstrap_exclude_sex_chroms`, and `--bootstrap_min_variants_per_gene`.
+
 ## Documentation
 
 - [Usage](docs/usage.md): verified parameters, profiles, and common execution patterns

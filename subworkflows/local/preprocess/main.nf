@@ -4,11 +4,12 @@
 
 include { SIEVE_INFER_SEX                                   } from '../../../modules/local/sieve/infer_sex/main'
 include { SIEVE_EMIT_SEX_MAP                                } from '../../../modules/local/sieve/emit_sex_map/main'
+include { SIEVE_EMIT_BEST_PARAMS                            } from '../../../modules/local/sieve/emit_best_params/main'
 include { SIEVE_PREPROCESS                                  } from '../../../modules/local/sieve/preprocess/main'
 include { SIEVE_TRAIN_SINGLE as SIEVE_TRAIN_SINGLE_GRID     } from '../../../modules/local/sieve/train_single/main'
 include { SIEVE_SELECT_BEST_PARAMS                          } from '../../../modules/local/sieve/select_best_params/main'
 include { SIEVE_DOWNLOAD_REFERENCES                         } from '../../../modules/local/sieve/download_references/main'
-include { buildTrainingGrid; extractTrainingParams; resolveExecuteSteps } from '../../../lib/sieve_helpers'
+include { buildTrainingGrid; buildFixedTrainingParams; extractTrainingParams; hasFixedTrainingParams; resolveExecuteSteps } from '../../../lib/sieve_helpers'
 
 workflow PREPROCESS {
 
@@ -38,6 +39,7 @@ workflow PREPROCESS {
     def useProvidedPreprocessed = params.preprocessed_data as boolean
     def useProvidedBestParams = params.best_params as boolean
     def useProvidedBestCheckpoint = (params.best_checkpoint && params.checkpoint_config) as boolean
+    def useFixedTrainingParams = hasFixedTrainingParams(params)
 
     def needExplain = targetExplain || targetEpistasis || targetValidation || targetNull || targetAblation
     def needBestCheckpoint = targetCv || needExplain
@@ -142,6 +144,7 @@ workflow PREPROCESS {
         epochs: params.train_epochs as Integer,
         batch_size: params.train_batch_size as Integer,
         chunk_size: params.train_chunk_size as Integer,
+        chunk_overlap: params.train_chunk_overlap as Integer,
         aggregation_method: params.train_aggregation_method,
         gradient_accumulation_steps: params.train_gradient_accumulation_steps as Integer,
         gradient_clip: params.train_gradient_clip as Double,
@@ -150,6 +153,10 @@ workflow PREPROCESS {
         early_stopping: params.train_early_stopping as Integer,
         hidden_dim: params.train_hidden_dim as Integer,
         num_attention_layers: params.train_num_attention_layers as Integer,
+        num_heads: params.train_num_heads != null ? (params.train_num_heads as Integer) : null,
+        classifier_type: params.train_classifier_type,
+        class_weighting: params.train_class_weighting,
+        num_pcs: params.num_pcs != null ? (params.num_pcs as Integer) : null,
     ].findAll { _key, value -> value != null }
 
     ch_best_params_path_keyed = channel.empty()
@@ -170,6 +177,22 @@ workflow PREPROCESS {
                     file(params.checkpoint_config, checkIfExists: true)
                 )
             )
+        } else if (useFixedTrainingParams) {
+            def fixedParams = buildFixedTrainingParams(baseTrainingParams, params)
+
+            ch_fixed_params_input = channel.value(
+                tuple(
+                    [id: cohortMeta.id],
+                    fixedParams
+                )
+            )
+
+            SIEVE_EMIT_BEST_PARAMS(ch_fixed_params_input)
+            ch_versions = ch_versions.mix(SIEVE_EMIT_BEST_PARAMS.out.versions)
+
+            ch_best_params_path_keyed = SIEVE_EMIT_BEST_PARAMS.out.best_params.map { meta, best_params_yaml ->
+                tuple(meta.id, best_params_yaml)
+            }
         } else {
             def trainingGrid = buildTrainingGrid(
                 baseTrainingParams,

@@ -3,6 +3,50 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.1.0dev - 2026-05-25
+
+Sync with upstream `sieve-project` v1.2.0 → v1.3.0 and add execution shortcuts.
+
+### `Added`
+
+- **Fixed-parameter shortcut for skipping the hyperparameter grid.**
+  When `--train_lr`, `--train_lambda_attr`, and `--train_latent_dim` are all
+  provided, the Cartesian grid is bypassed; the new `SIEVE_EMIT_BEST_PARAMS`
+  module materialises the in-memory params map as `best_params.yaml` so the
+  same downstream channels flow without further changes.
+- **Single-training mode via `--cv_folds 0|1`.** When cross-validation is not
+  required, the main model is trained once with `SIEVE_TRAIN_SINGLE`
+  (`--val-split` used for the train/validation split), skipping
+  `SIEVE_TRAIN_CV` and `SIEVE_SELECT_BEST_CHECKPOINT`.
+- **Delta-rank from bootstrap calibration is now the primary top-k selector
+  in the main branch.** `SIEVE_GENERATE_GENE_LIST` runs at the end of
+  `TRAIN_AND_EXPLAIN` (not only inside `ABLATION`) and emits
+  `gene_list_by_delta_rank.tsv`, `gene_list_by_z_attribution.tsv` (secondary
+  diagnostic), and `variant_significance_rankings.csv` under
+  `<cohort>/discovery/`.
+- Surface-area sync with upstream `sieve-project` 1.2.0 → 1.3.0:
+  - `--train_classifier_type` (`flatten` | `attention_pool`) (new in 1.3.0)
+  - `--train_num_heads`, `--train_chunk_overlap`, `--train_class_weighting`
+  - `--pc_map`, `--num_pcs` (population-structure covariates)
+  - `--explain_n_steps`, `--explain_max_variants`, `--explain_top_k_variants`,
+    `--explain_top_k_interactions`, `--explain_attention_threshold`,
+    `--explain_attention_threshold_mode`, `--explain_attention_percentile`,
+    `--explain_aggregation_method`, `--explain_skip_ig`,
+    `--explain_skip_attention`, `--explain_batch_size`
+  - `--bootstrap_top_k`, `--bootstrap_gene_delta_rank_aggregation`,
+    `--bootstrap_exclude_sex_chroms`, `--bootstrap_min_variants_per_gene`
+    (plus `bootstrap_summary.yaml` and `bootstrap_gene_stats.csv` outputs)
+  - `--compare_exclude_sex_chroms`, `--chrx_include_sex_chroms`
+
+### `Changed`
+
+- `validateSieveArguments` now also validates `--cv_folds`, the all-or-none
+  rule for fixed training hyperparameters, the `--train_classifier_type`
+  enum, and warns about the source-of-best-params precedence
+  (`--best_checkpoint` > `--best_params` > fixed `--train_*`).
+- `nextflow_schema.json` lowered `cv_folds` minimum from 2 to 0 to allow
+  single-training mode.
+
 ## v1.0.0dev - 2026-03-05
 
 Initial release of lescailab/sieve, created with the [nf-core](https://nf-co.re/) template.

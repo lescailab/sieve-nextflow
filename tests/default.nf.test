@@ -146,6 +146,65 @@ nextflow_pipeline {
         }
     }
 
+    test("fixed training params skip grid - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                train_lr = 0.0001
+                train_lambda_attr = 0.1
+                train_latent_dim = 64
+                execute_step = "preprocess,cv,explain,null"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_EMIT_BEST_PARAMS") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/best_checkpoint.pt").exists() },
+                { assert new File("$outputDir/cohort/discovery/gene_list_by_delta_rank.tsv").exists() },
+                { assert new File("$outputDir/cohort/discovery/gene_list_by_z_attribution.tsv").exists() },
+                { assert new File("$outputDir/cohort/discovery/variant_significance_rankings.csv").exists() }
+            )
+        }
+    }
+
+    test("fixed training params with cv_folds=1 skip both grid and CV - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                train_lr = 0.0001
+                train_lambda_attr = 0.1
+                train_latent_dim = 64
+                cv_folds = 1
+                execute_step = "preprocess,cv,explain,null"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_EMIT_BEST_PARAMS") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_TRAIN_CV") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_CHECKPOINT") },
+                { assert new File("$outputDir/cohort/discovery/gene_list_by_delta_rank.tsv").exists() },
+                { assert new File("$outputDir/cohort/discovery/variant_significance_rankings.csv").exists() }
+            )
+        }
+    }
+
     test("validation step accepts partial provided references - stub run") {
 
         config "../conf/test.config"

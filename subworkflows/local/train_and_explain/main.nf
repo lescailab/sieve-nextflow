@@ -3,6 +3,7 @@
 //
 
 include { SIEVE_TRAIN_CV                                                            } from '../../../modules/local/sieve/train_cv/main'
+include { SIEVE_TRAIN_SINGLE as SIEVE_TRAIN_SINGLE_MAIN                             } from '../../../modules/local/sieve/train_single/main'
 include { SIEVE_SELECT_BEST_CHECKPOINT                                              } from '../../../modules/local/sieve/select_best_checkpoint/main'
 include { SIEVE_EXPLAIN as SIEVE_EXPLAIN_REAL                                       } from '../../../modules/local/sieve/explain/main'
 include { SIEVE_CREATE_NULL_BASELINE                                                } from '../../../modules/local/sieve/create_null_baseline/main'
@@ -11,6 +12,7 @@ include { SIEVE_EXPLAIN as SIEVE_EXPLAIN_NULL                                   
 include { SIEVE_COMPARE_ATTRIBUTIONS as SIEVE_COMPARE_ATTRIBUTIONS_RAW              } from '../../../modules/local/sieve/compare_attributions/main'
 include { SIEVE_BOOTSTRAP_NULL_CALIBRATION                                          } from '../../../modules/local/sieve/bootstrap_null_calibration/main'
 include { SIEVE_CORRECT_CHRX_BIAS                                                   } from '../../../modules/local/sieve/correct_chrx_bias/main'
+include { SIEVE_GENERATE_GENE_LIST                                                  } from '../../../modules/local/sieve/generate_gene_list/main'
 include { resolveExecuteSteps } from '../../../lib/sieve_helpers'
 
 workflow TRAIN_AND_EXPLAIN {
@@ -47,6 +49,7 @@ workflow TRAIN_AND_EXPLAIN {
         epochs: params.train_epochs as Integer,
         batch_size: params.train_batch_size as Integer,
         chunk_size: params.train_chunk_size as Integer,
+        chunk_overlap: params.train_chunk_overlap as Integer,
         aggregation_method: params.train_aggregation_method,
         gradient_accumulation_steps: params.train_gradient_accumulation_steps as Integer,
         gradient_clip: params.train_gradient_clip as Double,
@@ -55,7 +58,13 @@ workflow TRAIN_AND_EXPLAIN {
         early_stopping: params.train_early_stopping as Integer,
         hidden_dim: params.train_hidden_dim as Integer,
         num_attention_layers: params.train_num_attention_layers as Integer,
+        num_heads: params.train_num_heads != null ? (params.train_num_heads as Integer) : null,
+        classifier_type: params.train_classifier_type,
+        class_weighting: params.train_class_weighting,
+        num_pcs: params.num_pcs != null ? (params.num_pcs as Integer) : null,
     ].findAll { _key, value -> value != null }
+
+    def runSingleTrainingForMain = (params.cv_folds as Integer ?: 5) <= 1
 
     //
     // Best checkpoint: train CV + select, or use provided
@@ -76,6 +85,42 @@ workflow TRAIN_AND_EXPLAIN {
 
             ch_published_best_model = ch_best_checkpoint_keyed.map { _cohort_id, checkpoint, config ->
                 [checkpoint, config]
+            }
+        } else if (runSingleTrainingForMain) {
+            //
+            // Single-training mode: cv_folds <= 1 → bypass CV and select-best-checkpoint,
+            // run one SIEVE_TRAIN_SINGLE pass on the best params using --val_split.
+            //
+            ch_single_main_spec = channel.value(
+                tuple(
+                    cohortMeta.id,
+                    [id: cohortMeta.id, run_id: 'train_main', stage: 'cv', level: params.default_train_level],
+                    params.default_train_level,
+                    params.val_split
+                )
+            )
+
+            ch_single_main_input = ch_single_main_spec
+                .join(ch_preprocessed_keyed, by: 0)
+                .join(ch_sex_map_keyed, by: 0)
+                .join(ch_best_params_map_keyed, by: 0)
+                .map { _key, meta, level, val_split, preprocessed, sex_map, best_params_map ->
+                    def mergedParams = new LinkedHashMap(baseTrainingParams)
+                    mergedParams.putAll(best_params_map instanceof Map ? best_params_map : [:])
+                    mergedParams.put('annotation_level', level)
+                    tuple(meta, preprocessed, sex_map, mergedParams, level, val_split)
+                }
+
+            SIEVE_TRAIN_SINGLE_MAIN(ch_single_main_input)
+            ch_versions = ch_versions.mix(SIEVE_TRAIN_SINGLE_MAIN.out.versions)
+            ch_plot_sources = ch_plot_sources.mix(SIEVE_TRAIN_SINGLE_MAIN.out.selection_payload.map { _meta, run_dir -> run_dir })
+
+            ch_best_checkpoint_keyed = SIEVE_TRAIN_SINGLE_MAIN.out.train_artifacts.map { meta, _results, config, model ->
+                tuple(meta.id, model, config)
+            }
+
+            ch_published_best_model = SIEVE_TRAIN_SINGLE_MAIN.out.train_artifacts.map { _meta, results, config, model ->
+                [model, config, results]
             }
         } else {
             ch_cv_spec = channel.value(
@@ -156,6 +201,9 @@ workflow TRAIN_AND_EXPLAIN {
     ch_published_null_comparison = channel.empty()
     ch_published_null_comparison_corrected = channel.empty()
     ch_published_bootstrap_calibration = channel.empty()
+    ch_published_gene_list_delta = channel.empty()
+    ch_published_gene_list_zattr = channel.empty()
+    ch_published_variant_significance = channel.empty()
     ch_null_attributions_npz = channel.value([])
     ch_null_variant_rankings = channel.value([])
 
@@ -279,6 +327,41 @@ workflow TRAIN_AND_EXPLAIN {
             calibrated_csv
         }
 
+        //
+        // Primary top-k selection: delta-rank-based gene/variant lists from bootstrap calibration
+        // (z-attribution-based gene list is also produced as a secondary diagnostic output).
+        //
+        ch_main_significance_keyed = SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.significance_rankings.map { meta, significance_csv ->
+            tuple(meta.id, meta, significance_csv)
+        }
+
+        ch_main_corrected_keyed = SIEVE_CORRECT_CHRX_BIAS.out.corrected.map { meta, corrected_dir ->
+            tuple(meta.id, corrected_dir.resolve('corrected_variant_rankings.csv'))
+        }
+
+        ch_main_calibrated_keyed = SIEVE_BOOTSTRAP_NULL_CALIBRATION.out.calibrated.map { meta, calibrated_csv ->
+            tuple(meta.id, calibrated_csv)
+        }
+
+        ch_gene_list_main_input = ch_main_significance_keyed
+            .join(ch_main_corrected_keyed, by: 0)
+            .join(ch_main_calibrated_keyed, by: 0)
+            .map { key, sig_meta, significance_csv, corrected_variant_rankings, calibrated_csv ->
+                tuple(
+                    [id: key, run_id: 'gene_list_main', stage: 'discovery', level: sig_meta.level ?: params.default_train_level],
+                    significance_csv,
+                    corrected_variant_rankings,
+                    calibrated_csv
+                )
+            }
+
+        SIEVE_GENERATE_GENE_LIST(ch_gene_list_main_input)
+        ch_versions = ch_versions.mix(SIEVE_GENERATE_GENE_LIST.out.versions)
+
+        ch_published_gene_list_delta = SIEVE_GENERATE_GENE_LIST.out.gene_list_delta.map { _meta, gene_list -> gene_list }
+        ch_published_gene_list_zattr = SIEVE_GENERATE_GENE_LIST.out.gene_list_zattr.map { _meta, gene_list -> gene_list }
+        ch_published_variant_significance = SIEVE_GENERATE_GENE_LIST.out.variant_rankings.map { _meta, variant_csv -> variant_csv }
+
         // Channels for downstream subworkflows
         ch_null_attributions_npz = SIEVE_EXPLAIN_NULL.out.explain_dir.map { _meta, explain_dir ->
             def npz = explain_dir.resolve('attributions.npz')
@@ -300,6 +383,9 @@ workflow TRAIN_AND_EXPLAIN {
     published_null_comparison          = ch_published_null_comparison          // channel: publish files
     published_null_comparison_corrected = ch_published_null_comparison_corrected // channel: path(corrected dir)
     published_bootstrap_calibration    = ch_published_bootstrap_calibration    // channel: path(calibrated csv)
+    published_gene_list_delta          = ch_published_gene_list_delta          // channel: path(gene_list_by_delta_rank.tsv) — primary top-k selector
+    published_gene_list_zattr          = ch_published_gene_list_zattr          // channel: path(gene_list_by_z_attribution.tsv) — secondary diagnostic
+    published_variant_significance     = ch_published_variant_significance     // channel: path(variant_significance_rankings.csv)
     null_attributions_npz              = ch_null_attributions_npz              // channel: path(npz) or val([])
     null_variant_rankings              = ch_null_variant_rankings              // channel: path(rankings) or val([])
     versions                           = ch_versions                           // channel: path(versions.yml)

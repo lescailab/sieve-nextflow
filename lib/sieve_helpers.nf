@@ -137,12 +137,48 @@ def validateSieveArguments(
     bestCheckpoint,
     checkpointConfig,
     executeStep,
+    cvFolds,
+    pipelineParams,
     logHandle,
     errorFn
 ) {
     def fail = errorFn ?: { message -> throw new IllegalArgumentException(message) }
 
     def selectedSteps = resolveExecuteSteps(executeStep)
+
+    // Fixed-training-params: all-or-none.
+    validateFixedTrainingParams(pipelineParams, fail)
+
+    // CV folds: <=1 means single-training mode.
+    if (cvFolds != null) {
+        def foldsInt
+        try {
+            foldsInt = cvFolds as Integer
+        } catch (Exception ignored) {
+            fail.call("Parameter --cv_folds must be an integer, got: ${cvFolds}")
+            return
+        }
+        if (foldsInt < 0) {
+            fail.call("Parameter --cv_folds must be >= 0, got: ${foldsInt}")
+        } else if (foldsInt <= 1) {
+            logHandle?.warn("--cv_folds=${foldsInt}: cross-validation is skipped; a single training pass will run with --val_split=${pipelineParams?.val_split}.")
+        }
+    }
+
+    // Classifier type: enum check (null = use upstream default).
+    if (pipelineParams?.train_classifier_type != null) {
+        def allowedClassifierTypes = ['flatten', 'attention_pool']
+        if (!(pipelineParams.train_classifier_type in allowedClassifierTypes)) {
+            fail.call("Invalid --train_classifier_type '${pipelineParams.train_classifier_type}'. Allowed values: ${allowedClassifierTypes.join(', ')}")
+        }
+    }
+
+    // Source-of-best-params precedence info (best_checkpoint > best_params > fixed params > grid).
+    if (bestCheckpoint && (bestParams || hasFixedTrainingParams(pipelineParams))) {
+        logHandle?.warn('--best_checkpoint takes precedence over --best_params and fixed --train_lr/--train_lambda_attr/--train_latent_dim, which will be ignored for the main model.')
+    } else if (bestParams && hasFixedTrainingParams(pipelineParams)) {
+        logHandle?.warn('--best_params takes precedence over fixed --train_lr/--train_lambda_attr/--train_latent_dim, which will be ignored.')
+    }
 
     def targetSex = selectedSteps.contains('sex')
     def targetPreprocess = selectedSteps.contains('preprocess')
@@ -258,11 +294,64 @@ def validateSieveArguments(
     }
 }
 
+def hasFixedTrainingParams(pipelineParams) {
+    if (pipelineParams == null) {
+        return false
+    }
+    def lr = pipelineParams.train_lr
+    def lambdaAttr = pipelineParams.train_lambda_attr
+    def latentDim = pipelineParams.train_latent_dim
+    return (lr != null) && (lambdaAttr != null) && (latentDim != null)
+}
+
+def validateFixedTrainingParams(pipelineParams, failFn) {
+    def fail = failFn ?: { message -> throw new IllegalArgumentException(message) }
+    if (pipelineParams == null) {
+        return
+    }
+    def lr = pipelineParams.train_lr
+    def lambdaAttr = pipelineParams.train_lambda_attr
+    def latentDim = pipelineParams.train_latent_dim
+    def provided = []
+    def missing = []
+    if (lr != null) { provided << '--train_lr' } else { missing << '--train_lr' }
+    if (lambdaAttr != null) { provided << '--train_lambda_attr' } else { missing << '--train_lambda_attr' }
+    if (latentDim != null) { provided << '--train_latent_dim' } else { missing << '--train_latent_dim' }
+    if (provided && missing) {
+        fail.call("Fixed training hyperparameters must be supplied all together. Provided: ${provided.join(', ')}. Missing: ${missing.join(', ')}.")
+    }
+}
+
+def buildFixedTrainingParams(baseTrainParams, pipelineParams) {
+    def runParams = new java.util.LinkedHashMap(baseTrainParams ?: [:])
+    runParams.put('run_id', 'fixed')
+    if (pipelineParams.train_lr != null)              { runParams.put('lr', pipelineParams.train_lr as Double) }
+    if (pipelineParams.train_lambda_attr != null)     { runParams.put('lambda_attr', pipelineParams.train_lambda_attr as Double) }
+    if (pipelineParams.train_latent_dim != null)      { runParams.put('latent_dim', pipelineParams.train_latent_dim as Integer) }
+    if (pipelineParams.train_hidden_dim != null)      { runParams.put('hidden_dim', pipelineParams.train_hidden_dim as Integer) }
+    if (pipelineParams.train_num_attention_layers != null) { runParams.put('num_attention_layers', pipelineParams.train_num_attention_layers as Integer) }
+    if (pipelineParams.train_num_heads != null)       { runParams.put('num_heads', pipelineParams.train_num_heads as Integer) }
+    if (pipelineParams.train_classifier_type != null) { runParams.put('classifier_type', pipelineParams.train_classifier_type as String) }
+    return runParams
+}
+
+def renderParamsAsYaml(paramsMap) {
+    def yaml = new org.yaml.snakeyaml.Yaml()
+    def serializable = [:]
+    paramsMap.each { key, value ->
+        if (value != null) {
+            serializable[key.toString()] = value
+        }
+    }
+    return yaml.dumpAsMap(serializable)
+}
+
 def extractTrainingParams(configPath) {
     def allowedKeys = [
         'epochs',
         'batch_size',
         'chunk_size',
+        'chunk_overlap',
         'aggregation_method',
         'gradient_accumulation_steps',
         'gradient_clip',
@@ -278,6 +367,10 @@ def extractTrainingParams(configPath) {
         'num_heads',
         'num_workers',
         'max_variants_per_batch',
+        'classifier_type',
+        'class_weighting',
+        'pc_map',
+        'num_pcs',
     ] as Set
 
     def yaml = new org.yaml.snakeyaml.Yaml()

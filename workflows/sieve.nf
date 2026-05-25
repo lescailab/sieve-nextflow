@@ -57,6 +57,9 @@ workflow SIEVE {
     ch_published_null_comparison = channel.empty()
     ch_published_null_comparison_corrected = channel.empty()
     ch_published_bootstrap_calibration = channel.empty()
+    ch_published_gene_list_delta = channel.empty()
+    ch_published_gene_list_zattr = channel.empty()
+    ch_published_variant_significance = channel.empty()
     ch_real_rankings = channel.empty()
     ch_null_attributions_npz = channel.value([])
     ch_null_variant_rankings = channel.value([])
@@ -81,6 +84,9 @@ workflow SIEVE {
         ch_published_null_comparison = TRAIN_AND_EXPLAIN.out.published_null_comparison
         ch_published_null_comparison_corrected = TRAIN_AND_EXPLAIN.out.published_null_comparison_corrected
         ch_published_bootstrap_calibration = TRAIN_AND_EXPLAIN.out.published_bootstrap_calibration
+        ch_published_gene_list_delta = TRAIN_AND_EXPLAIN.out.published_gene_list_delta
+        ch_published_gene_list_zattr = TRAIN_AND_EXPLAIN.out.published_gene_list_zattr
+        ch_published_variant_significance = TRAIN_AND_EXPLAIN.out.published_variant_significance
         ch_real_rankings = TRAIN_AND_EXPLAIN.out.real_rankings
         ch_null_attributions_npz = TRAIN_AND_EXPLAIN.out.null_attributions_npz
         ch_null_variant_rankings = TRAIN_AND_EXPLAIN.out.null_variant_rankings
@@ -268,6 +274,9 @@ workflow SIEVE {
     null_comparison_l3                  = ch_published_null_comparison
     null_comparison_corrected_l3        = ch_published_null_comparison_corrected
     bootstrap_calibration_l3            = ch_published_bootstrap_calibration
+    gene_list_delta                     = ch_published_gene_list_delta
+    gene_list_zattr                     = ch_published_gene_list_zattr
+    variant_significance                = ch_published_variant_significance
     ablation_training_l0                = ch_ablation_training_l0
     ablation_training_l1                = ch_ablation_training_l1
     ablation_training_l2                = ch_ablation_training_l2

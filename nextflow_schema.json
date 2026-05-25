@@ -132,8 +132,8 @@
                 "cv_folds": {
                     "type": "integer",
                     "default": 5,
-                    "minimum": 2,
-                    "description": "Number of folds used in cross-validation.",
+                    "minimum": 0,
+                    "description": "Number of folds used in cross-validation. Set to 0 or 1 to skip cross-validation and run a single training pass instead (uses --val_split for the train/validation split).",
                     "hidden": true
                 },
                 "val_split": {
@@ -182,6 +182,13 @@
                     "default": 3000,
                     "minimum": 100,
                     "description": "Chunk size for all training stages; larger values increase GPU memory usage.",
+                    "hidden": true
+                },
+                "train_chunk_overlap": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "description": "Overlap between adjacent chunks (forwarded to sieve-train --chunk-overlap).",
                     "hidden": true
                 },
                 "train_aggregation_method": {
@@ -235,6 +242,159 @@
                     "default": 1,
                     "minimum": 1,
                     "description": "Default number of attention layers used across training stages.",
+                    "hidden": true
+                },
+                "train_class_weighting": {
+                    "type": "string",
+                    "default": "auto",
+                    "enum": ["auto", "on", "off"],
+                    "description": "Inverse-frequency class weighting strategy (forwarded to sieve-train --class-weighting).",
+                    "hidden": true
+                },
+                "train_lr": {
+                    "type": ["number", "null"],
+                    "description": "Optional fixed learning rate. When set together with --train_lambda_attr and --train_latent_dim the grid search is skipped.",
+                    "hidden": true
+                },
+                "train_lambda_attr": {
+                    "type": ["number", "null"],
+                    "description": "Optional fixed embedding sparsity regularisation weight (lambda_attr). When set together with --train_lr and --train_latent_dim the grid search is skipped.",
+                    "hidden": true
+                },
+                "train_latent_dim": {
+                    "type": ["integer", "null"],
+                    "minimum": 1,
+                    "description": "Optional fixed latent dimension. When set together with --train_lr and --train_lambda_attr the grid search is skipped.",
+                    "hidden": true
+                },
+                "train_num_heads": {
+                    "type": ["integer", "null"],
+                    "minimum": 1,
+                    "description": "Optional fixed number of attention heads (forwarded to sieve-train --num-heads).",
+                    "hidden": true
+                },
+                "train_classifier_type": {
+                    "type": ["string", "null"],
+                    "enum": ["flatten", "attention_pool", null],
+                    "description": "Optional classifier-head architecture (forwarded to sieve-train --classifier-type). When null, the SIEVE default is used.",
+                    "hidden": true
+                },
+                "pc_map": {
+                    "type": ["string", "null"],
+                    "format": "file-path",
+                    "exists": true,
+                    "description": "Optional TSV with sample_id, PC1, PC2, ... for population-structure adjustment. Shared between sieve-train and sieve-explain.",
+                    "hidden": true
+                },
+                "num_pcs": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "description": "Number of principal components from --pc_map to use as covariates.",
+                    "hidden": true
+                },
+                "explain_n_steps": {
+                    "type": ["integer", "null"],
+                    "minimum": 1,
+                    "description": "Integration steps for integrated-gradients in sieve-explain (--n-steps).",
+                    "hidden": true
+                },
+                "explain_max_variants": {
+                    "type": ["integer", "null"],
+                    "minimum": 1,
+                    "description": "Maximum variants per sample considered during integrated-gradients computation (--max-variants).",
+                    "hidden": true
+                },
+                "explain_top_k_variants": {
+                    "type": ["integer", "null"],
+                    "minimum": 1,
+                    "description": "Number of top variants extracted by sieve-explain (--top-k-variants).",
+                    "hidden": true
+                },
+                "explain_top_k_interactions": {
+                    "type": ["integer", "null"],
+                    "minimum": 1,
+                    "description": "Number of top interactions extracted by sieve-explain (--top-k-interactions).",
+                    "hidden": true
+                },
+                "explain_attention_threshold": {
+                    "type": ["number", "null"],
+                    "description": "Minimum attention weight to keep an interaction (--attention-threshold).",
+                    "hidden": true
+                },
+                "explain_attention_threshold_mode": {
+                    "type": ["string", "null"],
+                    "enum": ["absolute", "percentile", null],
+                    "description": "Attention threshold mode (--attention-threshold-mode).",
+                    "hidden": true
+                },
+                "explain_attention_percentile": {
+                    "type": ["number", "null"],
+                    "minimum": 0,
+                    "maximum": 100,
+                    "description": "Percentile cutoff when --explain_attention_threshold_mode is percentile (--attention-percentile).",
+                    "hidden": true
+                },
+                "explain_aggregation_method": {
+                    "type": ["string", "null"],
+                    "enum": ["mean", "max", "rank_average", null],
+                    "description": "Score aggregation method used by sieve-explain (--aggregation-method).",
+                    "hidden": true
+                },
+                "explain_skip_ig": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Skip integrated-gradients computation in sieve-explain (--skip-ig).",
+                    "hidden": true
+                },
+                "explain_skip_attention": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Skip attention analysis in sieve-explain (--skip-attention).",
+                    "hidden": true
+                },
+                "explain_batch_size": {
+                    "type": ["integer", "null"],
+                    "minimum": 1,
+                    "description": "Dataloader batch size for sieve-explain (--batch-size).",
+                    "hidden": true
+                },
+                "bootstrap_top_k": {
+                    "type": "string",
+                    "default": "50,100,200,500,1000",
+                    "description": "Comma-separated top-k thresholds for delta-rank overlap summaries (sieve-bootstrap-null-calibration --top-k).",
+                    "hidden": true
+                },
+                "bootstrap_gene_delta_rank_aggregation": {
+                    "type": "string",
+                    "default": "max",
+                    "enum": ["max", "mean"],
+                    "description": "How to aggregate per-variant delta_rank to gene level (--gene-delta-rank-aggregation).",
+                    "hidden": true
+                },
+                "bootstrap_exclude_sex_chroms": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Drop sex-chromosome variants before bootstrap calibration (--exclude-sex-chroms).",
+                    "hidden": true
+                },
+                "bootstrap_min_variants_per_gene": {
+                    "type": "integer",
+                    "default": 10,
+                    "minimum": 1,
+                    "description": "Minimum variants required to compute gene-level statistics (--min-variants-per-gene).",
+                    "hidden": true
+                },
+                "compare_exclude_sex_chroms": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Drop sex-chromosome variants in sieve-compare-attributions (--exclude-sex-chroms).",
+                    "hidden": true
+                },
+                "chrx_include_sex_chroms": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Include sex chromosomes in the corrected output of sieve-correct-chrx-bias (--include-sex-chroms).",
                     "hidden": true
                 },
                 "grid_lr": {

@@ -42,6 +42,9 @@ workflow NFCORE_SIEVE {
     null_comparison_l3               = SIEVE.out.null_comparison_l3
     null_comparison_corrected_l3     = SIEVE.out.null_comparison_corrected_l3
     bootstrap_calibration_l3         = SIEVE.out.bootstrap_calibration_l3
+    gene_list_delta                  = SIEVE.out.gene_list_delta
+    gene_list_zattr                  = SIEVE.out.gene_list_zattr
+    variant_significance             = SIEVE.out.variant_significance
     ablation_training_l0             = SIEVE.out.ablation_training_l0
     ablation_training_l1             = SIEVE.out.ablation_training_l1
     ablation_training_l2             = SIEVE.out.ablation_training_l2
@@ -164,6 +167,9 @@ workflow {
     null_comparison_l3               = NFCORE_SIEVE.out.null_comparison_l3
     null_comparison_corrected_l3     = NFCORE_SIEVE.out.null_comparison_corrected_l3
     bootstrap_calibration_l3         = NFCORE_SIEVE.out.bootstrap_calibration_l3
+    gene_list_delta                  = NFCORE_SIEVE.out.gene_list_delta
+    gene_list_zattr                  = NFCORE_SIEVE.out.gene_list_zattr
+    variant_significance             = NFCORE_SIEVE.out.variant_significance
     ablation_training_l0             = NFCORE_SIEVE.out.ablation_training_l0
     ablation_training_l1             = NFCORE_SIEVE.out.ablation_training_l1
     ablation_training_l2             = NFCORE_SIEVE.out.ablation_training_l2
@@ -224,6 +230,10 @@ output {
     null_comparison_l3               { path "${params.cohort_id}/attribution_comparison/L3" }
     null_comparison_corrected_l3     { path "${params.cohort_id}/attribution_comparison/L3" }
     bootstrap_calibration_l3         { path "${params.cohort_id}/attribution_comparison/L3" }
+
+    gene_list_delta                  { path "${params.cohort_id}/discovery" }
+    gene_list_zattr                  { path "${params.cohort_id}/discovery" }
+    variant_significance             { path "${params.cohort_id}/discovery" }
 
     ablation_training_l0             { path "${params.cohort_id}/real_experiments/L0/training" }
     ablation_training_l1             { path "${params.cohort_id}/real_experiments/L1/training" }

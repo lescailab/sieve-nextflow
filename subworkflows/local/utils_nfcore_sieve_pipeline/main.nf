@@ -102,6 +102,8 @@ workflow PIPELINE_INITIALISATION {
         best_checkpoint,
         checkpoint_config,
         execute_step,
+        params.cv_folds,
+        params,
         log,
         { message -> error(message) }
     )

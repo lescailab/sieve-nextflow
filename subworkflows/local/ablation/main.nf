@@ -35,6 +35,7 @@ workflow ABLATION {
         epochs: params.train_epochs as Integer,
         batch_size: params.train_batch_size as Integer,
         chunk_size: params.train_chunk_size as Integer,
+        chunk_overlap: params.train_chunk_overlap as Integer,
         aggregation_method: params.train_aggregation_method,
         gradient_accumulation_steps: params.train_gradient_accumulation_steps as Integer,
         gradient_clip: params.train_gradient_clip as Double,
@@ -43,6 +44,10 @@ workflow ABLATION {
         early_stopping: params.train_early_stopping as Integer,
         hidden_dim: params.train_hidden_dim as Integer,
         num_attention_layers: params.train_num_attention_layers as Integer,
+        num_heads: params.train_num_heads != null ? (params.train_num_heads as Integer) : null,
+        classifier_type: params.train_classifier_type,
+        class_weighting: params.train_class_weighting,
+        num_pcs: params.num_pcs != null ? (params.num_pcs as Integer) : null,
     ].findAll { _key, value -> value != null }
 
     ch_ablation_specs = channel

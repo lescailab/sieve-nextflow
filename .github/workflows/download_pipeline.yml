@@ -21,6 +21,10 @@ env:
 
 jobs:
   configure:
+    # Skip in the lescailab fork: the `nf-core pipelines download` flow expects
+    # an upstream nf-core revision and a matching Nextflow line. This pipeline
+    # intentionally tracks an older Nextflow pin. Re-enable in upstream nf-core only.
+    if: github.repository == 'nf-core/sieve'
     runs-on: ubuntu-latest
     outputs:
       REPO_LOWERCASE: ${{ steps.get_repo_properties.outputs.REPO_LOWERCASE }}

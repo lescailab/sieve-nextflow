@@ -1,0 +1,51 @@
+def componentFixtures = new File("assets/testdata/component_fixtures").canonicalPath
+
+nextflow_process {
+
+    name "Test Process SIEVE_SELECT_BEST_PARAMS"
+    script "../modules/local/sieve/select_best_params/main.nf"
+    process "SIEVE_SELECT_BEST_PARAMS"
+    config "./component_process.config"
+    tag "components"
+    tag "select_best_params"
+
+    test("select best params with metric tie-breaking") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [ id: 'cohort' ]
+                input[1] = [
+                    file('${componentFixtures}/grid/grid_001_selection_payload', checkIfExists: true),
+                    file('${componentFixtures}/grid/grid_002_selection_payload', checkIfExists: true),
+                    file('${componentFixtures}/grid/grid_003_selection_payload', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.best_params != null },
+                {
+                    def bestRunId = new File(process.out.best_params.get(0).get(2).toString()).text.trim()
+                    assert bestRunId == "grid_003_selection_payload"
+                },
+                {
+                    def bestParams = new File(process.out.best_params.get(0).get(1).toString()).text
+                    assert bestParams.contains("aggregation_method: logit_mean")
+                },
+                {
+                    def summaryRows = new File(process.out.best_params.get(0).get(3).toString()).readLines()
+                    assert summaryRows.size() == 4
+                },
+                { assert process.out.versions },
+                { assert snapshot(process.out.versions).match("versions") }
+            )
+        }
+    }
+}

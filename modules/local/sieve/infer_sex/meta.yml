@@ -1,0 +1,58 @@
+name: sieve_infer_sex
+description: Infer sample sex from a bgzipped indexed VCF using SIEVE.
+keywords:
+  - sieve
+  - infer sex
+  - vcf
+tools:
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence:
+        - MIT
+input:
+  - - meta:
+        type: map
+        description: Sample metadata map
+    - vcf:
+        type: file
+        description: Input bgzipped multi-sample VCF
+    - vcf_index:
+        type: file
+        description: Optional VCF index (.tbi or .csi)
+    - known_sex:
+        type: file
+        description: Optional TSV of recorded sample sexes used only for concordance checking against the inferred output
+  - - genome_build:
+        type: string
+        description: Genome build (GRCh37 or GRCh38)
+output:
+  sex_map:
+    - - meta:
+          type: map
+          description: Sample metadata map
+      - sample_sex.tsv:
+          type: file
+          description: Per-sample sex map TSV
+  diagnostics:
+    - - meta:
+          type: map
+          description: Sample metadata map
+      - infer_sex_diagnostics/*:
+          type: file
+          description: Optional diagnostics files produced by SIEVE
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.3.0:
+          type: string
+          description: The version of the tool
+authors:
+  - "@lescai"
+topics:
+  versions: *1

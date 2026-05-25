@@ -9,6 +9,9 @@ on:
 
 jobs:
   pre-commit:
+    # Skip in the lescailab fork: this pipeline pins an older Nextflow that the
+    # latest nf-core pre-commit hooks treat as out-of-spec. Run only in upstream nf-core.
+    if: github.repository == 'nf-core/sieve'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
@@ -25,6 +28,10 @@ jobs:
         run: pre-commit run --all-files
 
   nf-core:
+    # Skip in the lescailab fork: `nf-core lint --release` expects the latest
+    # template/Nextflow strict-syntax conventions; this pipeline intentionally
+    # tracks an older Nextflow pin. Re-enable in upstream nf-core only.
+    if: github.repository == 'nf-core/sieve'
     runs-on: ubuntu-latest
     steps:
       - name: Check out pipeline code

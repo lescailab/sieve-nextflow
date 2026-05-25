@@ -1,0 +1,42 @@
+name: sieve_emit_best_params
+description: Materialize a SIEVE training hyperparameter map as a best_params.yaml file so it can flow through the same channel as a grid-selected YAML.
+keywords:
+  - sieve
+  - hyperparameters
+  - yaml
+tools:
+  - python:
+      description: Python scripting language
+      homepage: https://www.python.org
+      documentation: https://docs.python.org/3/
+      licence:
+        - PSF-2.0
+input:
+  - - meta:
+        type: map
+        description: Metadata map for the cohort
+    - params_map:
+        type: map
+        description: In-memory hyperparameter map (key/value pairs)
+output:
+  best_params:
+    - - meta:
+          type: map
+          description: Metadata map for the cohort
+      - best_params.yaml:
+          type: file
+          description: Hyperparameter map serialised to YAML for downstream training stages
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - python:
+          type: string
+          description: The name of the tool
+      - "3.11":
+          type: string
+          description: The version of the tool
+authors:
+  - "@lescai"
+topics:
+  versions: *1

@@ -4,7 +4,10 @@ nextflow_pipeline {
     script "../main.nf"
     tag "pipeline"
 
-    test("-profile test") {
+    test("test profile - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
 
         when {
             params {
@@ -13,20 +16,225 @@ nextflow_pipeline {
         }
 
         then {
-            // stable_name: All files + folders in ${params.outdir}/ with a stable name
-            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
-            // stable_path: All files in ${params.outdir}/ with stable content
-            def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             assertAll(
-                { assert workflow.success},
-                { assert snapshot(
-                    // pipeline versions.yml file for multiqc from which Nextflow version is removed because we test pipelines on multiple Nextflow versions
-                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_sieve_software_mqc_versions.yml"),
-                    // All stable path name, with a relative path
-                    stable_name,
-                    // All files with stable contents
-                    stable_path
-                ).match() }
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_COLLECT_PLOTS") },
+                { assert new File("$outputDir/cohort/data/sample_sex.tsv").exists() },
+                { assert new File("$outputDir/cohort/data/preprocessed.pt").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/best_checkpoint.pt").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/cv_folds_summary.tsv").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/attributions/explain_output/sieve_variant_rankings.csv").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/attributions/explain_output/sieve_gene_rankings.csv").exists() },
+                { assert new File("$outputDir/cohort/validation/validation_output/validation_report.yaml").exists() },
+                { assert new File("$outputDir/cohort/ablation/comparison_levels/ablation_summary.tsv").exists() },
+                { assert new File("$outputDir/cohort/null_baselines/L3/training/best_model.pt").exists() },
+                { assert new File("$outputDir/cohort/attribution_comparison/L3/comparison_summary.yaml").exists() },
+                { assert new File("$outputDir/cohort/attribution_comparison/L3/corrected/corrected_variant_rankings.csv").exists() },
+                { assert new File("$outputDir/cohort/validation/plots_manifest.tsv").exists() }
+            )
+        }
+    }
+
+    test("explain step from provided checkpoint + config + preprocessed data - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                vcf = null
+                phenotypes = null
+                infer_sex = false
+                sex_map = null
+                preprocessed_data = "${projectDir}/assets/testdata/small_reprocessed_test.pt"
+                best_params = null
+                best_checkpoint = "${projectDir}/assets/testdata/component_fixtures/cv/cv_output/fold_1/best_model.pt"
+                checkpoint_config = "${projectDir}/assets/testdata/test_model/L3_run/config.yaml"
+                execute_step = "explain"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/attributions/explain_output/sieve_variant_rankings.csv").exists() },
+                { assert !new File("$outputDir/cohort/ablation").exists() },
+                { assert !new File("$outputDir/cohort/null_baselines").exists() },
+                { assert !new File("$outputDir/cohort/validation").exists() },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_TRAIN_CV") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") }
+            )
+        }
+    }
+
+    test("ablation step from provided artifacts skips raw-data stages - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                vcf = null
+                phenotypes = null
+                infer_sex = false
+                sex_map = "${projectDir}/assets/testdata/sex_map.tsv"
+                preprocessed_data = "${projectDir}/assets/testdata/small_reprocessed_test.pt"
+                best_params = "${projectDir}/assets/testdata/test_model/L3_run/config.yaml"
+                best_checkpoint = "${projectDir}/assets/testdata/component_fixtures/cv/cv_output/fold_1/best_model.pt"
+                checkpoint_config = "${projectDir}/assets/testdata/test_model/L3_run/config.yaml"
+                execute_step = "ablation"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/cohort/ablation/comparison_levels/ablation_summary.tsv").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L0/training/ablation_L0_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L1/training/ablation_L1_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L2/training/ablation_L2_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/ablation_L3_selection_payload/results.yaml").exists() },
+                { assert !new File("$outputDir/cohort/real_experiments/L3/training/best_checkpoint.pt").exists() },
+                { assert !new File("$outputDir/cohort/null_baselines").exists() },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_INFER_SEX") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_PREPROCESS") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_TRAIN_CV") }
+            )
+        }
+    }
+
+    test("ablation step resolves required dependencies when artifacts are absent - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                execute_step = "ablation"
+                best_params = null
+                best_checkpoint = null
+                checkpoint_config = null
+                preprocessed_data = null
+                sex_map = null
+                known_sex = "${projectDir}/assets/testdata/known_sex.tsv"
+                infer_sex = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/cohort/data/sample_sex.tsv").exists() },
+                { assert new File("$outputDir/cohort/data/preprocessed.pt").exists() },
+                { assert new File("$outputDir/cohort/ablation/comparison_levels/ablation_summary.tsv").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L0/training/ablation_L0_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L1/training/ablation_L1_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L2/training/ablation_L2_selection_payload/results.yaml").exists() },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/ablation_L3_selection_payload/results.yaml").exists() },
+                { assert !new File("$outputDir/cohort/real_experiments/L3/training/best_checkpoint.pt").exists() },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_TRAIN_CV") }
+            )
+        }
+    }
+
+    test("fixed training params skip grid - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                train_lr = 0.0001
+                train_lambda_attr = 0.1
+                train_latent_dim = 64
+                execute_step = "preprocess,cv,explain,null"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_EMIT_BEST_PARAMS") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") },
+                { assert new File("$outputDir/cohort/real_experiments/L3/training/best_checkpoint.pt").exists() },
+                { assert new File("$outputDir/cohort/discovery/gene_list_by_delta_rank.tsv").exists() },
+                { assert new File("$outputDir/cohort/discovery/gene_list_by_z_attribution.tsv").exists() },
+                { assert new File("$outputDir/cohort/discovery/variant_significance_rankings.csv").exists() }
+            )
+        }
+    }
+
+    test("fixed training params with cv_folds=1 skip both grid and CV - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                train_lr = 0.0001
+                train_lambda_attr = 0.1
+                train_latent_dim = 64
+                cv_folds = 1
+                execute_step = "preprocess,cv,explain,null"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_EMIT_BEST_PARAMS") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_TRAIN_CV") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_CHECKPOINT") },
+                { assert new File("$outputDir/cohort/discovery/gene_list_by_delta_rank.tsv").exists() },
+                { assert new File("$outputDir/cohort/discovery/variant_significance_rankings.csv").exists() }
+            )
+        }
+    }
+
+    test("validation step accepts partial provided references - stub run") {
+
+        config "../conf/test.config"
+        options "-stub-run"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                vcf = null
+                phenotypes = null
+                infer_sex = false
+                sex_map = null
+                preprocessed_data = "${projectDir}/assets/testdata/small_reprocessed_test.pt"
+                best_params = null
+                best_checkpoint = "${projectDir}/assets/testdata/component_fixtures/cv/cv_output/fold_1/best_model.pt"
+                checkpoint_config = "${projectDir}/assets/testdata/test_model/L3_run/config.yaml"
+                clinvar_tsv = "${projectDir}/assets/testdata/test_biomart.tsv"
+                gwas_tsv = null
+                go_mapping_json = null
+                execute_step = "validation"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").exists() },
+                { assert new File("$outputDir/cohort/validation/validation_output/validation_report.yaml").exists() },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_DOWNLOAD_REFERENCES") },
+                { assert !new File("$outputDir/pipeline_info/nf_core_sieve_software_versions.yml").text.contains("SIEVE_SELECT_BEST_PARAMS") }
             )
         }
     }

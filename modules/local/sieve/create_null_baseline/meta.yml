@@ -1,0 +1,45 @@
+name: sieve_create_null_baseline
+description: Create a permuted/null baseline preprocessed tensor for attribution comparison.
+keywords:
+  - sieve
+  - null baseline
+  - preprocessing
+tools:
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence:
+        - MIT
+input:
+  - - meta:
+        type: map
+        description: Metadata map
+    - preprocessed:
+        type: file
+        description: Input preprocessed tensor
+    - seed:
+        type: integer
+        description: Random seed for null baseline generation
+output:
+  null_preprocessed:
+    - - meta:
+          type: map
+          description: Metadata map
+      - preprocessed_NULL.pt:
+          type: file
+          description: Null baseline preprocessed tensor
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.3.0:
+          type: string
+          description: The version of the tool
+authors:
+  - "@lescai"
+topics:
+  versions: *1

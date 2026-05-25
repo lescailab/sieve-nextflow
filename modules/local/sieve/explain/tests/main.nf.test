@@ -1,0 +1,38 @@
+nextflow_process {
+
+    name "Test Process SIEVE_EXPLAIN"
+    script "../main.nf"
+    process "SIEVE_EXPLAIN"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "explain"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort', run_id: 'explain_real' ],
+    file("${projectDir}/assets/testdata/component_fixtures/cv/cv_output/fold_0/best_model.pt", checkIfExists: true),
+    file("${projectDir}/assets/testdata/test_model/L3_run/config.yaml", checkIfExists: true),
+    file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true),
+    false
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.rankings != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

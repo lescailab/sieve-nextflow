@@ -1,0 +1,41 @@
+nextflow_workflow {
+
+    name "Test Workflow VALIDATION"
+    script "../main.nf"
+    workflow "VALIDATION"
+    config "./nextflow.config"
+
+    tag "subworkflows"
+    tag "local"
+    tag "validation"
+
+    test("stub run") {
+
+        options "-stub-run"
+
+        when {
+            workflow {
+                """
+input[0] = channel.of([ id: 'cohort' ])
+input[1] = channel.of([
+    [ id: 'cohort', run_id: 'explain_real' ],
+    file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/test_gwas.tsv", checkIfExists: true)
+])
+input[2] = channel.of(file("${projectDir}/assets/testdata/test_biomart.tsv", checkIfExists: true))
+input[3] = channel.of(file("${projectDir}/assets/testdata/test_gwas_simple.tsv", checkIfExists: true))
+input[4] = channel.of(file("${projectDir}/assets/testdata/parsed_go.json", checkIfExists: true))
+input[5] = channel.of(file("${projectDir}/assets/testdata/component_fixtures/ablation/ablation_L0_selection_payload", checkIfExists: true))
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.published_plots != null }
+            )
+        }
+    }
+}

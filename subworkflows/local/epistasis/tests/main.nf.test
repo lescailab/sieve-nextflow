@@ -1,0 +1,48 @@
+nextflow_workflow {
+
+    name "Test Workflow EPISTASIS"
+    script "../main.nf"
+    workflow "EPISTASIS"
+    config "./nextflow.config"
+
+    tag "subworkflows"
+    tag "local"
+    tag "epistasis"
+
+    test("stub run") {
+
+        options "-stub-run"
+
+        when {
+            workflow {
+                """
+input[0] = channel.of([
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true)
+])
+input[1] = channel.of(tuple('cohort', file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true)))
+input[2] = channel.of([
+    [ id: 'cohort', run_id: 'explain_real' ],
+    file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true)
+])
+input[3] = channel.of(tuple(
+    'cohort',
+    file("${projectDir}/assets/testdata/component_fixtures/cv/cv_output/fold_0/best_model.pt", checkIfExists: true),
+    file("${projectDir}/assets/testdata/test_model/L3_run/config.yaml", checkIfExists: true)
+))
+input[4] = channel.of(file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true))
+input[5] = channel.of(file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true))
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.published_explainability_analysis != null }
+            )
+        }
+    }
+}

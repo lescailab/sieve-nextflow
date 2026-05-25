@@ -1,0 +1,80 @@
+name: ABLATION
+description: Train ablation models across annotation levels and compare their performance
+  and rankings.
+keywords:
+  - sieve
+  - ablation
+  - training
+  - rankings
+components:
+  - sieve/train/single
+  - sieve/explain
+  - sieve/ablation/compare
+  - sieve/ablation/ranking/compare
+  - sieve/compare/attributions
+  - sieve/bootstrap/null/calibration
+  - sieve/correct/chrx/bias
+  - sieve/generate/gene/list
+  - sieve/plot/ablation/comparison
+input:
+  - ch_selection_meta:
+      type: channel
+      description: Channel emitting cohort-level metadata maps.
+  - ch_preprocessed_keyed:
+      type: channel
+      description: "Channel of keyed preprocessed tensors. Structure: [ val(cohort_id),
+        path(preprocessed) ]"
+  - ch_sex_map_keyed:
+      type: channel
+      description: "Channel of keyed sex maps. Structure: [ val(cohort_id), path(sex_map)
+        ]"
+  - ch_best_params_map_keyed:
+      type: channel
+      description: "Channel of keyed hyperparameter maps. Structure: [ val(cohort_id),
+        val(params_map) ]"
+  - ch_null_preprocessed_keyed:
+      type: channel
+      description: "Channel of keyed null-baseline tensors. Structure: [ val(cohort_id),
+        path(preprocessed_null) ]"
+output:
+  - ablation_training_per_level:
+      type: channel
+      description: Channel of per-level real ablation training payload directories.
+  - ablation_attributions_per_level:
+      type: channel
+      description: Channel of per-level real ablation attribution directories.
+  - null_training_per_level:
+      type: channel
+      description: Channel of per-level null ablation training payload directories.
+  - null_attributions_per_level:
+      type: channel
+      description: Channel of per-level null ablation attribution directories.
+  - attribution_comparison_per_level:
+      type: channel
+      description: Channel of per-level real-vs-null attribution comparison outputs.
+  - attribution_comparison_corrected_per_level:
+      type: channel
+      description: Channel of per-level chrX-corrected attribution comparison directories.
+  - bootstrap_calibration_per_level:
+      type: channel
+      description: Channel of per-level bootstrap-calibrated ranking files.
+  - gene_list_delta_per_level:
+      type: channel
+      description: Channel of per-level gene lists ranked by delta rank.
+  - gene_list_zattr_per_level:
+      type: channel
+      description: Channel of per-level gene lists ranked by z attribution.
+  - variant_significance_per_level:
+      type: channel
+      description: Channel of per-level variant significance ranking files.
+  - published_ablation_comparison:
+      type: channel
+      description: Channel of files and plots published under the ablation comparison output tree.
+  - versions:
+      type: channel
+      description: Channel of software version entries emitted by nested modules.
+  - plot_sources:
+      type: channel
+      description: Channel of directories that may contain plots for downstream collection.
+authors:
+  - "@lescai"

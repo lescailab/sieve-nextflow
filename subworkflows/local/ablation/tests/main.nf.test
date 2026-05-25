@@ -1,0 +1,41 @@
+nextflow_workflow {
+
+    name "Test Workflow TEST_ABLATION"
+    script "./harness.nf"
+    workflow "TEST_ABLATION"
+    config "./nextflow.config"
+
+    tag "subworkflows"
+    tag "local"
+    tag "ablation"
+
+    test("stub run") {
+
+        options "-stub-run"
+
+        when {
+            workflow {
+                """
+input[0] = channel.of([ id: 'cohort' ])
+input[1] = channel.of(tuple('cohort', file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true)))
+input[2] = channel.of(tuple('cohort', file("${projectDir}/assets/testdata/sex_map.tsv", checkIfExists: true)))
+input[3] = channel.of(tuple('cohort', [
+    lr: 0.0001,
+    lambda_attr: 0.1,
+    latent_dim: 32,
+    hidden_dim: 64,
+    num_attention_layers: 1
+]))
+input[4] = channel.of(tuple('cohort', file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true)))
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.versions != null }
+            )
+        }
+    }
+}

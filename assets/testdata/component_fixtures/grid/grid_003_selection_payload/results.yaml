@@ -1,0 +1,4 @@
+metrics:
+  auc: 0.73
+  accuracy: 0.70
+  loss: 0.53

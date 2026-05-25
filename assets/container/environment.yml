@@ -1,0 +1,12 @@
+name: sieve
+channel_priority: strict
+channels:
+  - pytorch
+  - nvidia
+  - bioconda
+  - conda-forge
+  - lescailab
+dependencies:
+  - lescailab::sieve=1.3.0
+  - pytorch::pytorch>=2.0.0
+  - pytorch::pytorch-cuda>=11.8

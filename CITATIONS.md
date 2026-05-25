@@ -1,4 +1,4 @@
-# nf-core/sieve: Citations
+# lescailab/sieve: Citations
 
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)
 
@@ -9,6 +9,15 @@
 > Di Tommaso P, Chatzou M, Floden EW, Barja PP, Palumbo E, Notredame C. Nextflow enables reproducible computational workflows. Nat Biotechnol. 2017 Apr 11;35(4):316-319. doi: 10.1038/nbt.3820. PubMed PMID: 28398311.
 
 ## Pipeline tools
+
+## [SIEVE](https://anaconda.org/lescailab/sieve)
+
+> Lescai Lab. SIEVE (Sparse Interpretable Exome Variant Explainer) user guide and software package, accessed via Anaconda package `lescailab::sieve`.
+
+### SIEVE runtime images used by this pipeline
+
+- Docker/Wave: `community.wave.seqera.io/library/sieve:0.1.0--dee13fc1b5eb4382`
+- Singularity/Apptainer ORAS: `oras://community.wave.seqera.io/library/sieve:0.1.0--7766b34e148e6eef`
 
 ## Software packaging/containerisation tools
 

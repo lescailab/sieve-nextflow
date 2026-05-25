@@ -1,0 +1,35 @@
+nextflow_process {
+
+    name "Test Process SIEVE_AUDIT_COOCCURRENCE"
+    script "../main.nf"
+    process "SIEVE_AUDIT_COOCCURRENCE"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "audit_cooccurrence"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/small_reprocessed_test.pt", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.cooccurrence_dir != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

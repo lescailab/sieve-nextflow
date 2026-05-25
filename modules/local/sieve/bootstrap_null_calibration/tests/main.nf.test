@@ -1,0 +1,36 @@
+nextflow_process {
+
+    name "Test Process SIEVE_BOOTSTRAP_NULL_CALIBRATION"
+    script "../main.nf"
+    process "SIEVE_BOOTSTRAP_NULL_CALIBRATION"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "bootstrap_null_calibration"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort', run_id: 'bootstrap_calibration', level: 'L3' ],
+    file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.calibrated != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

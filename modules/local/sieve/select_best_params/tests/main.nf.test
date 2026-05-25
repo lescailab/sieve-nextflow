@@ -1,0 +1,37 @@
+nextflow_process {
+
+    name "Test Process SIEVE_SELECT_BEST_PARAMS"
+    script "../main.nf"
+    process "SIEVE_SELECT_BEST_PARAMS"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "select_best_params"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [ id: 'cohort' ]
+input[1] = [
+    file("${projectDir}/assets/testdata/component_fixtures/grid/grid_001_selection_payload", checkIfExists: true),
+    file("${projectDir}/assets/testdata/component_fixtures/grid/grid_002_selection_payload", checkIfExists: true),
+    file("${projectDir}/assets/testdata/component_fixtures/grid/grid_003_selection_payload", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.best_params != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

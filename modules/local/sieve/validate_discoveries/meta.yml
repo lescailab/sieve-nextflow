@@ -1,0 +1,58 @@
+name: sieve_validate_discoveries
+description: Validate SIEVE-discovered variants/genes against optional reference resources.
+keywords:
+  - sieve
+  - validation
+  - clinvar
+  - gwas
+tools:
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence:
+        - MIT
+input:
+  - - meta:
+        type: map
+        description: Metadata map
+    - variant_rankings:
+        type: file
+        description: Variant ranking CSV from explainability
+    - gene_rankings:
+        type: file
+        description: Gene ranking CSV from explainability
+    - clinvar_tsv:
+        type: file
+        description: Optional ClinVar TSV (path or empty list when not provided)
+    - gwas_tsv:
+        type: file
+        description: Optional GWAS TSV (path or empty list when not provided)
+    - go_mapping_json:
+        type: file
+        description: Optional GO mapping JSON (path or empty list when not provided)
+output:
+  validation:
+    - - meta:
+          type: map
+          description: Metadata map
+      - validation_report.yaml:
+          type: file
+          description: Discovery validation summary report
+      - validation_output:
+          type: directory
+          description: Full validation output directory
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.3.0:
+          type: string
+          description: The version of the tool
+authors:
+  - "@lescai"
+topics:
+  versions: *1

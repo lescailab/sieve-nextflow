@@ -1,0 +1,57 @@
+name: PREPROCESS
+description: Prepare all upstream SIEVE artifacts including sex maps, preprocessed
+  tensors, best parameters, and reference resources.
+keywords:
+  - sieve
+  - preprocess
+  - sex map
+  - references
+components:
+  - sieve/infer/sex
+  - sieve/preprocess
+  - sieve/train/single
+  - sieve/select/best/params
+  - sieve/download/references
+  - sieve/emit/sex/map
+input:
+  - ch_selection_meta:
+      type: channel
+      description: Channel emitting cohort-level metadata maps.
+output:
+  - sex_map:
+      type: channel
+      description: "Channel of effective sex maps. Structure: [ val(meta), path(sex_map)
+        ]"
+  - preprocessed:
+      type: channel
+      description: "Channel of preprocessed tensors. Structure: [ val(meta), path(preprocessed)
+        ]"
+  - preprocessed_keyed:
+      type: channel
+      description: Keyed channel of preprocessed tensors.
+  - sex_map_keyed:
+      type: channel
+      description: Keyed channel of sex maps.
+  - best_params_path_keyed:
+      type: channel
+      description: Keyed channel of selected hyperparameter YAML files.
+  - best_params_map_keyed:
+      type: channel
+      description: Keyed channel of parsed hyperparameter maps.
+  - ref_clinvar:
+      type: channel
+      description: Channel of ClinVar reference resources.
+  - ref_gwas:
+      type: channel
+      description: Channel of GWAS reference resources.
+  - ref_go_mapping:
+      type: channel
+      description: Channel of GO mapping resources.
+  - versions:
+      type: channel
+      description: Channel of software version entries emitted by nested modules.
+  - plot_sources:
+      type: channel
+      description: Channel of directories that may contain plots for downstream collection.
+authors:
+  - "@lescai"

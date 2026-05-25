@@ -1,0 +1,37 @@
+nextflow_process {
+
+    name "Test Process SIEVE_COMPARE_ATTRIBUTIONS"
+    script "../main.nf"
+    process "SIEVE_COMPARE_ATTRIBUTIONS"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "compare_attributions"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort' ],
+    file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.comparison != null },
+                { assert process.out.significance_rankings != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

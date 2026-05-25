@@ -1,0 +1,7 @@
+hyperparameters:
+  lr: 0.0001
+  lambda_attr: 0.1
+  batch_size: 4
+  chunk_size: 2000
+  aggregation_method: mean
+  annotation_level: L3

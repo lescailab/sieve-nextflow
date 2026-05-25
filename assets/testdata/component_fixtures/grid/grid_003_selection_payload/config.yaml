@@ -1,0 +1,7 @@
+hyperparameters:
+  lr: 0.00001
+  lambda_attr: 0.1
+  batch_size: 8
+  chunk_size: 2000
+  aggregation_method: logit_mean
+  annotation_level: L3

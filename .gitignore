@@ -1,3 +1,4 @@
+## nextflow related files and tests
 .nextflow*
 work/
 data/
@@ -7,3 +8,12 @@ testing/
 testing*
 *.pyc
 null/
+
+## nf test files
+.nf-test/
+.nf-test*
+
+## mkdocs build output
+site/
+
+.*PIPELINE.md

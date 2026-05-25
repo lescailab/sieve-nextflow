@@ -1,0 +1,35 @@
+nextflow_process {
+
+    name "Test Process SIEVE_CORRECT_CHRX_BIAS"
+    script "../main.nf"
+    process "SIEVE_CORRECT_CHRX_BIAS"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "local"
+    tag "correct_chrx_bias"
+
+    test("stub run") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+input[0] = [
+    [ id: 'cohort', run_id: 'correct_chrx', level: 'L3' ],
+    file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true)
+]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.corrected != null },
+                { assert process.out.versions != null }
+            )
+        }
+    }
+}

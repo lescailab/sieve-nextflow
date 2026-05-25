@@ -1,0 +1,48 @@
+name: sieve_plot_ablation_comparison
+description: Plot SIEVE ablation ranking and performance comparisons.
+keywords:
+  - sieve
+  - ablation
+  - plotting
+tools:
+  - sieve:
+      description: Sparse Interpretable Exome Variant Explainer
+      homepage: https://anaconda.org/lescailab/sieve
+      documentation: https://anaconda.org/lescailab/sieve
+      licence:
+        - MIT
+input:
+  - - meta:
+        type: map
+        description: Metadata map
+    - jaccard_tsv:
+        type: file
+        description: Jaccard matrix TSV from ablation ranking comparison
+    - level_specific_tsv:
+        type: file
+        description: Level-specific variants TSV from ablation ranking comparison
+    - summary_yaml:
+        type: file
+        description: Ablation performance summary YAML
+output:
+  plot:
+    - - meta:
+          type: map
+          description: Metadata map
+      - ablation_comparison_plot.png:
+          type: file
+          description: Ablation comparison plot
+  versions: &1
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - sieve:
+          type: string
+          description: The name of the tool
+      - 1.3.0:
+          type: string
+          description: The version of the tool
+authors:
+  - "@lescai"
+topics:
+  versions: *1

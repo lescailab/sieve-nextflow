@@ -6,15 +6,15 @@
 
     <meta
       name="description"
-      content="nf-core/sieve: Sparse Interpretable Exome Variant Explainer for case-control variant discovery."
+      content="lescailab/sieve: Sparse Interpretable Exome Variant Explainer for case-control variant discovery."
     />
-    <title>nf-core/sieve Pipeline Report</title>
+    <title>lescailab/sieve Pipeline Report</title>
   </head>
   <body>
     <div style="font-family: Helvetica, Arial, sans-serif; padding: 30px; max-width: 800px; margin: 0 auto">
-      <img src="cid:nfcorepipelinelogo" />
+      <img src="cid:sievepipelinelogo" />
 
-      <h1>nf-core/sieve ${version}</h1>
+      <h1>lescailab/sieve ${version}</h1>
       <h2>Run Name: $runName</h2>
 
       <% if (!success){ out << """
@@ -29,7 +29,7 @@
           border-radius: 4px;
         "
       >
-        <h4 style="margin-top: 0; color: inherit">nf-core/sieve execution completed unsuccessfully!</h4>
+        <h4 style="margin-top: 0; color: inherit">lescailab/sieve execution completed unsuccessfully!</h4>
         <p>The exit status of the task that caused the workflow execution to fail was: <code>$exitStatus</code>.</p>
         <p>The full error message was:</p>
         <pre style="white-space: pre-wrap; overflow: visible; margin-bottom: 0">${errorReport}</pre>
@@ -46,7 +46,7 @@
           border-radius: 4px;
         "
       >
-        nf-core/sieve execution completed successfully!
+        lescailab/sieve execution completed successfully!
       </div>
       """ } %>
 
@@ -106,8 +106,8 @@ $commandLine</pre
         </tbody>
       </table>
 
-      <p>nf-core/sieve</p>
-      <p><a href="https://github.com/nf-core/sieve">https://github.com/nf-core/sieve</a></p>
+      <p>lescailab/sieve</p>
+      <p><a href="https://github.com/lescailab/sieve-nextflow">https://github.com/lescailab/sieve-nextflow</a></p>
     </div>
   </body>
 </html>

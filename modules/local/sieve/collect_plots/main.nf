@@ -7,7 +7,7 @@ process SIEVE_COLLECT_PLOTS {
 
     input:
     val meta
-    val plot_sources
+    path plot_sources, stageAs: '?/*'
 
     output:
     tuple val(meta), path('plots'), path('plots_manifest.tsv'), emit: plot_bundle

@@ -2,17 +2,13 @@
     "versions": {
         "content": [
             [
-                [
-                    "SIEVE_SELECT_BEST_CHECKPOINT",
-                    "sieve",
-                    "1.0.0"
-                ]
+                "versions.yml:md5,6873ac91b912893cf59eb2faab94a9aa"
             ]
         ],
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.3"
         },
-        "timestamp": "2026-03-16T20:21:20.326412"
+        "timestamp": "2026-05-25T16:11:37.406993"
     }
 }

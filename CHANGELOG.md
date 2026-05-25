@@ -69,6 +69,19 @@ Sync with upstream `sieve-project` v1.2.0 → v1.3.0 and add execution shortcuts
   realigned to `nf-schema@2.5.1` to match the pipeline pin.
 - `guidelines/installation.md` corrected the `mkdocs serve` command —
   `mkdocs.yml` lives at the repository root, not under `guidelines/`.
+- `SIEVE_COLLECT_PLOTS` now declares `plot_sources` as `path` (with
+  `stageAs: '?/*'`) instead of `val`, so plot directories from remote
+  / distributed executors are correctly staged into the task work dir.
+- `SIEVE_GENERATE_GENE_LIST` no longer takes the unused
+  `variant_rankings_with_significance` input; the chrX-corrected
+  variant rankings remain the source of `variant_significance_rankings.csv`.
+  Call sites in `TRAIN_AND_EXPLAIN` and `ABLATION` adjusted accordingly.
+- Dropped the `-C` (noclobber) bash flag from `process.shell` in both
+  `nextflow.config` and `tests/component_process.config`; it was blocking
+  legitimate `> versions.yml` rewrites on retries and idempotent scripts.
+- Regenerated `tests/component_select_best_params.nf.test.snap` and
+  `tests/component_select_best_checkpoint.nf.test.snap` to match the
+  new path-based `versions` output.
 
 ## v1.0.0dev - 2026-03-05
 

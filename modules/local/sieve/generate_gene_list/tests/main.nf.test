@@ -19,8 +19,7 @@ nextflow_process {
 input[0] = [
     [ id: 'cohort', run_id: 'gene_list_L3', level: 'L3' ],
     file("${projectDir}/assets/testdata/parsed_clinvar.tsv", checkIfExists: true),
-    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true),
-    file("${projectDir}/assets/testdata/parsed_go.json", checkIfExists: true)
+    file("${projectDir}/assets/testdata/parsed_gwas.tsv", checkIfExists: true)
 ]
                 """
             }

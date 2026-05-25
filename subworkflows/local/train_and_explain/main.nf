@@ -331,25 +331,19 @@ workflow TRAIN_AND_EXPLAIN {
         // Primary top-k selection: delta-rank-based gene/variant lists from bootstrap calibration
         // (z-attribution-based gene list is also produced as a secondary diagnostic output).
         //
-        ch_main_significance_keyed = SIEVE_COMPARE_ATTRIBUTIONS_RAW.out.significance_rankings.map { meta, significance_csv ->
-            tuple(meta.id, meta, significance_csv)
-        }
-
         ch_main_corrected_keyed = SIEVE_CORRECT_CHRX_BIAS.out.corrected.map { meta, corrected_dir ->
-            tuple(meta.id, corrected_dir.resolve('corrected_variant_rankings.csv'))
+            tuple(meta.id, meta, corrected_dir.resolve('corrected_variant_rankings.csv'))
         }
 
         ch_main_calibrated_keyed = SIEVE_BOOTSTRAP_NULL_CALIBRATION.out.calibrated.map { meta, calibrated_csv ->
             tuple(meta.id, calibrated_csv)
         }
 
-        ch_gene_list_main_input = ch_main_significance_keyed
-            .join(ch_main_corrected_keyed, by: 0)
+        ch_gene_list_main_input = ch_main_corrected_keyed
             .join(ch_main_calibrated_keyed, by: 0)
-            .map { key, sig_meta, significance_csv, corrected_variant_rankings, calibrated_csv ->
+            .map { key, corrected_meta, corrected_variant_rankings, calibrated_csv ->
                 tuple(
-                    [id: key, run_id: 'gene_list_main', stage: 'discovery', level: sig_meta.level ?: params.default_train_level],
-                    significance_csv,
+                    [id: key, run_id: 'gene_list_main', stage: 'discovery', level: corrected_meta.level ?: params.default_train_level],
                     corrected_variant_rankings,
                     calibrated_csv
                 )

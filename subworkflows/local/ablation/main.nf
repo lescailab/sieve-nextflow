@@ -217,21 +217,15 @@ workflow ABLATION {
     // Gene list generation per level
     // -----------------------------------------------------------------------
 
-    ch_ablation_significance_by_level = SIEVE_COMPARE_ATTRIBUTIONS_ABL.out.significance_rankings.map { meta, significance_csv ->
-        tuple(meta.level, significance_csv)
-    }
-
     ch_ablation_calibrated_by_level = SIEVE_BOOTSTRAP_ABL.out.calibrated.map { meta, calibrated_rankings ->
         tuple(meta.level, calibrated_rankings)
     }
 
-    ch_gene_list_input = ch_ablation_significance_by_level
-        .join(ch_ablation_corrected_variant_by_level, by: 0)
+    ch_gene_list_input = ch_ablation_corrected_variant_by_level
         .join(ch_ablation_calibrated_by_level, by: 0)
-        .map { level, significance_csv, real_meta, corrected_variant_rankings, calibrated_rankings ->
+        .map { level, real_meta, corrected_variant_rankings, calibrated_rankings ->
             tuple(
                 [id: real_meta.id, run_id: "gene_list_${level}", stage: 'ablation', level: level],
-                significance_csv,
                 corrected_variant_rankings,
                 calibrated_rankings
             )

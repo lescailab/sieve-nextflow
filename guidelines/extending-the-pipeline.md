@@ -1,6 +1,6 @@
 # Extending the Pipeline
 
-This page is for maintainers adding or changing workflow behavior.
+This page is for maintainers adding or changing workflow behaviour.
 
 ## Follow the existing structure
 
@@ -67,7 +67,7 @@ conda run -n nf-core_3.5.2 nf-test test
 conda run -n nf-core_3.5.2 nf-core pipelines lint
 ```
 
-Broaden tests when changing shared channels, `--execute_step` behavior, or output publishing.
+Broaden tests when changing shared channels, `--execute_step` behaviour, or output publishing.
 
 ## Documentation rules
 

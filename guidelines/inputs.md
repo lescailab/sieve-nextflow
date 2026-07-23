@@ -1,6 +1,6 @@
 # Inputs
 
-This page distinguishes required raw inputs from optional shortcut artifacts.
+This page distinguishes required raw inputs from optional shortcut artefacts.
 
 ## Raw inputs
 
@@ -51,9 +51,9 @@ sieve-infer-sex --vcf <vcf> --output-dir infer_sex_diagnostics --genome-build <b
 
 `--known_sex` is only passed to sex inference for concordance checking. It does not replace `--sex_map`.
 
-## Shortcut artifacts
+## Shortcut artefacts
 
-| Artifact | Parameter | Format check | Used to skip |
+| Artefact | Parameter | Format check | Used to skip |
 | --- | --- | --- | --- |
 | Preprocessed tensor | `--preprocessed_data` | Existing `.pt` | VCF preprocessing |
 | Best parameter file | `--best_params` | Existing `.yaml` or `.yml` | Grid search |

@@ -19,7 +19,7 @@ Detailed interpretation guidance is in the [extended output guide](../guidelines
 └── pipeline_info/
 ```
 
-The exact contents depend on `--execute_step` and shortcut artifacts.
+The exact contents depend on `--execute_step` and shortcut artefacts.
 
 ## Key outputs
 
@@ -31,7 +31,7 @@ The exact contents depend on `--execute_step` and shortcut artifacts.
 | `<cohort_id>/real_experiments/L3/training/best_checkpoint.pt` | Selected best checkpoint from CV training. |
 | `<cohort_id>/real_experiments/L3/training/best_fold_config.yaml` | Configuration paired with the selected checkpoint. |
 | `<cohort_id>/real_experiments/L*/attributions/explain_output/` | Explainability outputs, including variant rankings, gene rankings, interactions, and attribution arrays where produced. |
-| `<cohort_id>/null_baselines/L*/training/` | Null-baseline model artifacts and `preprocessed_NULL.pt` for L3 when the null branch runs. |
+| `<cohort_id>/null_baselines/L*/training/` | Null-baseline model artefacts and `preprocessed_NULL.pt` for L3 when the null branch runs. |
 | `<cohort_id>/null_baselines/L*/attributions/explain_output/` | Null-baseline explainability outputs. |
 | `<cohort_id>/attribution_comparison/L*/` | Real-vs-null comparison summaries, calibrated rankings, and chrX-corrected ranking outputs. |
 | `<cohort_id>/ablation/comparison_levels/` | Cross-level ablation summaries and comparison plot. |
@@ -47,5 +47,5 @@ The exact contents depend on `--execute_step` and shortcut artifacts.
 
 - `workflow.output.mode` follows `--publish_dir_mode`, which defaults to `copy`.
 - `--execute_step` can suppress whole branches and their outputs.
-- `--sex_map`, `--preprocessed_data`, `--best_params`, and `--best_checkpoint`/`--checkpoint_config` can cause published files to reflect supplied artifacts rather than newly generated files.
+- `--sex_map`, `--preprocessed_data`, `--best_params`, and `--best_checkpoint`/`--checkpoint_config` can cause published files to reflect supplied artefacts rather than newly generated files.
 - Epistasis validation is conditional on non-empty interaction rows from explainability output; other epistasis audit and aggregation steps may still run when `epistasis` is selected.

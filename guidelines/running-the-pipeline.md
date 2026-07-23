@@ -41,7 +41,7 @@ nextflow run lescailab/sieve-nextflow \
 
 Why: this skips `sieve-infer-sex` and publishes the supplied map as the effective `sample_sex.tsv`.
 
-## Reuse downstream artifacts
+## Reuse downstream artefacts
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
@@ -68,7 +68,7 @@ nextflow run lescailab/sieve-nextflow \
   --outdir results
 ```
 
-Use step selection when you know which upstream channels are needed. The workflow exposes shortcut artifacts for sex maps, preprocessed data, best parameters, and best checkpoints; it does not expose a shortcut for every internal channel.
+Use step selection when you know which upstream channels are needed. The workflow exposes shortcut artefacts for sex maps, preprocessed data, best parameters, and best checkpoints; it does not expose a shortcut for every internal channel.
 
 ## Use a parameter file
 

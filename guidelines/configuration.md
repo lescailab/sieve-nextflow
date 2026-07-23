@@ -1,6 +1,6 @@
 # Configuration
 
-SIEVE follows the standard Nextflow configuration model: base defaults are declared in `nextflow.config`, included config files add resource and module behavior, profiles override runtime settings, and command-line parameters have the final say.
+SIEVE follows the standard Nextflow configuration model: base defaults are declared in `nextflow.config`, included config files add resource and module behaviour, profiles override runtime settings, and command-line parameters have the final say.
 
 ## Configuration files
 

@@ -170,4 +170,4 @@ pipeline_info/params_<timestamp>.json
 pipeline_info/nf_core_sieve_software_versions.yml
 ```
 
-Use these files to audit command parameters, runtime behavior, task failures, and software versions.
+Use these files to audit command parameters, runtime behaviour, task failures, and software versions.

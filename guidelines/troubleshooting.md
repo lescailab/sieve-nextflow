@@ -10,7 +10,7 @@ Error pattern:
 Missing required argument: --vcf (required by selected execution steps).
 ```
 
-Cause: selected steps need sex inference or preprocessing, and no shortcut artifact satisfies that need.
+Cause: selected steps need sex inference or preprocessing, and no shortcut artefact satisfies that need.
 
 Fix: provide `--vcf`, or provide the relevant shortcut inputs such as `--preprocessed_data` and `--sex_map`.
 
@@ -86,7 +86,7 @@ For GPU runs, combine a container profile with `gpu`:
 
 Cause: `--execute_step` limits the requested branches, but later branches still need upstream data channels.
 
-Fix: either omit `--execute_step` for a full run, include the required upstream steps, or provide shortcut artifacts where available.
+Fix: either omit `--execute_step` for a full run, include the required upstream steps, or provide shortcut artefacts where available.
 
 Known fragile case: `ablation` uses the null-preprocessed channel produced by the null branch, but there is no public `--null_preprocessed_data` shortcut. Prefer a full run or include `null` when expecting complete ablation comparison outputs.
 

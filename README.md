@@ -65,12 +65,12 @@ The pipeline supports three top-level modes for the training side of the workflo
 3. **Fixed hyperparameters + single training (no CV).** Same as mode 2, plus `--cv_folds 1` (or `--cv_folds 0`). The main model is trained once with `--val_split` as the train/validation split.
 
 ```bash
-# Mode 2 — skip grid, keep CV
+# Mode 2: skip grid, keep CV
 nextflow run lescailab/sieve-nextflow -profile docker,gpu \
   --vcf data.vcf.gz --phenotypes pheno.tsv --genome_build GRCh38 \
   --train_lr 1e-4 --train_lambda_attr 0.1 --train_latent_dim 64
 
-# Mode 3 — skip grid AND skip CV
+# Mode 3: skip grid AND skip CV
 nextflow run lescailab/sieve-nextflow -profile docker,gpu \
   --vcf data.vcf.gz --phenotypes pheno.tsv --genome_build GRCh38 \
   --train_lr 1e-4 --train_lambda_attr 0.1 --train_latent_dim 64 \

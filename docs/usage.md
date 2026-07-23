@@ -17,7 +17,7 @@ nextflow run . \
 
 ## Required inputs
 
-The required inputs depend on the selected steps and any shortcut artifacts you provide.
+The required inputs depend on the selected steps and any shortcut artefacts you provide.
 
 Raw-input mode requires:
 
@@ -41,7 +41,7 @@ nextflow run lescailab/sieve-nextflow \
 
 ## Sex handling
 
-Default behavior:
+Default behaviour:
 
 ```bash
 --infer_sex true
@@ -61,7 +61,7 @@ Skip sex inference with a prepared sex map:
 
 If both `--sex_map` and `--infer_sex true` are supplied, the pipeline uses `--sex_map` and logs a warning.
 
-## Artifact shortcuts
+## Artefact shortcuts
 
 These inputs skip upstream work when the selected steps can be satisfied from existing files:
 
@@ -71,7 +71,7 @@ These inputs skip upstream work when the selected steps can be satisfied from ex
 | `--best_params` | `.yaml` or `.yml` | Skips internal hyperparameter grid search. |
 | `--best_checkpoint` with `--checkpoint_config` | `.pt` plus `.yaml` or `.yml` | Skips CV checkpoint training and selection. Both parameters are required together. |
 
-Example using downstream artifacts:
+Example using downstream artefacts:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
@@ -110,7 +110,7 @@ Allowed step names are:
 - `validation`
 - `plots`
 
-Later steps still need their upstream data channels. If you omit upstream steps, provide the corresponding shortcut artifacts where the pipeline exposes them. See [workflow steps](../guidelines/workflow-steps.md) for the dependency map.
+Later steps still need their upstream data channels. If you omit upstream steps, provide the corresponding shortcut artefacts where the pipeline exposes them. See [workflow steps](../guidelines/workflow-steps.md) for the dependency map.
 
 **`ablation` note:** selecting `ablation` automatically triggers null-baseline dataset creation (`SIEVE_CREATE_NULL_BASELINE`) so that per-level null comparisons always run. Adding `null` to the step list additionally runs the full L3 null training and attribution comparison.
 

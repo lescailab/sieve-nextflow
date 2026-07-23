@@ -42,7 +42,7 @@ If `--execute_step` is unset, the workflow requests all steps:
 sex, preprocess, grid, cv, explain, ablation, null, epistasis, validation, plots
 ```
 
-If `--execute_step all` is supplied, it resolves to the same full set. Individual aliases such as `grid_search`, `cross_validation`, and `discovery_validation` are normalized internally, but the documented stable names are the ten names above.
+If `--execute_step all` is supplied, it resolves to the same full set. Individual aliases such as `grid_search`, `cross_validation`, and `discovery_validation` are normalised internally, but the documented stable names are the ten names above.
 
 ## Channel flow
 

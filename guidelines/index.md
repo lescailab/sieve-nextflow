@@ -1,6 +1,12 @@
-# SIEVE Guidelines
+# SIEVE Nextflow
 
-This site is the extended documentation layer for `lescailab/sieve`. The repository keeps quick-access documentation in the root [README](https://github.com/lescailab/sieve-nextflow/blob/master/README.md), [usage guide](https://github.com/lescailab/sieve-nextflow/blob/master/docs/usage.md), and [output guide](https://github.com/lescailab/sieve-nextflow/blob/master/docs/output.md); this site explains the same pipeline in a tutorial-style order for users who need to understand how the workflow is assembled and how to operate it safely.
+!!! warning "Development status"
+
+    This pipeline is under active development on the `dev` branch and has no tagged release. Parameters, output paths and default values can change between commits. Pin a commit when you need a reproducible run, as described in [Reproducibility](reproducibility.md).
+
+This site documents the Nextflow pipeline that orchestrates SIEVE. The scientific method, the model, the encoding, the explainability procedures and the command-line tools live in [`lescailab/sieve-project`](https://github.com/lescailab/sieve-project), documented at [SIEVE Documentation](https://lescailab.github.io/sieve-project). This repository wraps those tools in a reproducible workflow: it manages inputs, provisions containers, schedules the steps in dependency order, handles resource allocation and retries, and publishes results in a fixed layout. Read the framework documentation to understand what each step computes. Read this site to understand how to run the steps together.
+
+The repository also keeps quick-access documentation in the root [README](https://github.com/lescailab/sieve-nextflow/blob/master/README.md), [usage guide](https://github.com/lescailab/sieve-nextflow/blob/master/docs/usage.md), and [output guide](https://github.com/lescailab/sieve-nextflow/blob/master/docs/output.md).
 
 ## Documentation layers
 
@@ -13,7 +19,7 @@ This site is the extended documentation layer for `lescailab/sieve`. The reposit
 
 ## What the pipeline does
 
-The pipeline takes a bgzipped, indexed, multi-sample VCF plus phenotype data, prepares SIEVE-ready tensors, trains models, selects checkpoints, produces explainability rankings, compares real and null attribution patterns, and can run ablation, epistasis, validation, and plot-collection branches.
+The pipeline takes a bgzipped, indexed, multi-sample VCF plus phenotype data, prepares SIEVE-ready tensors, trains models, selects checkpoints, produces explainability rankings, compares real and null attribution patterns, and can run ablation, candidate-interaction testing with power analysis, validation, and plot-collection branches.
 
 The default execution requests all defined steps:
 
@@ -55,7 +61,7 @@ Start with [Getting started](getting-started.md) if you need to run the pipeline
 
 ## Standards followed
 
-This documentation is structured around the nf-core expectation that bundled pipeline documentation includes a README, usage guide, and output guide, and around the Nextflow training style of moving from runnable examples to concepts and then advanced configuration.
+This pipeline follows nf-core structural conventions without being an nf-core pipeline. Its documentation is organised around the nf-core expectation that bundled pipeline documentation includes a README, usage guide, and output guide, and around the Nextflow training style of moving from runnable examples to concepts and then advanced configuration.
 
 Reference material:
 

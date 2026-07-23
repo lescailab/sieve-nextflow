@@ -30,7 +30,9 @@ jobs:
         run: |
           mapfile -d '' markdown_files < <(find README.md CITATIONS.md docs guidelines -type f -name '*.md' -print0)
           set +e
-          rg --line-number -i '\b(artifacts?|behavior|visualizations?|optimization|normalized)\b|—' "${markdown_files[@]}"
+          grep --line-number --with-filename --extended-regexp --ignore-case \
+            '(^|[^[:alnum:]_])(artifacts?|behavior|visualizations?|optimization|normalized)([^[:alnum:]_]|$)|—' \
+            "${markdown_files[@]}"
           scan_status=$?
           set -e
 

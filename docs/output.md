@@ -31,6 +31,9 @@ The exact contents depend on `--execute_step` and shortcut artefacts.
 | `<cohort_id>/real_experiments/L3/cross_fold/cv_output/fold_*/` | Cross-validation fold outputs when CV training runs. |
 | `<cohort_id>/real_experiments/L3/training/best_checkpoint.pt` | Selected best checkpoint from CV training. |
 | `<cohort_id>/real_experiments/L3/training/best_fold_config.yaml` | Configuration paired with the selected checkpoint. |
+| `<cohort_id>/real_experiments/L3/training/best_model.pt` | Model produced by the single-training path when `--cv_folds 1`. |
+| `<cohort_id>/real_experiments/L3/training/config.yaml` | Configuration used by the single-training path when `--cv_folds 1`. |
+| `<cohort_id>/real_experiments/L3/training/results.yaml` | Training metrics from the single-training path when `--cv_folds 1`. |
 | `<cohort_id>/real_experiments/L*/attributions/explain_output/` | Explainability outputs, including variant rankings, gene rankings, interactions, and attribution arrays where produced. |
 | `<cohort_id>/null_baselines/L*/training/` | Null-baseline model artefacts and `preprocessed_NULL.pt` for L3 when the null branch runs. |
 | `<cohort_id>/null_baselines/L*/attributions/explain_output/` | Null-baseline explainability outputs. |

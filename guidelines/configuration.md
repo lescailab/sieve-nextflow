@@ -126,7 +126,7 @@ The suffix is controlled by `--trace_report_suffix`.
 
 ## Custom configs
 
-The root config includes nf-core custom config support through `params.custom_config_base`. For offline or tightly controlled runs, check whether your environment should set `NXF_OFFLINE=true` or pass a local custom config.
+The pipeline is not an nf-core pipeline, but its nf-core-derived structure retains custom config support through `params.custom_config_base`. For offline or tightly controlled runs, check whether your environment should set `NXF_OFFLINE=true` or pass a local custom config.
 
 ## Command-line precedence
 

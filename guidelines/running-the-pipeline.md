@@ -17,6 +17,7 @@ This command was verified against the current repository. It exercises the compl
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -30,6 +31,7 @@ Use `--genome_build GRCh37` for GRCh37 data.
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -45,6 +47,7 @@ Why: this skips `sieve-infer-sex` and publishes the supplied map as the effectiv
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --preprocessed_data /path/to/preprocessed.pt \
   --sex_map /path/to/sample_sex.tsv \
@@ -59,6 +62,7 @@ Why: this avoids raw VCF preprocessing and CV checkpoint selection. The checkpoi
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --preprocessed_data /path/to/preprocessed.pt \
   --sex_map /path/to/sample_sex.tsv \
@@ -87,6 +91,7 @@ Command:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   -params-file params.yml
 ```
@@ -99,6 +104,7 @@ Use Nextflow resume when the command and work directory are still valid:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   -params-file params.yml \
   -resume

@@ -866,12 +866,13 @@ PIPELINE_COMPLETION(...)
 </tr>
 </tbody>
 </table>
+<p>The training processes follow three common <a href="../running-the-pipeline/#execution-modes">execution modes</a>, depending on whether you supply fixed hyperparameters and whether <code>--cv_folds</code> requests cross-validation.</p>
 <h2 id="step-resolution">Step resolution<a class="headerlink" href="#step-resolution" title="Permanent link">&para;</a></h2>
 <p><code>lib/sieve_helpers.nf</code> defines <code>resolveExecuteSteps()</code>.</p>
 <p>If <code>--execute_step</code> is unset, the workflow requests all steps:</p>
 <div class="highlight"><pre><span></span><code>sex, preprocess, grid, cv, explain, ablation, null, epistasis, validation, plots
 </code></pre></div>
-<p>If <code>--execute_step all</code> is supplied, it resolves to the same full set. Individual aliases such as <code>grid_search</code>, <code>cross_validation</code>, and <code>discovery_validation</code> are normalized internally, but the documented stable names are the ten names above.</p>
+<p>If <code>--execute_step all</code> is supplied, it resolves to the same full set. Individual aliases such as <code>grid_search</code>, <code>cross_validation</code>, and <code>discovery_validation</code> are normalised internally, but the documented stable names are the ten names above.</p>
 <h2 id="channel-flow">Channel flow<a class="headerlink" href="#channel-flow" title="Permanent link">&para;</a></h2>
 <p>The practical flow is:</p>
 <div class="highlight"><pre><span></span><code>raw VCF + phenotypes + sex map

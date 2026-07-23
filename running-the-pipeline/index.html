@@ -459,6 +459,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#execution-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution modes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#provide-a-sex-map" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -470,10 +481,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reuse-downstream-artifacts" class="md-nav__link">
+  <a href="#reuse-downstream-artefacts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reuse downstream artifacts
+        Reuse downstream artefacts
       
     </span>
   </a>
@@ -786,6 +797,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#execution-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution modes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#provide-a-sex-map" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -797,10 +819,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reuse-downstream-artifacts" class="md-nav__link">
+  <a href="#reuse-downstream-artefacts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reuse downstream artifacts
+        Reuse downstream artefacts
       
     </span>
   </a>
@@ -876,6 +898,39 @@
 <span class="w">  </span>--outdir<span class="w"> </span>results
 </code></pre></div>
 <p>Use <code>--genome_build GRCh37</code> for GRCh37 data.</p>
+<h2 id="execution-modes">Execution modes<a class="headerlink" href="#execution-modes" title="Permanent link">&para;</a></h2>
+<p>The grid and CV settings determine which training processes run:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Trigger</th>
+<th>Processes</th>
+<th>Published training output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Grid search with cross-validation</td>
+<td>Leave <code>--train_lr</code>, <code>--train_lambda_attr</code> and <code>--train_latent_dim</code> unset, and use <code>--cv_folds</code> greater than <code>1</code>. This is the default.</td>
+<td><code>SIEVE_TRAIN_SINGLE_GRID</code> and <code>SIEVE_SELECT_BEST_PARAMS</code> resolve the parameter grid. <code>SIEVE_TRAIN_CV</code> and <code>SIEVE_SELECT_BEST_CHECKPOINT</code> then run.</td>
+<td><code>real_experiments/L3/cross_fold/cv_output/fold_*/</code> plus <code>real_experiments/L3/training/best_checkpoint.pt</code>, <code>best_fold_config.yaml</code> and <code>cv_folds_summary.tsv</code>.</td>
+</tr>
+<tr>
+<td>Fixed hyperparameters with cross-validation</td>
+<td>Supply all three of <code>--train_lr</code>, <code>--train_lambda_attr</code> and <code>--train_latent_dim</code>, and use <code>--cv_folds</code> greater than <code>1</code>.</td>
+<td><code>SIEVE_EMIT_BEST_PARAMS</code> materialises the fixed map as <code>best_params.yaml</code>, bypassing <code>SIEVE_TRAIN_SINGLE_GRID</code> and <code>SIEVE_SELECT_BEST_PARAMS</code>. CV and checkpoint selection still run.</td>
+<td>The same cross-fold and selected-checkpoint files as the default mode. The intermediate <code>best_params.yaml</code> remains a workflow input rather than a separately published result.</td>
+</tr>
+<tr>
+<td>Fixed hyperparameters with one training run</td>
+<td>Supply all three fixed parameters and set <code>--cv_folds 1</code>.</td>
+<td><code>SIEVE_EMIT_BEST_PARAMS</code> resolves the parameters and <code>SIEVE_TRAIN_SINGLE_MAIN</code> trains once with <code>--val_split</code>. Grid search, <code>SIEVE_TRAIN_CV</code> and <code>SIEVE_SELECT_BEST_CHECKPOINT</code> are skipped.</td>
+<td><code>real_experiments/L3/training/best_model.pt</code>, <code>config.yaml</code> and <code>results.yaml</code>. No <code>cross_fold/</code> output is published.</td>
+</tr>
+</tbody>
+</table>
+<p>Use <code>--cv_folds 1</code> to select the single-training branch after the parameter source is resolved. <code>nextflow_schema.json</code> also permits <code>0</code>, but the current workflow expression treats <code>0</code> as false and falls back to the default five folds. If you omit the fixed trio and do not supply <code>--best_params</code>, the pipeline can still run the grid first and then perform one final training run.</p>
 <h2 id="provide-a-sex-map">Provide a sex map<a class="headerlink" href="#provide-a-sex-map" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
@@ -888,7 +943,7 @@
 <span class="w">  </span>--outdir<span class="w"> </span>results
 </code></pre></div>
 <p>Why: this skips <code>sieve-infer-sex</code> and publishes the supplied map as the effective <code>sample_sex.tsv</code>.</p>
-<h2 id="reuse-downstream-artifacts">Reuse downstream artifacts<a class="headerlink" href="#reuse-downstream-artifacts" title="Permanent link">&para;</a></h2>
+<h2 id="reuse-downstream-artefacts">Reuse downstream artefacts<a class="headerlink" href="#reuse-downstream-artefacts" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
@@ -910,7 +965,7 @@
 <span class="w">  </span>--execute_step<span class="w"> </span>explain,null,validation<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--outdir<span class="w"> </span>results
 </code></pre></div>
-<p>Use step selection when you know which upstream channels are needed. The workflow exposes shortcut artifacts for sex maps, preprocessed data, best parameters, and best checkpoints; it does not expose a shortcut for every internal channel.</p>
+<p>Use step selection when you know which upstream channels are needed. The workflow exposes shortcut artefacts for sex maps, preprocessed data, best parameters, and best checkpoints; it does not expose a shortcut for every internal channel.</p>
 <h2 id="use-a-parameter-file">Use a parameter file<a class="headerlink" href="#use-a-parameter-file" title="Permanent link">&para;</a></h2>
 <p><code>params.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">vcf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/data.vcf.gz</span>

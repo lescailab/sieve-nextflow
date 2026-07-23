@@ -627,6 +627,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ablation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -841,6 +852,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ablation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -914,6 +936,7 @@
 │   ├── real_experiments/
 │   ├── null_baselines/
 │   ├── attribution_comparison/
+│   ├── discovery/
 │   ├── ablation/
 │   ├── epistasis/
 │   └── validation/
@@ -1004,6 +1027,46 @@ results.yaml
 <tr>
 <td><code>corrected/correction_report.yaml</code></td>
 <td>Correction summary.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="discovery">Discovery<a class="headerlink" href="#discovery" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>&lt;cohort_id&gt;/discovery/
+├── gene_list_by_delta_rank.tsv
+├── gene_list_by_z_attribution.tsv
+└── variant_significance_rankings.csv
+</code></pre></div>
+<p><code>gene_list_by_delta_rank.tsv</code> is the primary gene result. Delta-rank is derived from bootstrap-resampled null attributions by <code>SIEVE_BOOTSTRAP_NULL_CALIBRATION</code>; it is scale-free and stable across annotation levels.</p>
+<p><code>gene_list_by_z_attribution.tsv</code> is a secondary diagnostic. Its z-score is computed per chromosome, which flattens genome-wide signal, and it is retained for Manhattan-plot visualisation and continuity with earlier runs.</p>
+<p><code>variant_significance_rankings.csv</code> carries the variant-level equivalent.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--bootstrap_top_k</code></td>
+<td><code>50,100,200,500,1000</code></td>
+<td>Comma-separated top-k thresholds for delta-rank overlap summaries.</td>
+</tr>
+<tr>
+<td><code>--bootstrap_gene_delta_rank_aggregation</code></td>
+<td><code>max</code></td>
+<td>Aggregates per-variant delta-rank to gene level with <code>max</code> or <code>mean</code>.</td>
+</tr>
+<tr>
+<td><code>--bootstrap_exclude_sex_chroms</code></td>
+<td><code>false</code></td>
+<td>Drops sex-chromosome variants before bootstrap calibration when enabled.</td>
+</tr>
+<tr>
+<td><code>--bootstrap_min_variants_per_gene</code></td>
+<td><code>10</code></td>
+<td>Minimum variants required to compute gene-level statistics.</td>
 </tr>
 </tbody>
 </table>

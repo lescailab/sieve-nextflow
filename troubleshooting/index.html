@@ -907,7 +907,7 @@
 <p>Error pattern:</p>
 <div class="highlight"><pre><span></span><code>Missing required argument: --vcf (required by selected execution steps).
 </code></pre></div>
-<p>Cause: selected steps need sex inference or preprocessing, and no shortcut artifact satisfies that need.</p>
+<p>Cause: selected steps need sex inference or preprocessing, and no shortcut artefact satisfies that need.</p>
 <p>Fix: provide <code>--vcf</code>, or provide the relevant shortcut inputs such as <code>--preprocessed_data</code> and <code>--sex_map</code>.</p>
 <h2 id="missing-vcf-index">Missing VCF index<a class="headerlink" href="#missing-vcf-index" title="Permanent link">&para;</a></h2>
 <p>Error pattern:</p>
@@ -945,8 +945,8 @@
 </code></pre></div>
 <h2 id="selected-step-produces-few-or-no-outputs">Selected step produces few or no outputs<a class="headerlink" href="#selected-step-produces-few-or-no-outputs" title="Permanent link">&para;</a></h2>
 <p>Cause: <code>--execute_step</code> limits the requested branches, but later branches still need upstream data channels.</p>
-<p>Fix: either omit <code>--execute_step</code> for a full run, include the required upstream steps, or provide shortcut artifacts where available.</p>
-<p>Known fragile case: <code>ablation</code> uses the null-preprocessed channel produced by the null branch, but there is no public <code>--null_preprocessed_data</code> shortcut. Prefer a full run or include <code>null</code> when expecting complete ablation comparison outputs.</p>
+<p>Fix: either omit <code>--execute_step</code> for a full run, include the required upstream steps, or provide shortcut artefacts where available.</p>
+<p>When <code>ablation</code> is selected, the workflow creates the null-preprocessed dataset even if <code>null</code> is absent from <code>--execute_step</code>. Adding <code>null</code> also runs the full L3 null training, explanation and attribution-comparison branch.</p>
 <h2 id="profile-value-warning">Profile value warning<a class="headerlink" href="#profile-value-warning" title="Permanent link">&para;</a></h2>
 <p>The verified smoke command completed but logged:</p>
 <div class="highlight"><pre><span></span><code>WARN: nf-core pipelines do not accept positional arguments. The positional argument `test` has been detected.
@@ -957,7 +957,7 @@
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>mkdocs-material
 </code></pre></div>
 <p>Then run:</p>
-<div class="highlight"><pre><span></span><code>mkdocs<span class="w"> </span>serve<span class="w"> </span>-f<span class="w"> </span>guidelines/mkdocs.yml
+<div class="highlight"><pre><span></span><code>mkdocs<span class="w"> </span>serve<span class="w"> </span>-f<span class="w"> </span>mkdocs.yml
 </code></pre></div>
 <h2 id="where-to-inspect-failures">Where to inspect failures<a class="headerlink" href="#where-to-inspect-failures" title="Permanent link">&para;</a></h2>
 <p>Use:</p>

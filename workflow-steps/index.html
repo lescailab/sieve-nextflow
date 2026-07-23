@@ -970,6 +970,7 @@
 <h2 id="preprocess">Preprocess<a class="headerlink" href="#preprocess" title="Permanent link">&para;</a></h2>
 <p>Purpose: encode raw VCF and phenotype data into a SIEVE tensor dataset.</p>
 <p>Implementation:</p>
+<p><code>SIEVE_PREPROCESS</code> runs:</p>
 <div class="highlight"><pre><span></span><code>sieve-preprocess \
   --vcf &lt;vcf&gt; \
   --phenotypes &lt;phenotypes&gt; \
@@ -990,6 +991,7 @@
 <li><code>buildTrainingGrid()</code> expands <code>grid_lr</code>, <code>grid_lambda_attr</code>, <code>grid_latent_dim</code>, <code>grid_hidden_dim</code>, and <code>grid_num_attention_layers</code>.</li>
 <li><code>SIEVE_TRAIN_SINGLE_GRID</code> runs one training process per grid combination.</li>
 <li><code>SIEVE_SELECT_BEST_PARAMS</code> emits <code>best_params.yaml</code>.</li>
+<li>When you supply all three fixed parameters, <code>SIEVE_EMIT_BEST_PARAMS</code> materialises the in-memory parameter map as <code>best_params.yaml</code>. This preserves the downstream channel shape while bypassing <code>SIEVE_TRAIN_SINGLE_GRID</code> and <code>SIEVE_SELECT_BEST_PARAMS</code>.</li>
 </ul>
 <p>Shortcut:</p>
 <div class="highlight"><pre><span></span><code>--best_params /path/to/best_params.yaml
@@ -1050,7 +1052,9 @@ explain_output/attributions.npz
 <li>Per-level real explainability: <code>SIEVE_EXPLAIN_ABLATION</code></li>
 <li>Per-level null training and explainability: <code>SIEVE_TRAIN_SINGLE_NULL_ABLATION</code>, <code>SIEVE_EXPLAIN_NULL_ABLATION</code></li>
 <li>Per-level comparison and correction: <code>SIEVE_COMPARE_ATTRIBUTIONS_ABL</code>, <code>SIEVE_BOOTSTRAP_ABL</code>, <code>SIEVE_CORRECT_CHRX_BIAS_ABL</code></li>
-<li>Gene lists and cross-level summaries: <code>SIEVE_GENERATE_GENE_LIST</code>, <code>SIEVE_ABLATION_RANKING_COMPARE</code>, <code>SIEVE_PLOT_ABLATION_COMPARISON</code></li>
+<li><code>SIEVE_ABLATION_COMPARE</code> reads the per-level training selection payloads and produces <code>ablation_summary.tsv</code> and <code>ablation_summary.yaml</code> from performance metrics.</li>
+<li><code>SIEVE_ABLATION_RANKING_COMPARE</code> compares the per-level corrected variant rankings and produces <code>ablation_jaccard_matrix.tsv</code> and <code>level_specific_variants.tsv</code>.</li>
+<li>Gene lists and the combined comparison plot: <code>SIEVE_GENERATE_GENE_LIST</code>, <code>SIEVE_PLOT_ABLATION_COMPARISON</code></li>
 </ul>
 <p>Published under:</p>
 <div class="highlight"><pre><span></span><code>&lt;cohort_id&gt;/real_experiments/L*/

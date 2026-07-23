@@ -55,7 +55,7 @@ Start with [Getting started](getting-started.md) if you need to run the pipeline
 
 ## Standards followed
 
-This documentation is structured around the nf-core expectation that bundled pipeline documentation includes a README, usage guide, and output guide, and around the Nextflow training style of moving from runnable examples to concepts and then advanced configuration.
+This pipeline follows nf-core structural conventions without being an nf-core pipeline. Its documentation is structured around the nf-core expectation that bundled pipeline documentation includes a README, usage guide, and output guide, and around the Nextflow training style of moving from runnable examples to concepts and then advanced configuration.
 
 Reference material:
 

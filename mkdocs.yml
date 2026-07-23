@@ -43,6 +43,7 @@ nav:
   - Running the pipeline: running-the-pipeline.md
   - Inputs: inputs.md
   - Configuration: configuration.md
+  - Google Batch A100 without Fusion: google-batch-a100-no-fusion.md
   - Workflow steps: workflow-steps.md
   - Detailed outputs: outputs-detailed.md
   - Troubleshooting: troubleshooting.md

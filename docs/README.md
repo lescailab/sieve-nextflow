@@ -1,10 +1,18 @@
-# lescailab/sieve: Documentation
+# SIEVE Nextflow: Documentation
 
-The lescailab/sieve documentation is split into the following pages:
+Use these documentation layers:
+
+The scientific framework is documented separately at [SIEVE Documentation](https://lescailab.github.io/sieve-project).
 
 - [Usage](usage.md)
-  - An overview of how the pipeline works, how to run it and a description of all of the different command-line flags.
+  - How the pipeline works, how to run it and the available command-line parameters.
 - [Output](output.md)
-  - An overview of the different results produced by the pipeline and how to interpret them.
+  - Published result locations and key files.
+- [SIEVE Nextflow site](https://lescailab.github.io/sieve-nextflow/)
+  - Extended guidance for installation, configuration, execution, outputs and troubleshooting.
+- [Google Batch A100 without Fusion](https://lescailab.github.io/sieve-nextflow/google-batch-a100-no-fusion/)
+  - The repository's bundled Google Batch GPU profile.
+- [SIEVE framework documentation](https://lescailab.github.io/sieve-project/)
+  - The scientific method, model, encoding, explainability procedures and command-line tools.
 
-You can find a lot more documentation about installing, configuring and running nf-core pipelines on the website: [https://nf-co.re](https://nf-co.re)
+SIEVE Nextflow follows nf-core structural conventions, but it is not an nf-core pipeline.

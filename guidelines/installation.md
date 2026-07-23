@@ -55,6 +55,7 @@ For GPU container runs:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -65,6 +66,7 @@ For CPU trials:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \

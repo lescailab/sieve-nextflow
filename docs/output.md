@@ -56,6 +56,7 @@ The exact contents depend on `--execute_step` and shortcut artefacts.
 - `--execute_step` can suppress whole branches and their outputs.
 - `--sex_map`, `--preprocessed_data`, `--best_params`, and `--best_checkpoint`/`--checkpoint_config` can cause published files to reflect supplied artefacts rather than newly generated files.
 - Epistasis validation is conditional on non-empty interaction rows from explainability output; other epistasis audit and aggregation steps may still run when `epistasis` is selected.
+- When plot collection runs, `SIEVE_COLLECT_PLOTS` copies supported image files into `<cohort_id>/validation/plots/`, prefixes each copied filename with a sequence number and records its source in `<cohort_id>/validation/plots_manifest.tsv`. If no plots are available, the directory contains `<cohort_id>/validation/plots/0000__no_plots_found.txt`.
 
 ## Primary discovery selector
 

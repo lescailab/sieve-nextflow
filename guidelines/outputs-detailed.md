@@ -2,6 +2,10 @@
 
 All paths are relative to `--outdir`. The cohort directory is `--cohort_id`, defaulting to `cohort`.
 
+!!! info "Scientific interpretation"
+
+    This page identifies published files and their pipeline locations. Use the framework's [Interpreting Results](https://lescailab.github.io/sieve-project/interpreting-results/) guide for scientific interpretation.
+
 ## High-level tree
 
 ```text
@@ -181,6 +185,8 @@ gene_interaction_summary.yaml
 ```
 
 Validation can use supplied reference resources or downloaded references. Plot collection depends on plot-source directories produced by selected upstream steps.
+
+`SIEVE_COLLECT_PLOTS` searches those source directories for PNG, JPEG, SVG, PDF, EPS and TIFF files. It publishes them under `<cohort_id>/validation/plots/` with sequential filename prefixes and writes the source-to-destination mapping to `<cohort_id>/validation/plots_manifest.tsv`. When no supported plot files are available, it writes `<cohort_id>/validation/plots/0000__no_plots_found.txt`.
 
 ## Pipeline info
 

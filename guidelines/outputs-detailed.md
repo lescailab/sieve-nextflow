@@ -11,6 +11,7 @@ All paths are relative to `--outdir`. The cohort directory is `--cohort_id`, def
 │   ├── real_experiments/
 │   ├── null_baselines/
 │   ├── attribution_comparison/
+│   ├── discovery/
 │   ├── ablation/
 │   ├── epistasis/
 │   └── validation/
@@ -105,6 +106,28 @@ Important files:
 | `corrected/corrected_gene_rankings.csv` | Gene-level corrected rankings. |
 | `corrected/correction_report.yaml` | Correction summary. |
 
+## Discovery
+
+```text
+<cohort_id>/discovery/
+├── gene_list_by_delta_rank.tsv
+├── gene_list_by_z_attribution.tsv
+└── variant_significance_rankings.csv
+```
+
+`gene_list_by_delta_rank.tsv` is the primary gene result. Delta-rank is derived from bootstrap-resampled null attributions by `SIEVE_BOOTSTRAP_NULL_CALIBRATION`; it is scale-free and stable across annotation levels.
+
+`gene_list_by_z_attribution.tsv` is a secondary diagnostic. Its z-score is computed per chromosome, which flattens genome-wide signal, and it is retained for Manhattan-plot visualisation and continuity with earlier runs.
+
+`variant_significance_rankings.csv` carries the variant-level equivalent.
+
+| Parameter | Default | Role |
+| --- | --- | --- |
+| `--bootstrap_top_k` | `50,100,200,500,1000` | Comma-separated top-k thresholds for delta-rank overlap summaries. |
+| `--bootstrap_gene_delta_rank_aggregation` | `max` | Aggregates per-variant delta-rank to gene level with `max` or `mean`. |
+| `--bootstrap_exclude_sex_chroms` | `false` | Drops sex-chromosome variants before bootstrap calibration when enabled. |
+| `--bootstrap_min_variants_per_gene` | `10` | Minimum variants required to compute gene-level statistics. |
+
 ## Ablation
 
 ```text
@@ -170,4 +193,4 @@ pipeline_info/params_<timestamp>.json
 pipeline_info/nf_core_sieve_software_versions.yml
 ```
 
-Use these files to audit command parameters, runtime behavior, task failures, and software versions.
+Use these files to audit command parameters, runtime behaviour, task failures, and software versions.

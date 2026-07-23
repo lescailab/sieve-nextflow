@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Extended documentation for the lescailab/sieve Nextflow pipeline">
+        <meta name="description" content="Nextflow pipeline orchestrating the SIEVE framework for case-control variant discovery from exome sequencing data">
       
       
       
@@ -19,15 +19,15 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>SIEVE Guidelines</title>
+        <title>SIEVE Nextflow</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sieve-guidelines" class="md-skip">
+        <a href="#sieve-nextflow" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +92,7 @@
       <img src="assets/images/sieve-top-banner.png" alt="" />
     </span>
     <span class="sieve-announce__copy">
-      <strong>lescailab/sieve</strong> - interpretable exome variant discovery with transparent sparse attention
+      <strong>SIEVE Nextflow</strong> - reproducible orchestration for case-control exome variant discovery
     </span>
   </a>
 
@@ -109,7 +109,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="SIEVE Guidelines" class="md-header__button md-logo" aria-label="SIEVE Guidelines" data-md-component="logo">
+    <a href="." title="SIEVE Nextflow" class="md-header__button md-logo" aria-label="SIEVE Nextflow" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -123,7 +123,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SIEVE Guidelines
+            SIEVE Nextflow
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -237,13 +237,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="SIEVE Guidelines" class="md-nav__button md-logo" aria-label="SIEVE Guidelines" data-md-component="logo">
+    <a href="." title="SIEVE Nextflow" class="md-nav__button md-logo" aria-label="SIEVE Nextflow" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    SIEVE Guidelines
+    SIEVE Nextflow
   </label>
   
     <div class="md-nav__source">
@@ -784,8 +784,13 @@
 
 
 
-<h1 id="sieve-guidelines">SIEVE Guidelines<a class="headerlink" href="#sieve-guidelines" title="Permanent link">&para;</a></h1>
-<p>This site is the extended documentation layer for <code>lescailab/sieve</code>. The repository keeps quick-access documentation in the root <a href="https://github.com/lescailab/sieve-nextflow/blob/master/README.md">README</a>, <a href="https://github.com/lescailab/sieve-nextflow/blob/master/docs/usage.md">usage guide</a>, and <a href="https://github.com/lescailab/sieve-nextflow/blob/master/docs/output.md">output guide</a>; this site explains the same pipeline in a tutorial-style order for users who need to understand how the workflow is assembled and how to operate it safely.</p>
+<h1 id="sieve-nextflow">SIEVE Nextflow<a class="headerlink" href="#sieve-nextflow" title="Permanent link">&para;</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Development status</p>
+<p>This pipeline is under active development on the <code>dev</code> branch and has no tagged release. Parameters, output paths and default values can change between commits. Pin a commit when you need a reproducible run, as described in <a href="reproducibility/">Reproducibility</a>.</p>
+</div>
+<p>This site documents the Nextflow pipeline that orchestrates SIEVE. The scientific method, the model, the encoding, the explainability procedures and the command-line tools live in <a href="https://github.com/lescailab/sieve-project"><code>lescailab/sieve-project</code></a>, documented at <a href="https://lescailab.github.io/sieve-project">SIEVE Documentation</a>. This repository wraps those tools in a reproducible workflow: it manages inputs, provisions containers, schedules the steps in dependency order, handles resource allocation and retries, and publishes results in a fixed layout. Read the framework documentation to understand what each step computes. Read this site to understand how to run the steps together.</p>
+<p>The repository also keeps quick-access documentation in the root <a href="https://github.com/lescailab/sieve-nextflow/blob/master/README.md">README</a>, <a href="https://github.com/lescailab/sieve-nextflow/blob/master/docs/usage.md">usage guide</a>, and <a href="https://github.com/lescailab/sieve-nextflow/blob/master/docs/output.md">output guide</a>.</p>
 <h2 id="documentation-layers">Documentation layers<a class="headerlink" href="#documentation-layers" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -819,7 +824,7 @@
 </tbody>
 </table>
 <h2 id="what-the-pipeline-does">What the pipeline does<a class="headerlink" href="#what-the-pipeline-does" title="Permanent link">&para;</a></h2>
-<p>The pipeline takes a bgzipped, indexed, multi-sample VCF plus phenotype data, prepares SIEVE-ready tensors, trains models, selects checkpoints, produces explainability rankings, compares real and null attribution patterns, and can run ablation, epistasis, validation, and plot-collection branches.</p>
+<p>The pipeline takes a bgzipped, indexed, multi-sample VCF plus phenotype data, prepares SIEVE-ready tensors, trains models, selects checkpoints, produces explainability rankings, compares real and null attribution patterns, and can run ablation, candidate-interaction testing with power analysis, validation, and plot-collection branches.</p>
 <p>The default execution requests all defined steps:</p>
 <div class="highlight"><pre><span></span><code>sex -&gt; preprocess -&gt; grid -&gt; cv -&gt; explain
                        |       |
@@ -852,7 +857,7 @@ all plot sources      -&gt; plots
 <h2 id="how-to-use-this-site">How to use this site<a class="headerlink" href="#how-to-use-this-site" title="Permanent link">&para;</a></h2>
 <p>Start with <a href="getting-started/">Getting started</a> if you need to run the pipeline. Use <a href="pipeline-overview/">Pipeline overview</a> and <a href="workflow-steps/">Workflow steps</a> to understand execution logic. Use <a href="configuration/">Configuration</a>, <a href="troubleshooting/">Troubleshooting</a>, and <a href="reproducibility/">Reproducibility</a> when moving from test data to a controlled analysis run.</p>
 <h2 id="standards-followed">Standards followed<a class="headerlink" href="#standards-followed" title="Permanent link">&para;</a></h2>
-<p>This documentation is structured around the nf-core expectation that bundled pipeline documentation includes a README, usage guide, and output guide, and around the Nextflow training style of moving from runnable examples to concepts and then advanced configuration.</p>
+<p>This pipeline follows nf-core structural conventions without being an nf-core pipeline. Its documentation is organised around the nf-core expectation that bundled pipeline documentation includes a README, usage guide, and output guide, and around the Nextflow training style of moving from runnable examples to concepts and then advanced configuration.</p>
 <p>Reference material:</p>
 <ul>
 <li><a href="https://nf-co.re/docs/guidelines/pipelines/overview">nf-core pipeline specifications</a></li>
@@ -918,7 +923,7 @@ all plot sources      -&gt; plots
       <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.sections", "navigation.top", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

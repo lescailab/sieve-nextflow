@@ -833,13 +833,19 @@
 <h1 id="reproducibility">Reproducibility<a class="headerlink" href="#reproducibility" title="Permanent link">&para;</a></h1>
 <p>Reproducibility comes from pinning the pipeline revision, recording parameters, using containers or fixed environments, and preserving execution reports.</p>
 <h2 id="pin-the-pipeline-revision">Pin the pipeline revision<a class="headerlink" href="#pin-the-pipeline-revision" title="Permanent link">&para;</a></h2>
-<p>For released versions:</p>
+<p><code>-r dev</code> selects the active development branch, which moves as commits land:</p>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-r<span class="w"> </span>&lt;release&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-params-file<span class="w"> </span>params.yml
 </code></pre></div>
-<p>For local development, record the Git commit used for the run.</p>
+<p>For a reproducible remote run, replace the moving branch with the full commit SHA:</p>
+<div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>&lt;commit-sha&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-params-file<span class="w"> </span>params.yml
+</code></pre></div>
+<p>Record that SHA alongside the results. For a local checkout, record the checked-out Git commit used for the run.</p>
 <h2 id="use-parameter-files">Use parameter files<a class="headerlink" href="#use-parameter-files" title="Permanent link">&para;</a></h2>
 <p>Keep run parameters in YAML or JSON:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">vcf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/data.vcf.gz</span>
@@ -899,6 +905,7 @@ pipeline_info/pipeline_dag_&lt;timestamp&gt;.html
 <h2 id="resume-behavior">Resume behavior<a class="headerlink" href="#resume-behavior" title="Permanent link">&para;</a></h2>
 <p>Nextflow <code>-resume</code> can reuse previous task outputs:</p>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-params-file<span class="w"> </span>params.yml<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-resume

@@ -841,6 +841,7 @@
 <p>This command was verified against the current repository. It exercises the complete graph with stub outputs.</p>
 <h2 id="full-raw-input-run">Full raw-input run<a class="headerlink" href="#full-raw-input-run" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--vcf<span class="w"> </span>/path/to/data.vcf.gz<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--phenotypes<span class="w"> </span>/path/to/phenotypes.tsv<span class="w"> </span><span class="se">\</span>
@@ -850,6 +851,7 @@
 <p>Use <code>--genome_build GRCh37</code> for GRCh37 data.</p>
 <h2 id="provide-a-sex-map">Provide a sex map<a class="headerlink" href="#provide-a-sex-map" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--vcf<span class="w"> </span>/path/to/data.vcf.gz<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--phenotypes<span class="w"> </span>/path/to/phenotypes.tsv<span class="w"> </span><span class="se">\</span>
@@ -861,6 +863,7 @@
 <p>Why: this skips <code>sieve-infer-sex</code> and publishes the supplied map as the effective <code>sample_sex.tsv</code>.</p>
 <h2 id="reuse-downstream-artifacts">Reuse downstream artifacts<a class="headerlink" href="#reuse-downstream-artifacts" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--preprocessed_data<span class="w"> </span>/path/to/preprocessed.pt<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--sex_map<span class="w"> </span>/path/to/sample_sex.tsv<span class="w"> </span><span class="se">\</span>
@@ -871,6 +874,7 @@
 <p>Why: this avoids raw VCF preprocessing and CV checkpoint selection. The checkpoint config also supplies best-parameter information to branches that need training parameters when <code>--best_params</code> is not supplied.</p>
 <h2 id="limit-execution">Limit execution<a class="headerlink" href="#limit-execution" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--preprocessed_data<span class="w"> </span>/path/to/preprocessed.pt<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--sex_map<span class="w"> </span>/path/to/sample_sex.tsv<span class="w"> </span><span class="se">\</span>
@@ -891,6 +895,7 @@
 </code></pre></div>
 <p>Command:</p>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-params-file<span class="w"> </span>params.yml
 </code></pre></div>
@@ -898,6 +903,7 @@
 <h2 id="resume-interrupted-work">Resume interrupted work<a class="headerlink" href="#resume-interrupted-work" title="Permanent link">&para;</a></h2>
 <p>Use Nextflow resume when the command and work directory are still valid:</p>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-params-file<span class="w"> </span>params.yml<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-resume

@@ -815,7 +815,7 @@
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>.
 </code></pre></div>
 <p>From outside the checkout, use the repository name:</p>
-<div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow
+<div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span>-r<span class="w"> </span>dev
 </code></pre></div>
 <h2 id="2-run-a-smoke-test">2. Run a smoke test<a class="headerlink" href="#2-run-a-smoke-test" title="Permanent link">&para;</a></h2>
 <p>Use bundled test data and stubbed commands:</p>
@@ -857,6 +857,7 @@
 <h2 id="5-run-a-real-analysis">5. Run a real analysis<a class="headerlink" href="#5-run-a-real-analysis" title="Permanent link">&para;</a></h2>
 <p>The default training device is CUDA. For a GPU run with Docker:</p>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--vcf<span class="w"> </span>/path/to/data.vcf.gz<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--phenotypes<span class="w"> </span>/path/to/phenotypes.tsv<span class="w"> </span><span class="se">\</span>
@@ -865,6 +866,7 @@
 </code></pre></div>
 <p>For a CPU trial, override the SIEVE training device explicitly:</p>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--vcf<span class="w"> </span>/path/to/data.vcf.gz<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--phenotypes<span class="w"> </span>/path/to/phenotypes.tsv<span class="w"> </span><span class="se">\</span>
@@ -876,9 +878,9 @@
 <h2 id="6-read-the-concise-docs">6. Read the concise docs<a class="headerlink" href="#6-read-the-concise-docs" title="Permanent link">&para;</a></h2>
 <p>Use the root docs for quick reference:</p>
 <ul>
-<li><a href="https://github.com/lescailab/sieve-nextflow/blob/master/README.md">README</a></li>
-<li><a href="https://github.com/lescailab/sieve-nextflow/blob/master/docs/usage.md">Usage</a></li>
-<li><a href="https://github.com/lescailab/sieve-nextflow/blob/master/docs/output.md">Output</a></li>
+<li><a href="https://github.com/lescailab/sieve-nextflow/blob/dev/README.md">README</a></li>
+<li><a href="https://github.com/lescailab/sieve-nextflow/blob/dev/docs/usage.md">Usage</a></li>
+<li><a href="https://github.com/lescailab/sieve-nextflow/blob/dev/docs/output.md">Output</a></li>
 </ul>
 
 

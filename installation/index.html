@@ -842,6 +842,7 @@
 </code></pre></div>
 <p>For GPU container runs:</p>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker,gpu<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--vcf<span class="w"> </span>/path/to/data.vcf.gz<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--phenotypes<span class="w"> </span>/path/to/phenotypes.tsv<span class="w"> </span><span class="se">\</span>
@@ -849,6 +850,7 @@
 </code></pre></div>
 <p>For CPU trials:</p>
 <div class="highlight"><pre><span></span><code>nextflow<span class="w"> </span>run<span class="w"> </span>lescailab/sieve-nextflow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-r<span class="w"> </span>dev<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-profile<span class="w"> </span>docker<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--vcf<span class="w"> </span>/path/to/data.vcf.gz<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--phenotypes<span class="w"> </span>/path/to/phenotypes.tsv<span class="w"> </span><span class="se">\</span>

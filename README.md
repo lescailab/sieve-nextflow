@@ -32,6 +32,7 @@ Run a local smoke test with bundled data and stubbed process scripts:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile test \
   -stub-run \
   --outdir results_stub
@@ -54,6 +55,7 @@ The training steps use `--train_device cuda` by default. Use a GPU-enabled profi
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -71,12 +73,12 @@ The pipeline supports three top-level modes for the training side of the workflo
 
 ```bash
 # Mode 2 — skip grid, keep CV
-nextflow run lescailab/sieve-nextflow -profile docker,gpu \
+nextflow run lescailab/sieve-nextflow -r dev -profile docker,gpu \
   --vcf data.vcf.gz --phenotypes pheno.tsv --genome_build GRCh38 \
   --train_lr 1e-4 --train_lambda_attr 0.1 --train_latent_dim 64
 
 # Mode 3 — skip grid AND skip CV
-nextflow run lescailab/sieve-nextflow -profile docker,gpu \
+nextflow run lescailab/sieve-nextflow -r dev -profile docker,gpu \
   --vcf data.vcf.gz --phenotypes pheno.tsv --genome_build GRCh38 \
   --train_lr 1e-4 --train_lambda_attr 0.1 --train_latent_dim 64 \
   --cv_folds 1

@@ -13,7 +13,7 @@ nextflow run .
 From outside the checkout, use the repository name:
 
 ```bash
-nextflow run lescailab/sieve-nextflow
+nextflow run lescailab/sieve-nextflow -r dev
 ```
 
 ## 2. Run a smoke test
@@ -70,6 +70,7 @@ The default training device is CUDA. For a GPU run with Docker:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -81,6 +82,7 @@ For a CPU trial, override the SIEVE training device explicitly:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -95,6 +97,6 @@ CPU runs are expected to be slower for training-heavy steps.
 
 Use the root docs for quick reference:
 
-- [README](https://github.com/lescailab/sieve-nextflow/blob/master/README.md)
-- [Usage](https://github.com/lescailab/sieve-nextflow/blob/master/docs/usage.md)
-- [Output](https://github.com/lescailab/sieve-nextflow/blob/master/docs/output.md)
+- [README](https://github.com/lescailab/sieve-nextflow/blob/dev/README.md)
+- [Usage](https://github.com/lescailab/sieve-nextflow/blob/dev/docs/usage.md)
+- [Output](https://github.com/lescailab/sieve-nextflow/blob/dev/docs/output.md)

@@ -6,7 +6,7 @@
 
 This site documents the Nextflow pipeline that orchestrates SIEVE. The scientific method, the model, the encoding, the explainability procedures and the command-line tools live in [`lescailab/sieve-project`](https://github.com/lescailab/sieve-project), documented at [SIEVE Documentation](https://lescailab.github.io/sieve-project). This repository wraps those tools in a reproducible workflow: it manages inputs, provisions containers, schedules the steps in dependency order, handles resource allocation and retries, and publishes results in a fixed layout. Read the framework documentation to understand what each step computes. Read this site to understand how to run the steps together.
 
-The repository also keeps quick-access documentation in the root [README](https://github.com/lescailab/sieve-nextflow/blob/master/README.md), [usage guide](https://github.com/lescailab/sieve-nextflow/blob/master/docs/usage.md), and [output guide](https://github.com/lescailab/sieve-nextflow/blob/master/docs/output.md).
+The repository also keeps quick-access documentation in the root [README](https://github.com/lescailab/sieve-nextflow/blob/dev/README.md), [usage guide](https://github.com/lescailab/sieve-nextflow/blob/dev/docs/usage.md), and [output guide](https://github.com/lescailab/sieve-nextflow/blob/dev/docs/output.md).
 
 ## Documentation layers
 

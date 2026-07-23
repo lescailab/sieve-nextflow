@@ -68,7 +68,7 @@ The pipeline supports three top-level modes for the training side of the workflo
 
 1. **Grid search + cross-validation (default).** The Cartesian product of `--grid_lr × --grid_lambda_attr × --grid_latent_dim × --grid_hidden_dim × --grid_num_attention_layers` is trained, the best hyperparameters are picked, and a `--cv_folds`-fold cross-validation produces the final checkpoint.
 2. **Fixed hyperparameters + cross-validation.** Skip the grid by supplying all three of `--train_lr`, `--train_lambda_attr`, and `--train_latent_dim` on the command line. The pipeline materialises a synthetic `best_params.yaml` and runs CV directly.
-3. **Fixed hyperparameters + single training (no CV).** Same as mode 2, plus `--cv_folds 1` (or `--cv_folds 0`). The main model is trained once with `--val_split` as the train/validation split.
+3. **Fixed hyperparameters + single training (no CV).** Same as mode 2, plus `--cv_folds 1`. The main model is trained once with `--val_split` as the train/validation split. Although the schema currently permits `0`, the workflow falls back to five folds for that value.
 
 ```bash
 # Mode 2 — skip grid, keep CV

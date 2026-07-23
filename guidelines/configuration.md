@@ -25,7 +25,7 @@ Important defaults from `nextflow.config`:
 | `--genome_build` | `GRCh38` | Allowed values: `GRCh37`, `GRCh38`. |
 | `--infer_sex` | `true` | Used when sex information is needed and no `--sex_map` is supplied. |
 | `--default_train_level` | `L3` | Main training level. |
-| `--cv_folds` | `5` | CV folds for `SIEVE_TRAIN_CV`. |
+| `--cv_folds` | `5` | CV folds for `SIEVE_TRAIN_CV`; use `1` for the single-training path described under [Execution modes](running-the-pipeline.md#execution-modes). The schema permits `0`, but the current workflow falls back to five folds for that value. |
 | `--train_device` | `cuda` | Passed to SIEVE training. |
 | `--publish_dir_mode` | `copy` | Sets `workflow.output.mode`. |
 

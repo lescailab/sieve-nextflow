@@ -27,10 +27,23 @@ jobs:
         shell: bash
         run: |
           mapfile -d '' markdown_files < <(find README.md CITATIONS.md docs guidelines -type f -name '*.md' -print0)
-          if rg --line-number --pcre2 '(?i)\b(?:artifacts?|behavior|visualizations?|optimization|normalized)\b|—' "${markdown_files[@]}"; then
-            echo "Documentation contains a disallowed spelling or em dash."
-            exit 1
-          fi
+          set +e
+          rg --line-number -i '\b(artifacts?|behavior|visualizations?|optimization|normalized)\b|—' "${markdown_files[@]}"
+          scan_status=$?
+          set -e
+
+          case "$scan_status" in
+            0)
+              echo "Documentation contains a disallowed spelling or em dash."
+              exit 1
+              ;;
+            1)
+              ;;
+            *)
+              echo "Documentation style scan failed with exit code $scan_status."
+              exit "$scan_status"
+              ;;
+          esac
 
   deploy:
     needs: docs-style

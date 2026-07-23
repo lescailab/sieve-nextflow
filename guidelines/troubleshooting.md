@@ -88,7 +88,7 @@ Cause: `--execute_step` limits the requested branches, but later branches still 
 
 Fix: either omit `--execute_step` for a full run, include the required upstream steps, or provide shortcut artefacts where available.
 
-Known fragile case: `ablation` uses the null-preprocessed channel produced by the null branch, but there is no public `--null_preprocessed_data` shortcut. Prefer a full run or include `null` when expecting complete ablation comparison outputs.
+When `ablation` is selected, the workflow creates the null-preprocessed dataset even if `null` is absent from `--execute_step`. Adding `null` also runs the full L3 null training, explanation and attribution-comparison branch.
 
 ## Profile value warning
 
@@ -111,7 +111,7 @@ pip install mkdocs-material
 Then run:
 
 ```bash
-mkdocs serve -f guidelines/mkdocs.yml
+mkdocs serve -f mkdocs.yml
 ```
 
 ## Where to inspect failures

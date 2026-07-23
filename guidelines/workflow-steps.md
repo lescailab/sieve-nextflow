@@ -2,6 +2,10 @@
 
 This page explains the defined `--execute_step` names and the subworkflows they activate.
 
+!!! info "Scientific interpretation"
+
+    This page describes pipeline orchestration. Use the framework's [Complete Workflow](https://lescailab.github.io/sieve-project/complete-workflow/) and [Command Reference](https://lescailab.github.io/sieve-project/command-reference/) to understand what each SIEVE command computes.
+
 ## Step names
 
 Stable step names:
@@ -34,6 +38,8 @@ Purpose: encode raw VCF and phenotype data into a SIEVE tensor dataset.
 
 Implementation:
 
+`SIEVE_PREPROCESS` runs:
+
 ```text
 sieve-preprocess \
   --vcf <vcf> \
@@ -64,6 +70,7 @@ Implementation:
 - `buildTrainingGrid()` expands `grid_lr`, `grid_lambda_attr`, `grid_latent_dim`, `grid_hidden_dim`, and `grid_num_attention_layers`.
 - `SIEVE_TRAIN_SINGLE_GRID` runs one training process per grid combination.
 - `SIEVE_SELECT_BEST_PARAMS` emits `best_params.yaml`.
+- When you supply all three fixed parameters, `SIEVE_EMIT_BEST_PARAMS` materialises the in-memory parameter map as `best_params.yaml`. This preserves the downstream channel shape while bypassing `SIEVE_TRAIN_SINGLE_GRID` and `SIEVE_SELECT_BEST_PARAMS`.
 
 Shortcut:
 
@@ -154,7 +161,9 @@ Implementation:
 - Per-level real explainability: `SIEVE_EXPLAIN_ABLATION`
 - Per-level null training and explainability: `SIEVE_TRAIN_SINGLE_NULL_ABLATION`, `SIEVE_EXPLAIN_NULL_ABLATION`
 - Per-level comparison and correction: `SIEVE_COMPARE_ATTRIBUTIONS_ABL`, `SIEVE_BOOTSTRAP_ABL`, `SIEVE_CORRECT_CHRX_BIAS_ABL`
-- Gene lists and cross-level summaries: `SIEVE_GENERATE_GENE_LIST`, `SIEVE_ABLATION_RANKING_COMPARE`, `SIEVE_PLOT_ABLATION_COMPARISON`
+- `SIEVE_ABLATION_COMPARE` reads the per-level training selection payloads and produces `ablation_summary.tsv` and `ablation_summary.yaml` from performance metrics.
+- `SIEVE_ABLATION_RANKING_COMPARE` compares the per-level corrected variant rankings and produces `ablation_jaccard_matrix.tsv` and `level_specific_variants.tsv`.
+- Gene lists and the combined comparison plot: `SIEVE_GENERATE_GENE_LIST`, `SIEVE_PLOT_ABLATION_COMPARISON`
 
 Published under:
 
@@ -169,7 +178,7 @@ When `ablation` is selected, `SIEVE_CREATE_NULL_BASELINE` runs automatically to 
 
 ## Epistasis
 
-Purpose: audit co-occurrence, validate interactions when present, estimate power, and aggregate gene interactions.
+Purpose: audit co-occurrence, test candidate interactions when present, quantify power, and aggregate gene interactions.
 
 Implementation:
 

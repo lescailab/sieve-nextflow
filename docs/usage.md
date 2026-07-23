@@ -4,7 +4,7 @@ This page lists the verified command-line interface exposed by `main.nf`, `nextf
 
 ## Execution entry point
 
-Run the pipeline with `nextflow run lescailab/sieve-nextflow` or, from a local checkout, `nextflow run .`.
+Run the remote development branch with `nextflow run lescailab/sieve-nextflow -r dev`. From a local checkout, `nextflow run .` runs the revision currently checked out in that directory.
 
 Verified smoke test:
 
@@ -19,6 +19,8 @@ nextflow run . \
 
 The required inputs depend on the selected steps and any shortcut artefacts you provide.
 
+The pipeline-level `--input` parameter is inherited from the nf-core template and is not consumed by this pipeline. Supply inputs through `--vcf` and `--phenotypes`; the pipeline does not support an input samplesheet. This parameter is unrelated to any internal input option exposed by the underlying SIEVE tools.
+
 Raw-input mode requires:
 
 | Parameter | Requirement |
@@ -32,6 +34,7 @@ Example raw-input command:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -75,6 +78,7 @@ Example using downstream artefacts:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --preprocessed_data /path/to/preprocessed.pt \
   --sex_map /path/to/sample_sex.tsv \
@@ -134,6 +138,7 @@ Combine profiles with commas:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -165,6 +170,54 @@ The internal grid-search parameters are:
 - `--grid_hidden_dim`
 - `--grid_num_attention_layers`
 
+### Additional training parameters
+
+Types, defaults and base descriptions in this table come from `nextflow_schema.json`.
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--train_aggregation_method` | string | `mean` | Aggregation method passed to SIEVE training. |
+| `--train_chunk_overlap` | integer | `0` | Overlap between adjacent chunks (forwarded to `sieve-train --chunk-overlap`). |
+| `--train_class_weighting` | string | `auto` | Inverse-frequency class weighting strategy (forwarded to `sieve-train --class-weighting`). |
+| `--train_classifier_type` | string or null | Not set | Optional classifier-head architecture (forwarded to `sieve-train --classifier-type`). When null, the SIEVE default is used. |
+| `--train_early_stopping` | integer | `10` | Early stopping patience for training runs. |
+| `--train_gradient_accumulation_steps` | integer | `4` | Gradient accumulation steps for all training stages. |
+| `--train_gradient_clip` | number | `1.0` | Gradient clipping threshold for all training stages. |
+| `--train_hidden_dim` | integer | `64` | Default hidden dimension used across training stages. |
+| `--train_num_attention_layers` | integer | `1` | Default number of attention layers used across training stages. |
+| `--train_num_heads` | integer or null | Not set | Optional fixed number of attention heads (forwarded to `sieve-train --num-heads`). |
+
+The `flatten` classifier head is the SIEVE default and the head used throughout this pipeline. `attention_pool` is available as an alternative and underperformed on the cohorts tested; use the framework [command reference for `sieve-train`](https://lescailab.github.io/sieve-project/command-reference/#trainpy) for its CLI contract.
+
+### Explainability parameters
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--explain_aggregation_method` | string or null | Not set | Score aggregation method used by `sieve-explain` (`--aggregation-method`). |
+| `--explain_attention_percentile` | number or null | Not set | Percentile cutoff when `--explain_attention_threshold_mode` is `percentile` (`--attention-percentile`). |
+| `--explain_attention_threshold` | number or null | Not set | Minimum attention weight to keep an interaction (`--attention-threshold`). |
+| `--explain_attention_threshold_mode` | string or null | Not set | Attention threshold mode (`--attention-threshold-mode`). |
+| `--explain_batch_size` | integer or null | Not set | Dataloader batch size for `sieve-explain` (`--batch-size`). |
+| `--explain_max_variants` | integer or null | Not set | Maximum variants per sample considered during integrated-gradients computation (`--max-variants`). |
+| `--explain_n_steps` | integer or null | Not set | Integration steps for integrated-gradients in `sieve-explain` (`--n-steps`). |
+| `--explain_skip_attention` | boolean | `false` | Skip attention analysis in `sieve-explain` (`--skip-attention`). |
+| `--explain_skip_ig` | boolean | `false` | Skip integrated-gradients computation in `sieve-explain` (`--skip-ig`). |
+| `--explain_top_k_interactions` | integer or null | Not set | Number of top interactions extracted by `sieve-explain` (`--top-k-interactions`). |
+| `--explain_top_k_variants` | integer or null | Not set | Number of top variants extracted by `sieve-explain` (`--top-k-variants`). |
+
+See the framework [command reference for `sieve-explain`](https://lescailab.github.io/sieve-project/command-reference/#explainpy) for the scientific and CLI context behind these controls.
+
+### Covariate and chromosome parameters
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--pc_map` | string or null | Not set | Optional TSV with `sample_id`, `PC1`, `PC2`, ... for population-structure adjustment. Shared between `sieve-train` and `sieve-explain`. |
+| `--num_pcs` | integer | `0` | Number of principal components from `--pc_map` to use as covariates. |
+| `--chrx_include_sex_chroms` | boolean | `false` | Include sex chromosomes in the corrected output of `sieve-correct-chrx-bias` (`--include-sex-chroms`). |
+| `--compare_exclude_sex_chroms` | boolean | `false` | Drop sex-chromosome variants in `sieve-compare-attributions` (`--exclude-sex-chroms`). |
+
+`--pc_map` and `--num_pcs` supply population-structure covariates to training and explanation. The framework [command reference](https://lescailab.github.io/sieve-project/command-reference/) describes how those covariates enter the model.
+
 Optional validation resources:
 
 - `--clinvar_tsv`
@@ -173,12 +226,15 @@ Optional validation resources:
 
 If none of the validation resources are supplied and `validation` is selected, the workflow runs the reference-download module to fetch all three. If any subset is supplied, the missing resources are omitted rather than downloaded; partial downloads are not triggered.
 
+Generic nf-core-derived options such as `--email`, `--help`, `--version`, `--monochrome_logs` and the `--config_profile_*` family behave as in other nf-core-derived pipelines and are listed in `nextflow_schema.json`.
+
 ## Parameter files
 
 Use a YAML or JSON parameter file for repeatable runs:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   -params-file params.yml
 ```

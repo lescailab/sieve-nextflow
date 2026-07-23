@@ -2,6 +2,10 @@
 
 All paths are relative to `--outdir`. The cohort directory is `--cohort_id`, defaulting to `cohort`.
 
+!!! info "Scientific interpretation"
+
+    This page identifies published files and their pipeline locations. Use the framework's [Interpreting Results](https://lescailab.github.io/sieve-project/interpreting-results/) guide for scientific interpretation.
+
 ## High-level tree
 
 ```text
@@ -11,6 +15,7 @@ All paths are relative to `--outdir`. The cohort directory is `--cohort_id`, def
 │   ├── real_experiments/
 │   ├── null_baselines/
 │   ├── attribution_comparison/
+│   ├── discovery/
 │   ├── ablation/
 │   ├── epistasis/
 │   └── validation/
@@ -105,6 +110,28 @@ Important files:
 | `corrected/corrected_gene_rankings.csv` | Gene-level corrected rankings. |
 | `corrected/correction_report.yaml` | Correction summary. |
 
+## Discovery
+
+```text
+<cohort_id>/discovery/
+├── gene_list_by_delta_rank.tsv
+├── gene_list_by_z_attribution.tsv
+└── variant_significance_rankings.csv
+```
+
+`gene_list_by_delta_rank.tsv` is the primary gene result. Delta-rank is derived from bootstrap-resampled null attributions by `SIEVE_BOOTSTRAP_NULL_CALIBRATION`; it is scale-free and stable across annotation levels.
+
+`gene_list_by_z_attribution.tsv` is a secondary diagnostic. Its z-score is computed per chromosome, which flattens genome-wide signal, and it is retained for Manhattan-plot visualisation and continuity with earlier runs.
+
+`variant_significance_rankings.csv` carries the variant-level equivalent.
+
+| Parameter | Default | Role |
+| --- | --- | --- |
+| `--bootstrap_top_k` | `50,100,200,500,1000` | Comma-separated top-k thresholds for delta-rank overlap summaries. |
+| `--bootstrap_gene_delta_rank_aggregation` | `max` | Aggregates per-variant delta-rank to gene level with `max` or `mean`. |
+| `--bootstrap_exclude_sex_chroms` | `false` | Drops sex-chromosome variants before bootstrap calibration when enabled. |
+| `--bootstrap_min_variants_per_gene` | `10` | Minimum variants required to compute gene-level statistics. |
+
 ## Ablation
 
 ```text
@@ -158,6 +185,8 @@ gene_interaction_summary.yaml
 ```
 
 Validation can use supplied reference resources or downloaded references. Plot collection depends on plot-source directories produced by selected upstream steps.
+
+`SIEVE_COLLECT_PLOTS` searches those source directories for PNG, JPEG, SVG, PDF, EPS and TIFF files. It publishes them under `<cohort_id>/validation/plots/` with sequential filename prefixes and writes the source-to-destination mapping to `<cohort_id>/validation/plots_manifest.tsv`. When no supported plot files are available, it writes `<cohort_id>/validation/plots/0000__no_plots_found.txt`.
 
 ## Pipeline info
 

@@ -32,6 +32,8 @@ PIPELINE_COMPLETION(...)
 | `EPISTASIS` | `subworkflows/local/epistasis/main.nf` | Audit co-occurrence, validate non-empty interaction results, perform power analysis, and aggregate gene interactions. |
 | `VALIDATION` | `subworkflows/local/validation/main.nf` | Validate discoveries against optional or downloaded references and collect plots. |
 
+The training processes follow three common [execution modes](running-the-pipeline.md#execution-modes), depending on whether you supply fixed hyperparameters and whether `--cv_folds` requests cross-validation.
+
 ## Step resolution
 
 `lib/sieve_helpers.nf` defines `resolveExecuteSteps()`.

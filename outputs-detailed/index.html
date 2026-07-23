@@ -458,6 +458,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../google-batch-a100-no-fusion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Batch A100 without Fusion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../workflow-steps/" class="md-nav__link">
         
   
@@ -1016,6 +1043,7 @@ gene_interaction_summary.yaml
 &lt;cohort_id&gt;/validation/plots_manifest.tsv
 </code></pre></div>
 <p>Validation can use supplied reference resources or downloaded references. Plot collection depends on plot-source directories produced by selected upstream steps.</p>
+<p><code>SIEVE_COLLECT_PLOTS</code> searches those source directories for PNG, JPEG, SVG, PDF, EPS and TIFF files. It publishes them under <code>&lt;cohort_id&gt;/validation/plots/</code> with sequential filename prefixes and writes the source-to-destination mapping to <code>&lt;cohort_id&gt;/validation/plots_manifest.tsv</code>. When no supported plot files are available, it writes <code>&lt;cohort_id&gt;/validation/plots/0000__no_plots_found.txt</code>.</p>
 <h2 id="pipeline-info">Pipeline info<a class="headerlink" href="#pipeline-info" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>pipeline_info/execution_timeline_&lt;timestamp&gt;.html
 pipeline_info/execution_report_&lt;timestamp&gt;.html
@@ -1024,7 +1052,7 @@ pipeline_info/pipeline_dag_&lt;timestamp&gt;.html
 pipeline_info/params_&lt;timestamp&gt;.json
 pipeline_info/nf_core_sieve_software_versions.yml
 </code></pre></div>
-<p>Use these files to audit command parameters, runtime behavior, task failures, and software versions.</p>
+<p>Use these files to audit command parameters, runtime behaviour, task failures, and software versions.</p>
 
 
 

@@ -1,6 +1,6 @@
 # Configuration
 
-SIEVE follows the standard Nextflow configuration model: base defaults are declared in `nextflow.config`, included config files add resource and module behavior, profiles override runtime settings, and command-line parameters have the final say.
+SIEVE follows the standard Nextflow configuration model: base defaults are declared in `nextflow.config`, included config files add resource and module behaviour, profiles override runtime settings, and command-line parameters have the final say.
 
 ## Configuration files
 
@@ -76,7 +76,7 @@ The suffix is controlled by `--trace_report_suffix`.
 
 ## Custom configs
 
-The root config includes nf-core custom config support through `params.custom_config_base`. For offline or tightly controlled runs, check whether your environment should set `NXF_OFFLINE=true` or pass a local custom config.
+The pipeline is not an nf-core pipeline, but its nf-core-derived structure retains custom config support through `params.custom_config_base`. For offline or tightly controlled runs, check whether your environment should set `NXF_OFFLINE=true` or pass a local custom config.
 
 ## Command-line precedence
 

@@ -8,7 +8,6 @@
 [![Open in GitHub Codespaces](https://img.shields.io/badge/Open_In_GitHub_Codespaces-black?labelColor=grey&logo=github)](https://github.com/codespaces/new/lescailab/sieve-nextflow)
 [![GitHub Actions CI Status](https://github.com/lescailab/sieve-nextflow/actions/workflows/nf-test.yml/badge.svg)](https://github.com/lescailab/sieve-nextflow/actions/workflows/nf-test.yml)
 [![GitHub Actions Linting Status](https://github.com/lescailab/sieve-nextflow/actions/workflows/linting.yml/badge.svg)](https://github.com/lescailab/sieve-nextflow/actions/workflows/linting.yml)
-[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/sieve/results)
 [![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
 
 [![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.04.0-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)
@@ -96,11 +95,11 @@ After null-baseline comparison, delta-rank derived from bootstrap-resampled null
 
 ## Credits
 
-lescailab/sieve was originally written by Francesco Lescai.
+SIEVE Nextflow was originally written by Francesco Lescai. The scientific framework is developed separately in [`lescailab/sieve-project`](https://github.com/lescailab/sieve-project).
 
 ## Contributions and support
 
-See the [contributing guidelines](.github/CONTRIBUTING.md). For help, use the [nf-core Slack `#sieve` channel](https://nfcore.slack.com/channels/sieve) after joining via [nf-co.re/join/slack](https://nf-co.re/join/slack).
+See the [contributing guidelines](.github/CONTRIBUTING.md). For help, open an issue in the [SIEVE Nextflow issue tracker](https://github.com/lescailab/sieve-nextflow/issues).
 
 ## Citations
 

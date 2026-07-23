@@ -163,6 +163,8 @@ gene_interaction_summary.yaml
 
 Validation can use supplied reference resources or downloaded references. Plot collection depends on plot-source directories produced by selected upstream steps.
 
+`SIEVE_COLLECT_PLOTS` searches those source directories for PNG, JPEG, SVG, PDF, EPS and TIFF files. It publishes them under `<cohort_id>/validation/plots/` with sequential filename prefixes and writes the source-to-destination mapping to `<cohort_id>/validation/plots_manifest.tsv`. When no supported plot files are available, it writes `<cohort_id>/validation/plots/0000__no_plots_found.txt`.
+
 ## Pipeline info
 
 ```text
@@ -174,4 +176,4 @@ pipeline_info/params_<timestamp>.json
 pipeline_info/nf_core_sieve_software_versions.yml
 ```
 
-Use these files to audit command parameters, runtime behavior, task failures, and software versions.
+Use these files to audit command parameters, runtime behaviour, task failures, and software versions.

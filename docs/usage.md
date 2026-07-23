@@ -4,7 +4,7 @@ This page lists the verified command-line interface exposed by `main.nf`, `nextf
 
 ## Execution entry point
 
-Run the pipeline with `nextflow run lescailab/sieve-nextflow` or, from a local checkout, `nextflow run .`.
+Run the development branch with `nextflow run lescailab/sieve-nextflow -r dev` or, from a local checkout, `nextflow run .`.
 
 Verified smoke test:
 
@@ -32,6 +32,7 @@ Example raw-input command:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -75,6 +76,7 @@ Example using downstream artifacts:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --preprocessed_data /path/to/preprocessed.pt \
   --sex_map /path/to/sample_sex.tsv \
@@ -134,6 +136,7 @@ Combine profiles with commas:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   --vcf /path/to/data.vcf.gz \
   --phenotypes /path/to/phenotypes.tsv \
@@ -179,6 +182,7 @@ Use a YAML or JSON parameter file for repeatable runs:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   -params-file params.yml
 ```

@@ -1,6 +1,6 @@
 # SIEVE Guidelines
 
-This site is the extended documentation layer for `lescailab/sieve`. The repository keeps quick-access documentation in the root [README](https://github.com/lescailab/sieve-nextflow/blob/master/README.md), [usage guide](https://github.com/lescailab/sieve-nextflow/blob/master/docs/usage.md), and [output guide](https://github.com/lescailab/sieve-nextflow/blob/master/docs/output.md); this site explains the same pipeline in a tutorial-style order for users who need to understand how the workflow is assembled and how to operate it safely.
+This site is the extended documentation layer for the SIEVE Nextflow pipeline. The repository keeps quick-access documentation in the root [README](https://github.com/lescailab/sieve-nextflow/blob/dev/README.md), [usage guide](https://github.com/lescailab/sieve-nextflow/blob/dev/docs/usage.md), and [output guide](https://github.com/lescailab/sieve-nextflow/blob/dev/docs/output.md); this site explains the same pipeline in a tutorial-style order for users who need to understand how the workflow is assembled and how to operate it safely. The scientific framework is documented separately at [SIEVE Documentation](https://lescailab.github.io/sieve-project).
 
 ## Documentation layers
 

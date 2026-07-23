@@ -4,16 +4,25 @@ Reproducibility comes from pinning the pipeline revision, recording parameters, 
 
 ## Pin the pipeline revision
 
-For released versions:
+`-r dev` selects the active development branch, which moves as commits land:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
-  -r <release> \
+  -r dev \
   -profile docker,gpu \
   -params-file params.yml
 ```
 
-For local development, record the Git commit used for the run.
+For a reproducible remote run, replace the moving branch with the full commit SHA:
+
+```bash
+nextflow run lescailab/sieve-nextflow \
+  -r <commit-sha> \
+  -profile docker,gpu \
+  -params-file params.yml
+```
+
+Record that SHA alongside the results. For a local checkout, record the checked-out Git commit used for the run.
 
 ## Use parameter files
 
@@ -85,6 +94,7 @@ Nextflow `-resume` can reuse previous task outputs:
 
 ```bash
 nextflow run lescailab/sieve-nextflow \
+  -r dev \
   -profile docker,gpu \
   -params-file params.yml \
   -resume

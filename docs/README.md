@@ -2,6 +2,8 @@
 
 Use these documentation layers:
 
+The scientific framework is documented separately at [SIEVE Documentation](https://lescailab.github.io/sieve-project).
+
 - [Usage](usage.md)
   - How the pipeline works, how to run it and the available command-line parameters.
 - [Output](output.md)

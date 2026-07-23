@@ -1,5 +1,5 @@
-site_name: SIEVE Guidelines
-site_description: Extended documentation for the lescailab/sieve Nextflow pipeline
+site_name: SIEVE Nextflow
+site_description: Nextflow pipeline orchestrating the SIEVE framework for case-control variant discovery from exome sequencing data
 repo_url: https://github.com/lescailab/sieve-nextflow
 edit_uri: ""
 

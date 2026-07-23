@@ -4,7 +4,7 @@ This page lists the verified command-line interface exposed by `main.nf`, `nextf
 
 ## Execution entry point
 
-Run the development branch with `nextflow run lescailab/sieve-nextflow -r dev` or, from a local checkout, `nextflow run .`.
+Run the remote development branch with `nextflow run lescailab/sieve-nextflow -r dev`. From a local checkout, `nextflow run .` runs the revision currently checked out in that directory.
 
 Verified smoke test:
 

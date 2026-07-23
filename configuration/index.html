@@ -513,6 +513,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#training-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Training parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explainability-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explainability parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#covariate-and-chromosome-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Covariate and chromosome parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#resource-labels" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -786,6 +819,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#training-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Training parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explainability-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explainability parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#covariate-and-chromosome-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Covariate and chromosome parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#resource-labels" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -951,6 +1017,200 @@
 </tr>
 </tbody>
 </table>
+<h2 id="training-parameters">Training parameters<a class="headerlink" href="#training-parameters" title="Permanent link">&para;</a></h2>
+<p>Types, defaults and base descriptions in these tables come from <code>nextflow_schema.json</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--train_aggregation_method</code></td>
+<td>string</td>
+<td><code>mean</code></td>
+<td>Aggregation method passed to SIEVE training.</td>
+</tr>
+<tr>
+<td><code>--train_chunk_overlap</code></td>
+<td>integer</td>
+<td><code>0</code></td>
+<td>Overlap between adjacent chunks (forwarded to <code>sieve-train --chunk-overlap</code>).</td>
+</tr>
+<tr>
+<td><code>--train_class_weighting</code></td>
+<td>string</td>
+<td><code>auto</code></td>
+<td>Inverse-frequency class weighting strategy (forwarded to <code>sieve-train --class-weighting</code>).</td>
+</tr>
+<tr>
+<td><code>--train_classifier_type</code></td>
+<td>string or null</td>
+<td>Not set</td>
+<td>Optional classifier-head architecture (forwarded to <code>sieve-train --classifier-type</code>). When null, the SIEVE default is used.</td>
+</tr>
+<tr>
+<td><code>--train_early_stopping</code></td>
+<td>integer</td>
+<td><code>10</code></td>
+<td>Early stopping patience for training runs.</td>
+</tr>
+<tr>
+<td><code>--train_gradient_accumulation_steps</code></td>
+<td>integer</td>
+<td><code>4</code></td>
+<td>Gradient accumulation steps for all training stages.</td>
+</tr>
+<tr>
+<td><code>--train_gradient_clip</code></td>
+<td>number</td>
+<td><code>1.0</code></td>
+<td>Gradient clipping threshold for all training stages.</td>
+</tr>
+<tr>
+<td><code>--train_hidden_dim</code></td>
+<td>integer</td>
+<td><code>64</code></td>
+<td>Default hidden dimension used across training stages.</td>
+</tr>
+<tr>
+<td><code>--train_num_attention_layers</code></td>
+<td>integer</td>
+<td><code>1</code></td>
+<td>Default number of attention layers used across training stages.</td>
+</tr>
+<tr>
+<td><code>--train_num_heads</code></td>
+<td>integer or null</td>
+<td>Not set</td>
+<td>Optional fixed number of attention heads (forwarded to <code>sieve-train --num-heads</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>flatten</code> classifier head is the SIEVE default and the head used throughout this pipeline. <code>attention_pool</code> is available as an alternative and underperformed on the cohorts tested; use the framework <a href="https://lescailab.github.io/sieve-project/command-reference/#trainpy">command reference for <code>sieve-train</code></a> for its CLI contract.</p>
+<h2 id="explainability-parameters">Explainability parameters<a class="headerlink" href="#explainability-parameters" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--explain_aggregation_method</code></td>
+<td>string or null</td>
+<td>Not set</td>
+<td>Score aggregation method used by <code>sieve-explain</code> (<code>--aggregation-method</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_attention_percentile</code></td>
+<td>number or null</td>
+<td>Not set</td>
+<td>Percentile cutoff when <code>--explain_attention_threshold_mode</code> is <code>percentile</code> (<code>--attention-percentile</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_attention_threshold</code></td>
+<td>number or null</td>
+<td>Not set</td>
+<td>Minimum attention weight to keep an interaction (<code>--attention-threshold</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_attention_threshold_mode</code></td>
+<td>string or null</td>
+<td>Not set</td>
+<td>Attention threshold mode (<code>--attention-threshold-mode</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_batch_size</code></td>
+<td>integer or null</td>
+<td>Not set</td>
+<td>Dataloader batch size for <code>sieve-explain</code> (<code>--batch-size</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_max_variants</code></td>
+<td>integer or null</td>
+<td>Not set</td>
+<td>Maximum variants per sample considered during integrated-gradients computation (<code>--max-variants</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_n_steps</code></td>
+<td>integer or null</td>
+<td>Not set</td>
+<td>Integration steps for integrated-gradients in <code>sieve-explain</code> (<code>--n-steps</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_skip_attention</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Skip attention analysis in <code>sieve-explain</code> (<code>--skip-attention</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_skip_ig</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Skip integrated-gradients computation in <code>sieve-explain</code> (<code>--skip-ig</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_top_k_interactions</code></td>
+<td>integer or null</td>
+<td>Not set</td>
+<td>Number of top interactions extracted by <code>sieve-explain</code> (<code>--top-k-interactions</code>).</td>
+</tr>
+<tr>
+<td><code>--explain_top_k_variants</code></td>
+<td>integer or null</td>
+<td>Not set</td>
+<td>Number of top variants extracted by <code>sieve-explain</code> (<code>--top-k-variants</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>See the framework <a href="https://lescailab.github.io/sieve-project/command-reference/#explainpy">command reference for <code>sieve-explain</code></a> for the scientific and CLI context behind these controls.</p>
+<h2 id="covariate-and-chromosome-parameters">Covariate and chromosome parameters<a class="headerlink" href="#covariate-and-chromosome-parameters" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--pc_map</code></td>
+<td>string or null</td>
+<td>Not set</td>
+<td>Optional TSV with <code>sample_id</code>, <code>PC1</code>, <code>PC2</code>, ... for population-structure adjustment. Shared between <code>sieve-train</code> and <code>sieve-explain</code>.</td>
+</tr>
+<tr>
+<td><code>--num_pcs</code></td>
+<td>integer</td>
+<td><code>0</code></td>
+<td>Number of principal components from <code>--pc_map</code> to use as covariates.</td>
+</tr>
+<tr>
+<td><code>--chrx_include_sex_chroms</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Include sex chromosomes in the corrected output of <code>sieve-correct-chrx-bias</code> (<code>--include-sex-chroms</code>).</td>
+</tr>
+<tr>
+<td><code>--compare_exclude_sex_chroms</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Drop sex-chromosome variants in <code>sieve-compare-attributions</code> (<code>--exclude-sex-chroms</code>).</td>
+</tr>
+</tbody>
+</table>
+<p><code>--pc_map</code> and <code>--num_pcs</code> supply population-structure covariates to training and explanation. The framework <a href="https://lescailab.github.io/sieve-project/command-reference/">command reference</a> describes how those covariates enter the model.</p>
+<p>Generic nf-core-derived options such as <code>--email</code>, <code>--help</code>, <code>--version</code>, <code>--monochrome_logs</code> and the <code>--config_profile_*</code> family behave as in other nf-core-derived pipelines and are listed in <code>nextflow_schema.json</code>.</p>
 <h2 id="resource-labels">Resource labels<a class="headerlink" href="#resource-labels" title="Permanent link">&para;</a></h2>
 <p><code>conf/base.config</code> defines labels used by modules:</p>
 <table>

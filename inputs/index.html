@@ -497,10 +497,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shortcut-artifacts" class="md-nav__link">
+  <a href="#shortcut-artefacts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shortcut artifacts
+        Shortcut artefacts
       
     </span>
   </a>
@@ -786,10 +786,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shortcut-artifacts" class="md-nav__link">
+  <a href="#shortcut-artefacts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shortcut artifacts
+        Shortcut artefacts
       
     </span>
   </a>
@@ -836,7 +836,8 @@
 
 
 <h1 id="inputs">Inputs<a class="headerlink" href="#inputs" title="Permanent link">&para;</a></h1>
-<p>This page distinguishes required raw inputs from optional shortcut artifacts.</p>
+<p>This page distinguishes required raw inputs from optional shortcut artefacts.</p>
+<p>The pipeline-level <code>--input</code> parameter is inherited from the nf-core template and is not consumed by this pipeline. Supply inputs through <code>--vcf</code> and <code>--phenotypes</code>; the pipeline does not support an input samplesheet. This parameter is unrelated to any internal input option exposed by the underlying SIEVE tools.</p>
 <h2 id="raw-inputs">Raw inputs<a class="headerlink" href="#raw-inputs" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -890,11 +891,11 @@ sample2 1
 <div class="highlight"><pre><span></span><code>sieve-infer-sex --vcf &lt;vcf&gt; --output-dir infer_sex_diagnostics --genome-build &lt;build&gt;
 </code></pre></div>
 <p><code>--known_sex</code> is only passed to sex inference for concordance checking. It does not replace <code>--sex_map</code>.</p>
-<h2 id="shortcut-artifacts">Shortcut artifacts<a class="headerlink" href="#shortcut-artifacts" title="Permanent link">&para;</a></h2>
+<h2 id="shortcut-artefacts">Shortcut artefacts<a class="headerlink" href="#shortcut-artefacts" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Artifact</th>
+<th>Artefact</th>
 <th>Parameter</th>
 <th>Format check</th>
 <th>Used to skip</th>

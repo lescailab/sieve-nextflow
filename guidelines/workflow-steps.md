@@ -2,6 +2,10 @@
 
 This page explains the defined `--execute_step` names and the subworkflows they activate.
 
+!!! info "Scientific interpretation"
+
+    This page describes pipeline orchestration. Use the framework's [Complete Workflow](https://lescailab.github.io/sieve-project/complete-workflow/) and [Command Reference](https://lescailab.github.io/sieve-project/command-reference/) to understand what each SIEVE command computes.
+
 ## Step names
 
 Stable step names:
@@ -169,7 +173,7 @@ When `ablation` is selected, `SIEVE_CREATE_NULL_BASELINE` runs automatically to 
 
 ## Epistasis
 
-Purpose: audit co-occurrence, validate interactions when present, estimate power, and aggregate gene interactions.
+Purpose: audit co-occurrence, test candidate interactions when present, quantify power, and aggregate gene interactions.
 
 Implementation:
 

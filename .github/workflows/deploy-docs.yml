@@ -5,15 +5,50 @@ on:
     branches:
       - dev
     paths:
+      - "README.md"
+      - "CITATIONS.md"
+      - "docs/**"
       - "guidelines/**"
       - "mkdocs.yml"
+      - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
+  docs-style:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check documentation style
+        shell: bash
+        run: |
+          mapfile -d '' markdown_files < <(find README.md CITATIONS.md docs guidelines -type f -name '*.md' -print0)
+          set +e
+          rg --line-number -i '\b(artifacts?|behavior|visualizations?|optimization|normalized)\b|—' "${markdown_files[@]}"
+          scan_status=$?
+          set -e
+
+          case "$scan_status" in
+            0)
+              echo "Documentation contains a disallowed spelling or em dash."
+              exit 1
+              ;;
+            1)
+              ;;
+            *)
+              echo "Documentation style scan failed with exit code $scan_status."
+              exit "$scan_status"
+              ;;
+          esac
+
   deploy:
+    needs: docs-style
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -88,7 +88,7 @@ Relevant defaults:
 
 Keep these values fixed when comparing runs.
 
-## Resume behavior
+## Resume behaviour
 
 Nextflow `-resume` can reuse previous task outputs:
 
@@ -106,5 +106,5 @@ Use `-resume` only when the work directory is preserved and the command still de
 
 - Validation references can be downloaded automatically when none are supplied. For fixed analyses, provide versioned local reference files with `--clinvar_tsv`, `--gwas_tsv`, and `--go_mapping_json`.
 - `--publish_dir_mode move` can remove files from work directories. The default is `copy`.
-- CPU and GPU training may not produce identical floating-point behavior.
+- CPU and GPU training may not produce identical floating-point behaviour.
 - `--execute_step` can alter which upstream channels are created and therefore which outputs exist.

@@ -2,7 +2,7 @@
 
 This page distinguishes required raw inputs from optional shortcut artefacts.
 
-`--input` is inherited from the nf-core template and is not consumed by this pipeline. Supply inputs through `--vcf` and `--phenotypes`; the pipeline does not support an input samplesheet.
+The pipeline-level `--input` parameter is inherited from the nf-core template and is not consumed by this pipeline. Supply inputs through `--vcf` and `--phenotypes`; the pipeline does not support an input samplesheet. This parameter is unrelated to any internal input option exposed by the underlying SIEVE tools.
 
 ## Raw inputs
 

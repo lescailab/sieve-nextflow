@@ -2,6 +2,10 @@
 
 All paths are relative to `--outdir`. The cohort directory is `--cohort_id`, defaulting to `cohort`.
 
+!!! info "Scientific interpretation"
+
+    This page identifies published files and their pipeline locations. Use the framework's [Interpreting Results](https://lescailab.github.io/sieve-project/interpreting-results/) guide for scientific interpretation.
+
 ## High-level tree
 
 ```text
